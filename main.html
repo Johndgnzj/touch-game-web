@@ -125,6 +125,8 @@
 
         var hitSound = new Audio('assets/sfx/hit.mp3');
         var endSound = new Audio('assets/sfx/gameover.mp3');
+        var bgm = new Audio('assets/sfx/bgm.mp3');
+        bgm.loop = true;
 
         function start() {
             s1 = 0; s2 = 0; tm = 30;
@@ -132,6 +134,9 @@
             document.getElementById('s2').innerText = 0;
             document.getElementById('tm').innerText = 30;
             active = true;
+
+            bgm.currentTime = 0;
+            bgm.play().catch(function(e){});
 
             var timer = setInterval(function() {
                 tm--;
@@ -222,6 +227,7 @@
             spawnInterval = null;
             document.querySelectorAll('.falling-item').forEach(function(el) { el.remove(); });
 
+            bgm.pause();
             endSound.play().catch(function(e){});
 
             saveRecord(s1, s2);
