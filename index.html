@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ULTRAMAN x MELODY: HEROES</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/tailwind.css">
     <link rel="stylesheet" href="styles.css">
     <style>
         .hero-row {
@@ -88,25 +88,27 @@
 
     <script src="js/history.js"></script>
     <script>
-        var records = loadHistory();
-        var container = document.getElementById('preview-content');
-        if (records.length === 0) return;
+        (function() {
+            var records = loadHistory();
+            var container = document.getElementById('preview-content');
+            if (records.length === 0) return;
 
-        var html = '';
-        var shown = records.slice(0, 3);
-        for (var i = 0; i < shown.length; i++) {
-            var r = shown[i];
-            var winLabel = r.winner === 'ultraman' ? '⚡ Ultraman' :
-                           r.winner === 'melody'   ? '✨ Melody' : 'Tie';
-            var winColor = r.winner === 'ultraman' ? '#93c5fd' :
-                           r.winner === 'melody'   ? '#f9a8d4' : '#d1d5db';
-            html += '<div class="preview-row">' +
-                '<span class="preview-scores">U ' + r.s1 + ' &nbsp;–&nbsp; M ' + r.s2 + '</span>' +
-                '<span style="color:' + winColor + ';font-weight:bold;font-size:0.82rem;">' + winLabel + '</span>' +
-                '<span class="preview-time">' + formatTimestamp(r.timestamp) + '</span>' +
-            '</div>';
-        }
-        container.innerHTML = html;
+            var html = '';
+            var shown = records.slice(0, 3);
+            for (var i = 0; i < shown.length; i++) {
+                var r = shown[i];
+                var winLabel = r.winner === 'ultraman' ? '⚡ Ultraman' :
+                               r.winner === 'melody'   ? '✨ Melody' : 'Tie';
+                var winColor = r.winner === 'ultraman' ? '#93c5fd' :
+                               r.winner === 'melody'   ? '#f9a8d4' : '#d1d5db';
+                html += '<div class="preview-row">' +
+                    '<span class="preview-scores">U ' + r.s1 + ' &nbsp;–&nbsp; M ' + r.s2 + '</span>' +
+                    '<span style="color:' + winColor + ';font-weight:bold;font-size:0.82rem;">' + winLabel + '</span>' +
+                    '<span class="preview-time">' + formatTimestamp(r.timestamp) + '</span>' +
+                '</div>';
+            }
+            container.innerHTML = html;
+        })();
     </script>
 </body>
 </html>

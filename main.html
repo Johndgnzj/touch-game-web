@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ULTRAMAN x MELODY: HEROES</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/tailwind.css">
     <link rel="stylesheet" href="styles.css">
     <style>
         #game-area {
@@ -102,7 +102,7 @@
                 <p id="f1" style="font-size:2.5rem; font-weight:900; color:#93c5fd;">0</p>
             </div>
             <div style="text-align:center;">
-                <div class="result-avatar" style="background:#9d174d;">
+                <div class="result-avatar" style="background:#ffffff;">
                     <img src="assets/melody.png" onerror="this.style.display='none';this.parentNode.textContent='✨'">
                 </div>
                 <p style="font-size:0.8rem; color:#f9a8d4; margin-bottom:4px;">MELODY</p>
@@ -122,6 +122,9 @@
         var s1 = 0, s2 = 0, tm = 30, active = false;
         var spawnInterval = null;
         var area = document.getElementById('game-area');
+
+        var hitSound = new Audio('assets/sfx/hit.mp3');
+        var endSound = new Audio('assets/sfx/gameover.mp3');
 
         function start() {
             s1 = 0; s2 = 0; tm = 30;
@@ -147,7 +150,7 @@
             var item = document.createElement('div');
             item.className = 'falling-item';
             item.dataset.type = isU ? 'ultraman' : 'melody';
-            item.style.background = isU ? '#1e3a8a' : '#9d174d';
+            item.style.background = isU ? '#1e3a8a' : '#ffffff';
 
             var img = document.createElement('img');
             img.src = isU ? 'assets/ultraman.png' : 'assets/melody.png';
@@ -190,11 +193,15 @@
 
         function handleHit(tx, ty) {
             var items = document.getElementsByClassName('falling-item');
-            for (var i = 0; i < items.length; i++) {
-                var item = items[i];
-                var r = item.getBoundingClientRect();
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                const r = item.getBoundingClientRect();
                 if (tx > r.left - 25 && tx < r.right + 25 &&
                     ty > r.top  - 25 && ty < r.bottom + 25) {
+                    
+                    hitSound.currentTime = 0;
+                    hitSound.play().catch(function(e){});
+
                     if (item.dataset.type === 'ultraman') {
                         s1++;
                         document.getElementById('s1').innerText = s1;
@@ -214,6 +221,8 @@
             clearInterval(spawnInterval);
             spawnInterval = null;
             document.querySelectorAll('.falling-item').forEach(function(el) { el.remove(); });
+
+            endSound.play().catch(function(e){});
 
             saveRecord(s1, s2);
 
