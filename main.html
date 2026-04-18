@@ -96,14 +96,14 @@
         <div style="display:flex; gap:48px; margin-bottom:36px;">
             <div style="text-align:center;">
                 <div class="result-avatar" style="background:#1e3a8a;">
-                    <img src="assets/ultraman.jpg" onerror="this.style.display='none';this.parentNode.textContent='⚡'">
+                    <img src="assets/ultraman.png" onerror="this.style.display='none';this.parentNode.textContent='⚡'">
                 </div>
                 <p style="font-size:0.8rem; color:#93c5fd; margin-bottom:4px;">ULTRAMAN</p>
                 <p id="f1" style="font-size:2.5rem; font-weight:900; color:#93c5fd;">0</p>
             </div>
             <div style="text-align:center;">
                 <div class="result-avatar" style="background:#9d174d;">
-                    <img src="assets/melody.jpg" onerror="this.style.display='none';this.parentNode.textContent='✨'">
+                    <img src="assets/melody.png" onerror="this.style.display='none';this.parentNode.textContent='✨'">
                 </div>
                 <p style="font-size:0.8rem; color:#f9a8d4; margin-bottom:4px;">MELODY</p>
                 <p id="f2" style="font-size:2.5rem; font-weight:900; color:#f9a8d4;">0</p>
@@ -150,7 +150,7 @@
             item.style.background = isU ? '#1e3a8a' : '#9d174d';
 
             var img = document.createElement('img');
-            img.src = isU ? 'assets/ultraman.jpg' : 'assets/melody.jpg';
+            img.src = isU ? 'assets/ultraman.png' : 'assets/melody.png';
             img.onerror = function() {
                 img.style.display = 'none';
                 item.textContent = isU ? '⚡' : '✨';
