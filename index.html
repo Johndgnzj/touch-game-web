@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ULTRAMAN x MELODY: HEROES</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .hero-row {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+        .hero-avatar {
+            width: 80px; height: 80px;
+            border-radius: 50%; overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+        }
+        .hero-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .vs-text {
+            font-size: 1.8rem; font-weight: 900;
+            color: #fbbf24;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+        }
+        #history-preview {
+            width: 100%;
+            max-width: 480px;
+            margin-top: 24px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 16px;
+            padding: 16px;
+        }
+        .preview-title {
+            font-size: 0.75rem; font-weight: bold;
+            letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .preview-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.85rem;
+        }
+        .preview-row:last-child { border-bottom: none; }
+        .preview-scores { color: rgba(255,255,255,0.8); }
+        .preview-time { color: rgba(255,255,255,0.4); font-size: 0.75rem; }
+        .empty-state {
+            text-align: center;
+            color: rgba(255,255,255,0.4);
+            font-size: 0.9rem;
+            padding: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="screen">
+        <div class="hero-row">
+            <div class="hero-avatar" style="border: 3px solid #3b82f6;">
+                <img src="assets/ultraman.jpg" onerror="this.style.display='none';this.parentNode.textContent='⚡'">
+            </div>
+            <div class="vs-text">VS</div>
+            <div class="hero-avatar" style="border: 3px solid #ec4899;">
+                <img src="assets/melody.jpg" onerror="this.style.display='none';this.parentNode.textContent='✨'">
+            </div>
+        </div>
+
+        <h1 class="text-3xl font-black mb-1 tracking-wide">ULTRAMAN x MELODY</h1>
+        <p class="text-sm mb-8 text-gray-400 tracking-widest uppercase">Heroes Adventure</p>
+
+        <a href="main.html" class="btn" style="font-size:1.15rem; padding:16px 48px;">START GAME</a>
+
+        <div id="history-preview">
+            <div class="preview-title">Recent Games</div>
+            <div id="preview-content">
+                <div class="empty-state">No games played yet</div>
+            </div>
+        </div>
+
+        <a href="history.html" class="btn-secondary" style="margin-top:16px;">View All History</a>
+    </div>
+
+    <script src="js/history.js"></script>
+    <script>
+        var records = loadHistory();
+        var container = document.getElementById('preview-content');
+        if (records.length === 0) return;
+
+        var html = '';
+        var shown = records.slice(0, 3);
+        for (var i = 0; i < shown.length; i++) {
+            var r = shown[i];
+            var winLabel = r.winner === 'ultraman' ? '⚡ Ultraman' :
+                           r.winner === 'melody'   ? '✨ Melody' : 'Tie';
+            var winColor = r.winner === 'ultraman' ? '#93c5fd' :
+                           r.winner === 'melody'   ? '#f9a8d4' : '#d1d5db';
+            html += '<div class="preview-row">' +
+                '<span class="preview-scores">U ' + r.s1 + ' &nbsp;–&nbsp; M ' + r.s2 + '</span>' +
+                '<span style="color:' + winColor + ';font-weight:bold;font-size:0.82rem;">' + winLabel + '</span>' +
+                '<span class="preview-time">' + formatTimestamp(r.timestamp) + '</span>' +
+            '</div>';
+        }
+        container.innerHTML = html;
+    </script>
+</body>
+</html>

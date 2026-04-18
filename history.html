@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>History – ULTRAMAN x MELODY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { overflow-y: auto; }
+
+        .history-screen {
+            position: fixed; inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+            padding: 24px 16px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .history-header {
+            width: 100%; max-width: 600px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+
+        #table-wrapper {
+            width: 100%; max-width: 600px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            flex-shrink: 0;
+        }
+
+        #empty-state {
+            color: rgba(255,255,255,0.45);
+            text-align: center;
+            padding: 48px 0;
+            font-size: 1rem;
+        }
+        #empty-state a { color: #60a5fa; text-decoration: underline; }
+
+        .action-row {
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="history-screen">
+        <div class="history-header">
+            <h1 style="font-size:1.6rem; font-weight:900; letter-spacing:0.05em;">HISTORY</h1>
+            <span id="record-count" style="color:rgba(255,255,255,0.4); font-size:0.85rem;"></span>
+        </div>
+
+        <div id="table-wrapper">
+            <div id="empty-state" class="hidden">
+                No games played yet. <a href="main.html">Play now!</a>
+            </div>
+            <table class="history-table" id="history-table" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>Date &amp; Time</th>
+                        <th style="text-align:center;">⚡ U</th>
+                        <th style="text-align:center;">M ✨</th>
+                        <th>Winner</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body"></tbody>
+            </table>
+        </div>
+
+        <div class="action-row">
+            <button onclick="handleClear()" class="btn-danger">Clear History</button>
+            <a href="index.html" class="btn">Home</a>
+        </div>
+    </div>
+
+    <script src="js/history.js"></script>
+    <script>
+        function renderHistory() {
+            var records = loadHistory();
+            var emptyEl = document.getElementById('empty-state');
+            var tableEl = document.getElementById('history-table');
+            var bodyEl  = document.getElementById('history-body');
+            var countEl = document.getElementById('record-count');
+
+            if (records.length === 0) {
+                emptyEl.classList.remove('hidden');
+                tableEl.style.display = 'none';
+                countEl.textContent = '';
+                return;
+            }
+
+            emptyEl.classList.add('hidden');
+            tableEl.style.display = 'table';
+            countEl.textContent = records.length + ' game' + (records.length !== 1 ? 's' : '');
+
+            var rows = '';
+            for (var i = 0; i < records.length; i++) {
+                var r = records[i];
+                var badgeClass = 'winner-' + r.winner;
+                var badgeLabel = r.winner === 'ultraman' ? '⚡ Ultraman' :
+                                 r.winner === 'melody'   ? '✨ Melody' : 'Tie';
+                rows += '<tr>' +
+                    '<td>' + formatTimestamp(r.timestamp) + '</td>' +
+                    '<td style="text-align:center; font-weight:bold; color:#93c5fd;">' + r.s1 + '</td>' +
+                    '<td style="text-align:center; font-weight:bold; color:#f9a8d4;">' + r.s2 + '</td>' +
+                    '<td><span class="winner-badge ' + badgeClass + '">' + badgeLabel + '</span></td>' +
+                '</tr>';
+            }
+            bodyEl.innerHTML = rows;
+        }
+
+        function handleClear() {
+            if (confirm('Clear all history? This cannot be undone.')) {
+                clearHistory();
+                renderHistory();
+            }
+        }
+
+        renderHistory();
+    </script>
+</body>
+</html>
