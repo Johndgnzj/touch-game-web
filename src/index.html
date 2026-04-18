@@ -141,14 +141,14 @@
         <div class="flex gap-12 mb-10">
             <div class="text-center">
                 <div class="result-avatar" style="background:#1e3a8a;" id="av1">
-                    <img src="../assets/ultraman.jpg" onerror="this.style.display='none';this.parentNode.textContent='⚡'">
+                    <img src="assets/ultraman.png" onerror="this.style.display='none';this.parentNode.textContent='⚡'">
                 </div>
                 <p class="text-sm text-blue-300 mb-1">ULTRAMAN</p>
                 <p id="f1" class="text-4xl font-bold text-blue-300">0</p>
             </div>
             <div class="text-center">
                 <div class="result-avatar" style="background:#9d174d;" id="av2">
-                    <img src="../assets/melody.jpg" onerror="this.style.display='none';this.parentNode.textContent='✨'">
+                    <img src="assets/melody.png" onerror="this.style.display='none';this.parentNode.textContent='✨'">
                 </div>
                 <p class="text-sm text-pink-300 mb-1">MELODY</p>
                 <p id="f2" class="text-4xl font-bold text-pink-300">0</p>
@@ -193,7 +193,7 @@
             item.style.background = isU ? '#1e3a8a' : '#9d174d';
 
             const img = document.createElement('img');
-            img.src = isU ? '../assets/ultraman.jpg' : '../assets/melody.jpg';
+            img.src = isU ? 'assets/ultraman.png' : 'assets/melody.png';
             img.onerror = () => {
                 img.style.display = 'none';
                 item.textContent = isU ? '⚡' : '✨';
