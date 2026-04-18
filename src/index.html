@@ -6,55 +6,152 @@
     <title>ULTRAMAN x MELODY: HEROES</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: sans-serif; }
-        .screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; background: #000; color: white; }
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; font-family: sans-serif;
+            touch-action: manipulation;
+        }
+
+        /* Shared background for all screens */
+        body {
+            background: url('../assets/background-portrait.jpg') no-repeat center center / cover #000;
+        }
+        @media (orientation: landscape) {
+            body { background-image: url('../assets/background-landscape.jpg'); }
+        }
+
+        .screen {
+            position: fixed; inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.65);
+            color: white;
+        }
         .hidden { display: none !important; }
-        #game-area { 
-            position: fixed; 
-            inset: 0; 
-            z-index: 10; 
-            pointer-events: auto; 
-            background-size: cover; 
+
+        #game-area {
+            position: fixed; inset: 0; z-index: 10;
+            pointer-events: auto;
+            background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
         }
-        /* 響應式背景切換 */
         @media (orientation: portrait) {
             #game-area { background-image: url('../assets/background-portrait.jpg'); }
         }
         @media (orientation: landscape) {
             #game-area { background-image: url('../assets/background-landscape.jpg'); }
         }
-        .falling-item { position: absolute; width: 80px; height: 80px; pointer-events: none; z-index: 20; transition: transform 0.1s linear; }
-        .btn { background: #3b82f6; color: white; padding: 15px 40px; border-radius: 50px; font-weight: bold; margin: 10px; cursor: pointer; }
-        .ui { position: fixed; top: 0; left: 0; width: 100%; z-index: 50; display: flex; justify-content: space-between; padding: 20px; pointer-events: none; }
-        .stat { background: rgba(0,0,0,0.8); padding: 10px; border-radius: 10px; pointer-events: none; }
+
+        /* Falling item: circular container with inner <img> */
+        .falling-item {
+            position: absolute;
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            pointer-events: none;
+            z-index: 20;
+            font-size: 52px;
+            user-select: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        .falling-item img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        @keyframes hitFlash {
+            0%   { transform: scale(1.4); opacity: 0.7; }
+            100% { transform: scale(1);   opacity: 0; }
+        }
+        .hit-flash { animation: hitFlash 0.18s ease-out forwards; }
+
+        .btn {
+            background: #3b82f6; color: white;
+            padding: 15px 40px; border-radius: 50px;
+            font-weight: bold; margin: 10px; cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .ui {
+            position: fixed; top: 0; left: 0; width: 100%;
+            z-index: 50; display: flex;
+            justify-content: space-between;
+            padding: 20px; pointer-events: none;
+        }
+        .stat {
+            background: rgba(0,0,0,0.8);
+            padding: 10px 16px; border-radius: 10px;
+            pointer-events: none; font-size: 1.1rem; font-weight: bold;
+        }
+
+        /* Left/right zone labels */
+        .zone-label {
+            position: absolute; bottom: 30px; width: 50%;
+            font-size: 1rem; font-weight: bold; text-align: center;
+            color: rgba(255,255,255,0.7);
+            pointer-events: none; user-select: none;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+            letter-spacing: 0.05em;
+        }
+        #zone-left  { left: 0; }
+        #zone-right { right: 0; }
+
+        /* Result screen avatars */
+        .result-avatar {
+            width: 90px; height: 90px;
+            border-radius: 50%; overflow: hidden;
+            margin: 0 auto 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 44px;
+        }
+        .result-avatar img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
     </style>
 </head>
 <body>
+    <!-- Welcome screen -->
     <div id="welcome" class="screen">
-        <h1 class="text-4xl font-bold mb-8">HEROES ADVENTURE</h1>
+        <h1 class="text-4xl font-bold mb-2">ULTRAMAN x MELODY</h1>
+        <p class="text-lg mb-10 text-gray-300">HEROES ADVENTURE</p>
         <div onclick="start()" class="btn">START GAME</div>
     </div>
 
+    <!-- HUD -->
     <div id="game-ui" class="ui hidden">
-        <div class="stat text-blue-400">U: <span id="s1">0</span></div>
-        <div class="stat text-white font-bold" id="tm">30</div>
-        <div class="stat text-pink-400">M: <span id="s2">0</span></div>
+        <div class="stat text-blue-400">⚡ <span id="s1">0</span></div>
+        <div class="stat text-white" id="tm">30</div>
+        <div class="stat text-pink-400"><span id="s2">0</span> ✨</div>
     </div>
 
-    <div id="game-area" class="hidden"></div>
+    <!-- Game area -->
+    <div id="game-area" class="hidden">
+        <div id="zone-left"  class="zone-label">⚡ ULTRAMAN</div>
+        <div id="zone-right" class="zone-label">MELODY ✨</div>
+    </div>
 
+    <!-- Result screen -->
     <div id="result" class="screen hidden">
         <h1 class="text-3xl font-bold mb-8 text-yellow-400">GAME OVER</h1>
-        <div class="flex gap-8 mb-8">
+        <div class="flex gap-12 mb-10">
             <div class="text-center">
-                <img src="../assets/ultraman.jpg" class="w-20 h-20 rounded mb-2" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=u'">
-                <p id="f1" class="text-3xl font-bold">0</p>
+                <div class="result-avatar" style="background:#1e3a8a;" id="av1">
+                    <img src="../assets/ultraman.jpg" onerror="this.style.display='none';this.parentNode.textContent='⚡'">
+                </div>
+                <p class="text-sm text-blue-300 mb-1">ULTRAMAN</p>
+                <p id="f1" class="text-4xl font-bold text-blue-300">0</p>
             </div>
             <div class="text-center">
-                <img src="../assets/melody.jpg" class="w-20 h-20 rounded mb-2" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=m'">
-                <p id="f2" class="text-3xl font-bold">0</p>
+                <div class="result-avatar" style="background:#9d174d;" id="av2">
+                    <img src="../assets/melody.jpg" onerror="this.style.display='none';this.parentNode.textContent='✨'">
+                </div>
+                <p class="text-sm text-pink-300 mb-1">MELODY</p>
+                <p id="f2" class="text-4xl font-bold text-pink-300">0</p>
             </div>
         </div>
         <div onclick="location.reload()" class="btn">RESTART</div>
@@ -62,74 +159,94 @@
 
     <script>
         let s1 = 0, s2 = 0, tm = 30, active = false;
+        let spawnInterval = null;
         const area = document.getElementById('game-area');
 
         function start() {
+            s1 = 0; s2 = 0; tm = 30;
+            document.getElementById('s1').innerText = 0;
+            document.getElementById('s2').innerText = 0;
+            document.getElementById('tm').innerText = 30;
+
             document.getElementById('welcome').classList.add('hidden');
             document.getElementById('game-ui').classList.remove('hidden');
             area.classList.remove('hidden');
             active = true;
-            
+
             const timer = setInterval(() => {
                 tm--;
                 document.getElementById('tm').innerText = tm;
-                if(tm <= 0) {
-                    clearInterval(timer);
-                    end();
-                }
+                if (tm <= 0) { clearInterval(timer); end(); }
             }, 1000);
 
-            setInterval(() => {
-                if(active) spawn();
+            spawnInterval = setInterval(() => {
+                if (active) spawn();
             }, 700);
         }
 
         function spawn() {
             const isU = Math.random() > 0.5;
-            const div = document.createElement('img');
-            div.src = isU ? '../assets/ultraman.jpg' : '../assets/melody.jpg';
-            div.onerror = () => { div.src = ''; div.style.fontSize = '60px'; div.innerText = isU ? '👾' : '🍓'; };
-            div.className = 'falling-item';
-            const x = Math.random() * (window.innerWidth - 80);
-            div.style.left = x + 'px';
-            div.style.top = '-100px';
-            area.appendChild(div);
 
-            let pos = -100;
+            const item = document.createElement('div');
+            item.className = 'falling-item';
+            item.dataset.type = isU ? 'ultraman' : 'melody';
+            item.style.background = isU ? '#1e3a8a' : '#9d174d';
+
+            const img = document.createElement('img');
+            img.src = isU ? '../assets/ultraman.jpg' : '../assets/melody.jpg';
+            img.onerror = () => {
+                img.style.display = 'none';
+                item.textContent = isU ? '⚡' : '✨';
+            };
+            item.appendChild(img);
+
+            const half = window.innerWidth / 2;
+            const x = isU
+                ? Math.random() * (half - 100)
+                : half + Math.random() * (half - 100);
+
+            item.style.left = x + 'px';
+            item.style.top = '-110px';
+            area.appendChild(item);
+
+            let pos = -110;
             const speed = 3 + Math.random() * 4;
             const move = setInterval(() => {
-                if(!active) { clearInterval(move); div.remove(); return; }
+                if (!active) { clearInterval(move); item.remove(); return; }
                 pos += speed;
-                div.style.top = pos + 'px';
-                if(pos > window.innerHeight) {
-                    clearInterval(move);
-                    div.remove();
-                }
+                item.style.top = pos + 'px';
+                if (pos > window.innerHeight) { clearInterval(move); item.remove(); }
             }, 20);
-
-            // Click handling directly on area to be safe
         }
 
         area.addEventListener('touchstart', (e) => {
-            if(!active) return;
-            const t = e.touches[0];
+            if (!active) return;
+            e.preventDefault();
+            const t = e.changedTouches[0];
             handleHit(t.clientX, t.clientY);
-        });
+        }, { passive: false });
+
         area.addEventListener('mousedown', (e) => {
-            if(!active) return;
+            if (!active) return;
             handleHit(e.clientX, e.clientY);
         });
 
         function handleHit(tx, ty) {
             const items = document.getElementsByClassName('falling-item');
-            for(let i=0; i<items.length; i++) {
+            for (let i = 0; i < items.length; i++) {
                 const item = items[i];
                 const r = item.getBoundingClientRect();
-                if(tx > r.left - 20 && tx < r.right + 20 && ty > r.top - 20 && ty < r.bottom + 20) {
-                    if(item.src.includes('ultraman')) s1++; else s2++;
-                    document.getElementById('s1').innerText = s1;
-                    document.getElementById('s2').innerText = s2;
-                    item.remove();
+                if (tx > r.left - 25 && tx < r.right + 25 &&
+                    ty > r.top  - 25 && ty < r.bottom + 25) {
+                    if (item.dataset.type === 'ultraman') {
+                        s1++;
+                        document.getElementById('s1').innerText = s1;
+                    } else {
+                        s2++;
+                        document.getElementById('s2').innerText = s2;
+                    }
+                    item.classList.add('hit-flash');
+                    item.addEventListener('animationend', () => item.remove(), { once: true });
                     break;
                 }
             }
@@ -137,6 +254,9 @@
 
         function end() {
             active = false;
+            clearInterval(spawnInterval);
+            spawnInterval = null;
+            document.querySelectorAll('.falling-item').forEach(el => el.remove());
             document.getElementById('game-area').classList.add('hidden');
             document.getElementById('game-ui').classList.add('hidden');
             document.getElementById('result').classList.remove('hidden');
