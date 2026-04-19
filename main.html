@@ -101,15 +101,13 @@
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; pointer-events: auto; transition: all 0.3s;
             opacity: 0.2; filter: grayscale(1);
-            flex-shrink: 0;
-            box-sizing: border-box;
         }
         .skill-ready { opacity: 1 !important; filter: grayscale(0) !important; border-color: #fbbf24 !important; transform: scale(1.1); box-shadow: 0 0 20px #fbbf24; }
-        .skill-btn img { width: 80%; height: 80%; object-fit: contain; }
+        .skill-btn img { width: 85%; height: 85%; object-fit: contain; }
 
-        /* 技能遮罩：寬度為畫面一半，高度為畫面 1/3，從天而降具備彈性動畫 */
+        /* 技能遮罩：寬度剛好等於一半，高度調整為 1/2 (50vh) */
         .skill-overlay {
-            position: fixed; top: 0; width: 50vw; height: calc(100vh / 3);
+            position: fixed; top: 0; width: 50%; height: 50vh;
             z-index: 200; pointer-events: none;
             display: none;
             animation: bounceInDown 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
@@ -121,7 +119,7 @@
             90% { transform: translate3d(0, 5px, 0); }
             to { transform: translate3d(0, 0, 0); }
         }
-        .skill-overlay img { width: 100%; height: 100%; object-fit: cover; }
+        .skill-overlay img { width: 100%; height: 100%; object-fit: contain; }
         .left-0 { left: 0; }
         .right-0 { right: 0; }
 
@@ -144,21 +142,21 @@
 
     <div class="bottom-hud">
         <div class="hud-side">
-            <div class="hud-avatar"><img src="assets/ultraman.png"></div>
-            <div id="s1" class="hud-score text-blue-400">0</div>
+            <div class="hud-avatar" style="border: 4px solid #3b82f6;"><img src="assets/ultraman.png"></div>
+            <div class="hud-score text-blue-400">U:<span id="s1">0</span></div>
             <div class="energy-container"><div id="bar1" class="energy-bar energy-u"></div></div>
             <div id="btn1" class="skill-btn" onclick="useSkill('u')"><img src="assets/skills/spiderman-skill.png"></div>
         </div>
         <div class="hud-side hud-right">
-            <div class="hud-avatar"><img src="assets/melody.png"></div>
-            <div id="s2" class="hud-score text-pink-400">0</div>
+            <div class="hud-avatar" style="border: 4px solid #ffffff; background: #ffffff;"><img src="assets/melody.png"></div>
+            <div class="hud-score text-pink-400">M:<span id="s2">0</span></div>
             <div class="energy-container"><div id="bar2" class="energy-bar energy-m"></div></div>
             <div id="btn2" class="skill-btn" onclick="useSkill('m')"><img src="assets/skills/kuromi-skill.png"></div>
         </div>
     </div>
 
     <div id="result" class="screen hidden" style="z-index:1000; background: rgba(0,0,0,0.9); position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
-        <h1 class="text-5xl font-black mb-12 text-yellow-400 italic">MISSION COMPLETE</h1>
+        <h1 class="text-5xl font-black mb-12 text-yellow-400 italic tracking-tighter">MISSION COMPLETE</h1>
         <div class="flex gap-16 mb-12">
             <div class="text-center">
                 <div class="w-32 h-32 rounded-full border-4 border-blue-500 overflow-hidden mb-4 bg-[#1e3a8a] shadow-xl"><img src="assets/ultraman.png" class="w-full h-full object-cover"></div>
@@ -181,10 +179,8 @@
     <script src="js/history.js"></script>
     <script>
         var s1 = 0, s2 = 0, tm = 30, active = false;
-        var e1 = 0, e2 = 0;
+        var e1 = 0, e2 = 0; 
         var spawnInterval = null;
-        var spawnCountU = 0, spawnCountM = 0;
-        var FAIR_DIFF_MAX = 2;
         var hitSound = new Audio('assets/sfx/hit.mp3');
         var endSound = new Audio('assets/sfx/gameover.mp3');
         var bgm = new Audio('assets/sfx/bgm.mp3'); bgm.loop = true;
@@ -205,12 +201,7 @@
         }
 
         function spawn() {
-            var diff = spawnCountU - spawnCountM;
-            var isU;
-            if (diff >= FAIR_DIFF_MAX) isU = false;
-            else if (diff <= -FAIR_DIFF_MAX) isU = true;
-            else isU = Math.random() > 0.5;
-            if (isU) spawnCountU++; else spawnCountM++;
+            var isU = Math.random() > 0.5;
             var item = document.createElement('div');
             item.className = 'falling-item';
             item.dataset.type = isU ? 'u' : 'm';
@@ -272,18 +263,16 @@
             if(type === 'u') { 
                 e1 = 0; 
                 document.getElementById('btn1').classList.remove('skill-ready'); 
-                showBlock('u'); // 奧特曼放技能，出現蜘蛛網在右邊 (m 區域)
+                showBlock('u'); // 奧特曼射出的網子會顯示在右邊
             } else { 
                 e2 = 0; 
                 document.getElementById('btn2').classList.remove('skill-ready'); 
-                showBlock('m'); // 美樂蒂放技能，出現紫色煙霧在左邊 (u 區域)
+                showBlock('m'); // 美樂蒂炸出的煙霧會顯示在左邊
             }
             updateHUD();
         }
 
         function showBlock(origin) {
-            // 如果是奧特曼放招，要把 skill-u (蜘蛛網) 顯示在右邊
-            // 如果是美樂蒂放招，要把 skill-m (紫色煙霧) 顯示在左邊
             var targetId = (origin === 'u') ? 'skill-u' : 'skill-m';
             var el = document.getElementById(targetId);
             el.style.display = 'block';
