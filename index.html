@@ -9,12 +9,35 @@
     <style>
         body {
             background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+            background-attachment: fixed;
         }
+        .container-box {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+        }
+        /* 響應式佈局：橫向模式下縮小間距與 Logo */
+        @media (orientation: landscape) {
+            .container-box {
+                flex-direction: row;
+                max-width: 900px;
+                gap: 2rem;
+                justify-content: center;
+            }
+            .hero-logo { width: 40vh !important; }
+            .content-side { flex: 1; text-align: left; }
+            .content-side .h-1 { margin-left: 0; }
+        }
+
         .glass-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
+            width: 100%;
         }
         .hero-logo {
             filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.5));
@@ -51,41 +74,43 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
-    <div class="screen w-full max-w-lg">
+<body class="min-h-screen flex items-center justify-center">
+    <div class="container-box">
         <!-- Logo Area -->
-        <div class="flex justify-center mb-6 animate-float">
-            <img src="assets/logo-twins.png" alt="Twins Logo" class="hero-logo w-64 h-auto" onerror="this.style.display='none'">
+        <div class="flex justify-center mb-6 animate-float flex-shrink-0">
+            <img src="assets/logo-twins.png" alt="Twins Logo" class="hero-logo w-48 md:w-64 h-auto" onerror="this.style.display='none'">
         </div>
 
-        <div class="text-center mb-10">
-            <h1 class="text-4xl font-black text-white mb-2 tracking-tight italic">ULTRAMAN <span class="text-blue-400">x</span> MELODY</h1>
-            <div class="h-1 w-20 bg-blue-500 mx-auto rounded-full mb-3"></div>
-            <p class="text-slate-400 text-sm font-bold tracking-[0.2em] uppercase">Heroes Adventure</p>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="flex flex-col gap-4 mb-12">
-            <a href="main.html" class="btn-primary text-white text-center py-5 rounded-2xl font-black text-xl tracking-wide uppercase">
-                Start Mission
-            </a>
-            <a href="history.html" class="btn-secondary-custom text-white text-center py-4 rounded-2xl font-bold text-sm tracking-widest uppercase">
-                Battle History
-            </a>
-        </div>
-
-        <!-- Recent Games Preview -->
-        <div class="glass-card p-6 w-full">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xs font-black text-slate-500 tracking-widest uppercase">Recent Missions</h3>
-                <div class="flex gap-1">
-                    <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                    <div class="w-1.5 h-1.5 rounded-full bg-pink-500"></div>
-                </div>
+        <div class="content-side w-full">
+            <div class="text-center mb-6 landscape:text-left">
+                <h1 class="text-3xl md:text-4xl font-black text-white mb-2 tracking-tight italic">ULTRAMAN <span class="text-blue-400">x</span> MELODY</h1>
+                <div class="h-1 w-20 bg-blue-500 mx-auto landscape:mx-0 rounded-full mb-3"></div>
+                <p class="text-slate-400 text-xs md:text-sm font-bold tracking-[0.2em] uppercase">Heroes Adventure</p>
             </div>
-            
-            <div id="preview-content" class="space-y-1">
-                <div class="text-center py-4 text-slate-500 text-sm italic">No missions completed yet</div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col gap-3 mb-8">
+                <a href="main.html" class="btn-primary text-white text-center py-4 md:py-5 rounded-2xl font-black text-lg md:text-xl tracking-wide uppercase">
+                    Start Mission
+                </a>
+                <a href="history.html" class="btn-secondary-custom text-white text-center py-3 md:py-4 rounded-2xl font-bold text-xs tracking-widest uppercase">
+                    Battle History
+                </a>
+            </div>
+
+            <!-- Recent Games Preview -->
+            <div class="glass-card p-5 w-full">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-[10px] font-black text-slate-500 tracking-widest uppercase">Recent Missions</h3>
+                    <div class="flex gap-1">
+                        <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                        <div class="w-1.5 h-1.5 rounded-full bg-pink-500"></div>
+                    </div>
+                </div>
+                
+                <div id="preview-content" class="space-y-1">
+                    <div class="text-center py-4 text-slate-500 text-sm italic">No missions completed yet</div>
+                </div>
             </div>
         </div>
     </div>
