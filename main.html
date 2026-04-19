@@ -119,8 +119,9 @@
 
     <div id="game-area"></div>
 
-    <div id="skill-u" class="skill-overlay left-0"><img src="assets/skills/spiderman-block.png"></div>
-    <div id="skill-m" class="skill-overlay right-0"><img src="assets/skills/kuromi-block.png"></div>
+    <!-- 技能遮罩：奧特曼的網子在右邊，美樂蒂的煙霧在左邊 -->
+    <div id="skill-u" class="skill-overlay right-0"><img src="assets/skills/spiderman-block.png"></div>
+    <div id="skill-m" class="skill-overlay left-0"><img src="assets/skills/kuromi-block.png"></div>
 
     <div class="bottom-hud">
         <div class="hud-side">
@@ -243,17 +244,20 @@
             if(type === 'u') { 
                 e1 = 0; 
                 document.getElementById('btn1').classList.remove('skill-ready'); 
-                showBlock('m'); // 奧特曼攻擊美樂蒂 (右邊)
+                showBlock('u'); // 奧特曼放技能，出現蜘蛛網在右邊 (m 區域)
             } else { 
                 e2 = 0; 
                 document.getElementById('btn2').classList.remove('skill-ready'); 
-                showBlock('u'); // 美樂蒂攻擊奧特曼 (左邊)
+                showBlock('m'); // 美樂蒂放技能，出現紫色煙霧在左邊 (u 區域)
             }
             updateHUD();
         }
 
-        function showBlock(target) {
-            var el = document.getElementById('skill-' + target);
+        function showBlock(origin) {
+            // 如果是奧特曼放招，要把 skill-u (蜘蛛網) 顯示在右邊
+            // 如果是美樂蒂放招，要把 skill-m (紫色煙霧) 顯示在左邊
+            var targetId = (origin === 'u') ? 'skill-u' : 'skill-m';
+            var el = document.getElementById(targetId);
             el.style.display = 'block';
             setTimeout(() => { el.style.display = 'none'; }, 3000);
         }
