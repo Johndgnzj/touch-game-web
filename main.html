@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="css/tailwind.css">
     <link rel="stylesheet" href="styles.css">
     <style>
-        body { background: #000; overflow: hidden; touch-action: none; }
+        body { background: #000; overflow: hidden; touch-action: none; margin: 0; padding: 0; width: 100vw; height: 100vh; }
         #game-area {
             position: fixed; inset: 0; z-index: 10;
             pointer-events: auto;
@@ -17,162 +17,167 @@
             #game-area { background-image: url('assets/background-landscape.jpg'); }
         }
 
-        /* 倒數計時：大3倍，灰色半透明陰影 */
+        /* 倒數計時：左右置中，距頂部 60px */
+        #tm-container {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 60;
+            pointer-events: none;
+        }
         #tm {
             font-size: 8rem;
             font-weight: 900;
             color: white;
-            text-shadow: 8px 8px 20px rgba(0,0,0,0.5), -4px -4px 10px rgba(128,128,128,0.3);
-            z-index: 60;
-            pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-shadow: 10px 10px 25px rgba(0,0,0,0.6), -4px -4px 12px rgba(128,128,128,0.4);
+            transition: all 0.3s;
         }
         .timer-danger {
             color: #ff4444 !important;
-            font-size: 9rem !important; /* 加大 6 點左右的視覺感 */
+            font-size: 10rem !important;
             animation: shake 0.15s infinite;
         }
 
         @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
+            0% { transform: translate(2px, 2px); }
+            20% { transform: translate(-2px, -4px); }
+            40% { transform: translate(-4px, 0px); }
+            60% { transform: translate(4px, 4px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0px, 0px); }
         }
 
         .falling-item {
             position: absolute;
-            width: 90px; height: 90px;
+            width: 110px; height: 110px;
             border-radius: 50%;
             overflow: hidden;
             display: flex; align-items: center; justify-content: center;
             pointer-events: none;
             z-index: 20;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.6);
         }
         .falling-item img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* 底部 HUD 面版 */
+        /* 底部 HUD：放大內容適應寬高 */
         .bottom-hud {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 12vh;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255,255,255,0.1);
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 15vh;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(255,255,255,0.15);
             z-index: 100;
             display: flex; justify-content: space-between; align-items: center;
-            padding: 0 20px;
+            padding: 0 40px;
         }
-        .hud-side { display: flex; align-items: center; gap: 15px; flex: 1; }
+        .hud-side { display: flex; align-items: center; gap: 25px; flex: 1; height: 100%; }
         .hud-right { flex-direction: row-reverse; }
 
-        .energy-container { width: 120px; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden; }
+        .energy-container { width: 180px; height: 18px; background: rgba(255,255,255,0.1); border-radius: 9px; overflow: hidden; border: 2px solid rgba(255,255,255,0.1); }
         .energy-bar { height: 100%; width: 0%; transition: width 0.3s; }
-        .energy-u { background: #3b82f6; box-shadow: 0 0 10px #3b82f6; }
-        .energy-m { background: #ec4899; box-shadow: 0 0 10px #ec4899; }
+        .energy-u { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .energy-m { background: linear-gradient(90deg, #f472b6, #ec4899); }
 
         .skill-btn {
-            width: 60px; height: 60px; border-radius: 50%;
-            background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2);
+            width: 85px; height: 85px; border-radius: 50%;
+            background: rgba(255,255,255,0.05); border: 3px solid rgba(255,255,255,0.2);
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; pointer-events: auto; transition: all 0.3s;
-            opacity: 0.3; filter: grayscale(1);
+            opacity: 0.2; filter: grayscale(1);
         }
-        .skill-ready { opacity: 1 !important; filter: grayscale(0) !important; border-color: #fbbf24 !important; transform: scale(1.1); box-shadow: 0 0 15px #fbbf24; }
-        .skill-btn img { width: 80%; height: 80%; object-fit: contain; }
+        .skill-ready { opacity: 1 !important; filter: grayscale(0) !important; border-color: #fbbf24 !important; transform: scale(1.1); box-shadow: 0 0 20px #fbbf24; }
+        .skill-btn img { width: 85%; height: 85%; object-fit: contain; }
 
-        /* 技能遮罩動畫 */
+        /* 技能遮罩：寬度剛好等於一半，從天而降具備彈性動畫 */
         .skill-overlay {
-            position: fixed; top: 0; width: 50%; height: 33vh;
+            position: fixed; top: 0; width: 50%; height: 35vh;
             z-index: 200; pointer-events: none;
             display: none;
-            animation: bounceInDown 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: bounceInDown 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
         @keyframes bounceInDown {
-            from { opacity: 0; transform: translate3d(0, -100%, 0); }
-            60% { opacity: 1; transform: translate3d(0, 25px, 0); }
+            from { transform: translate3d(0, -100%, 0); opacity: 0; }
+            60% { transform: translate3d(0, 20px, 0); opacity: 1; }
             75% { transform: translate3d(0, -10px, 0); }
             90% { transform: translate3d(0, 5px, 0); }
             to { transform: translate3d(0, 0, 0); }
         }
         .skill-overlay img { width: 100%; height: 100%; object-fit: contain; }
+        .left-0 { left: 0; }
+        .right-0 { right: 0; }
 
-        .hit-flash { animation: hitFlash 0.18s ease-out forwards; }
-        @keyframes hitFlash { 0% { transform: scale(1.4); opacity: 0.7; } 100% { transform: scale(1); opacity: 0; } }
+        .hit-flash { animation: hitFlash 0.2s ease-out forwards; }
+        @keyframes hitFlash { 0% { transform: scale(1.4); opacity: 0.8; } 100% { transform: scale(1); opacity: 0; } }
     </style>
 </head>
 <body>
-    <div id="game-ui" class="ui">
-        <div id="tm" class="fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2">30</div>
+    <div id="game-ui">
+        <div id="tm-container">
+            <div id="tm">30</div>
+        </div>
     </div>
 
     <div id="game-area"></div>
 
-    <!-- 技能遮罩 -->
     <div id="skill-u" class="skill-overlay left-0"><img src="assets/skills/spiderman-block.png"></div>
     <div id="skill-m" class="skill-overlay right-0"><img src="assets/skills/kuromi-block.png"></div>
 
-    <!-- 底部 HUD -->
     <div class="bottom-hud">
         <div class="hud-side">
-            <div class="text-blue-400 font-black text-xl">U: <span id="s1">0</span></div>
+            <div class="text-blue-400 font-black text-3xl">U: <span id="s1">0</span></div>
             <div class="energy-container"><div id="bar1" class="energy-bar energy-u"></div></div>
             <div id="btn1" class="skill-btn" onclick="useSkill('u')"><img src="assets/skills/spiderman-skill.png"></div>
         </div>
         <div class="hud-side hud-right">
-            <div class="text-pink-400 font-black text-xl">M: <span id="s2">0</span></div>
+            <div class="text-pink-400 font-black text-3xl">M: <span id="s2">0</span></div>
             <div class="energy-container"><div id="bar2" class="energy-bar energy-m"></div></div>
             <div id="btn2" class="skill-btn" onclick="useSkill('m')"><img src="assets/skills/kuromi-skill.png"></div>
         </div>
     </div>
 
-    <!-- Result screen (Legacy integration) -->
-    <div id="result" class="screen hidden" style="z-index:1000;">
-        <h1 class="text-4xl font-black mb-8 text-yellow-400 italic">MISSION COMPLETE</h1>
-        <div class="flex gap-12 mb-10">
+    <div id="result" class="screen hidden" style="z-index:1000; background: rgba(0,0,0,0.9); position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
+        <h1 class="text-5xl font-black mb-12 text-yellow-400 italic">MISSION COMPLETE</h1>
+        <div class="flex gap-16 mb-12">
             <div class="text-center">
-                <div class="result-avatar" style="background:#1e3a8a;"><img src="assets/ultraman.png"></div>
-                <p id="f1" class="text-5xl font-black text-blue-400">0</p>
+                <div class="w-32 h-32 rounded-full border-4 border-blue-500 overflow-hidden mb-4 bg-[#1e3a8a] shadow-xl"><img src="assets/ultraman.png" class="w-full h-full object-cover"></div>
+                <p class="text-blue-400 font-bold mb-1">ULTRAMAN</p>
+                <p id="f1" class="text-6xl font-black text-white">0</p>
             </div>
             <div class="text-center">
-                <div class="result-avatar" style="background:#ffffff;"><img src="assets/melody.png"></div>
-                <p id="f2" class="text-5xl font-black text-pink-400">0</p>
+                <div class="w-32 h-32 rounded-full border-4 border-white overflow-hidden mb-4 bg-white shadow-xl"><img src="assets/melody.png" class="w-full h-full object-cover"></div>
+                <p class="text-pink-400 font-bold mb-1">MELODY</p>
+                <p id="f2" class="text-6xl font-black text-white">0</p>
             </div>
         </div>
-        <div id="winner-msg" class="text-xl font-bold mb-8 text-white"></div>
-        <div class="flex gap-4">
-            <button onclick="location.reload()" class="btn px-8 py-3 bg-blue-600 rounded-xl font-bold">RESTART</button>
-            <a href="index.html" class="btn px-8 py-3 bg-slate-700 rounded-xl font-bold">HOME</a>
+        <div id="winner-msg" class="text-2xl font-black mb-12 text-yellow-400"></div>
+        <div class="flex gap-6">
+            <button onclick="location.reload()" class="px-10 py-4 bg-blue-600 rounded-2xl font-black text-xl shadow-lg">RESTART</button>
+            <a href="index.html" class="px-10 py-4 bg-slate-700 rounded-2xl font-black text-xl shadow-lg">HOME</a>
         </div>
     </div>
 
     <script src="js/history.js"></script>
     <script>
         var s1 = 0, s2 = 0, tm = 30, active = false;
-        var e1 = 0, e2 = 0; // Energy
+        var e1 = 0, e2 = 0; 
         var spawnInterval = null;
         var hitSound = new Audio('assets/sfx/hit.mp3');
         var endSound = new Audio('assets/sfx/gameover.mp3');
         var bgm = new Audio('assets/sfx/bgm.mp3'); bgm.loop = true;
 
         function start() {
-            document.getElementById('welcome')?.classList.add('hidden');
             active = true;
+            bgm.currentTime = 0;
             bgm.play().catch(e=>{});
             var timer = setInterval(() => {
+                if(!active) { clearInterval(timer); return; }
                 tm--;
                 var tmEl = document.getElementById('tm');
                 tmEl.innerText = tm;
                 if(tm <= 5) tmEl.classList.add('timer-danger');
                 if(tm <= 0) { clearInterval(timer); end(); }
             }, 1000);
-            spawnInterval = setInterval(() => { if(active) spawn(); }, 700);
+            spawnInterval = setInterval(() => { if(active) spawn(); }, 600);
         }
 
         function spawn() {
@@ -184,10 +189,17 @@
             var img = document.createElement('img');
             img.src = isU ? 'assets/ultraman.png' : 'assets/melody.png';
             item.appendChild(img);
-            var x = Math.random() * (window.innerWidth - 100);
-            item.style.left = x + 'px'; item.style.top = '-110px';
+
+            var half = window.innerWidth / 2;
+            var x = isU 
+                ? Math.random() * (half - 120) + 10 
+                : half + Math.random() * (half - 120) + 10;
+
+            item.style.left = x + 'px'; 
+            item.style.top = '-120px';
             document.getElementById('game-area').appendChild(item);
-            var pos = -110; var speed = 4 + Math.random() * 5;
+
+            var pos = -120; var speed = 4 + Math.random() * 5;
             var move = setInterval(() => {
                 if(!active) { clearInterval(move); item.remove(); return; }
                 pos += speed; item.style.top = pos + 'px';
@@ -195,21 +207,26 @@
             }, 20);
         }
 
-        window.addEventListener('touchstart', (e) => {
+        function handleHit(clientX, clientY) {
             if(!active) return;
-            var t = e.changedTouches[0];
             var items = document.getElementsByClassName('falling-item');
             for(var i=0; i<items.length; i++){
                 var r = items[i].getBoundingClientRect();
-                if(t.clientX > r.left-20 && t.clientX < r.right+20 && t.clientY > r.top-20 && t.clientY < r.bottom+20){
+                if(clientX > r.left-30 && clientX < r.right+30 && clientY > r.top-30 && clientY < r.bottom+30){
                     hitSound.currentTime = 0; hitSound.play().catch(e=>{});
                     if(items[i].dataset.type === 'u') { s1++; e1 = Math.min(8, e1+1); } 
                     else { s2++; e2 = Math.min(8, e2+1); }
                     updateHUD();
-                    items[i].remove(); break;
+                    items[i].classList.add('hit-flash');
+                    var target = items[i];
+                    setTimeout(() => target.remove(), 200);
+                    break;
                 }
             }
-        });
+        }
+
+        window.addEventListener('touchstart', (e) => { var t = e.changedTouches[0]; handleHit(t.clientX, t.clientY); }, { passive: false });
+        window.addEventListener('mousedown', (e) => { handleHit(e.clientX, e.clientY); });
 
         function updateHUD() {
             document.getElementById('s1').innerText = s1;
@@ -223,8 +240,15 @@
         function useSkill(type) {
             if(type === 'u' && e1 < 8) return;
             if(type === 'm' && e2 < 8) return;
-            if(type === 'u') { e1 = 0; document.getElementById('btn1').classList.remove('skill-ready'); showBlock('m'); }
-            else { e2 = 0; document.getElementById('btn2').classList.remove('skill-ready'); showBlock('u'); }
+            if(type === 'u') { 
+                e1 = 0; 
+                document.getElementById('btn1').classList.remove('skill-ready'); 
+                showBlock('m'); // 奧特曼攻擊美樂蒂 (右邊)
+            } else { 
+                e2 = 0; 
+                document.getElementById('btn2').classList.remove('skill-ready'); 
+                showBlock('u'); // 美樂蒂攻擊奧特曼 (左邊)
+            }
             updateHUD();
         }
 
@@ -239,9 +263,10 @@
             document.getElementById('result').classList.remove('hidden');
             document.getElementById('f1').innerText = s1;
             document.getElementById('f2').innerText = s2;
+            var msg = s1 > s2 ? '⚡ ULTRAMAN WINS!' : s2 > s1 ? '🌸 MELODY WINS!' : 'HEROIC TIE!';
+            document.getElementById('winner-msg').innerText = msg;
             saveRecord(s1, s2);
         }
-
         window.onload = start;
     </script>
 </body>
