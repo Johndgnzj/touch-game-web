@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/tailwind.css">
     <link rel="stylesheet" href="styles.css">
     <style>
+        body { background: #000; overflow: hidden; touch-action: none; }
         #game-area {
             position: fixed; inset: 0; z-index: 10;
             pointer-events: auto;
@@ -16,236 +17,232 @@
             #game-area { background-image: url('assets/background-landscape.jpg'); }
         }
 
+        /* 倒數計時：大3倍，灰色半透明陰影 */
+        #tm {
+            font-size: 8rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 8px 8px 20px rgba(0,0,0,0.5), -4px -4px 10px rgba(128,128,128,0.3);
+            z-index: 60;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .timer-danger {
+            color: #ff4444 !important;
+            font-size: 9rem !important; /* 加大 6 點左右的視覺感 */
+            animation: shake 0.15s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
         .falling-item {
             position: absolute;
-            width: 100px; height: 100px;
+            width: 90px; height: 90px;
             border-radius: 50%;
             overflow: hidden;
             display: flex; align-items: center; justify-content: center;
             pointer-events: none;
             z-index: 20;
-            font-size: 52px;
-            user-select: none;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
-        .falling-item img {
-            width: 100%; height: 100%;
-            object-fit: cover; display: block;
-        }
+        .falling-item img { width: 100%; height: 100%; object-fit: cover; }
 
-        @keyframes hitFlash {
-            0%   { transform: scale(1.4); opacity: 0.7; }
-            100% { transform: scale(1);   opacity: 0; }
+        /* 底部 HUD 面版 */
+        .bottom-hud {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 12vh;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            z-index: 100;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px;
         }
-        .hit-flash { animation: hitFlash 0.18s ease-out forwards; }
+        .hud-side { display: flex; align-items: center; gap: 15px; flex: 1; }
+        .hud-right { flex-direction: row-reverse; }
 
-        .ui {
-            position: fixed; top: 0; left: 0; width: 100%;
-            z-index: 50; display: flex;
-            justify-content: space-between;
-            padding: 20px; pointer-events: none;
-        }
-        .stat {
-            background: rgba(0,0,0,0.8);
-            padding: 10px 16px; border-radius: 10px;
-            pointer-events: none; font-size: 1.1rem; font-weight: bold;
-            color: white;
-        }
+        .energy-container { width: 120px; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden; }
+        .energy-bar { height: 100%; width: 0%; transition: width 0.3s; }
+        .energy-u { background: #3b82f6; box-shadow: 0 0 10px #3b82f6; }
+        .energy-m { background: #ec4899; box-shadow: 0 0 10px #ec4899; }
 
-        .zone-label {
-            position: absolute; bottom: 30px; width: 50%;
-            font-size: 1rem; font-weight: bold; text-align: center;
-            color: rgba(255,255,255,0.7);
-            pointer-events: none; user-select: none;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.9);
-            letter-spacing: 0.05em;
-        }
-        #zone-left  { left: 0; }
-        #zone-right { right: 0; }
-
-        .result-avatar {
-            width: 90px; height: 90px;
-            border-radius: 50%; overflow: hidden;
-            margin: 0 auto 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        .skill-btn {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2);
             display: flex; align-items: center; justify-content: center;
-            font-size: 44px;
+            cursor: pointer; pointer-events: auto; transition: all 0.3s;
+            opacity: 0.3; filter: grayscale(1);
         }
-        .result-avatar img {
-            width: 100%; height: 100%; object-fit: cover;
+        .skill-ready { opacity: 1 !important; filter: grayscale(0) !important; border-color: #fbbf24 !important; transform: scale(1.1); box-shadow: 0 0 15px #fbbf24; }
+        .skill-btn img { width: 80%; height: 80%; object-fit: contain; }
+
+        /* 技能遮罩動畫 */
+        .skill-overlay {
+            position: fixed; top: 0; width: 50%; height: 33vh;
+            z-index: 200; pointer-events: none;
+            display: none;
+            animation: bounceInDown 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        @keyframes bounceInDown {
+            from { opacity: 0; transform: translate3d(0, -100%, 0); }
+            60% { opacity: 1; transform: translate3d(0, 25px, 0); }
+            75% { transform: translate3d(0, -10px, 0); }
+            90% { transform: translate3d(0, 5px, 0); }
+            to { transform: translate3d(0, 0, 0); }
+        }
+        .skill-overlay img { width: 100%; height: 100%; object-fit: contain; }
+
+        .hit-flash { animation: hitFlash 0.18s ease-out forwards; }
+        @keyframes hitFlash { 0% { transform: scale(1.4); opacity: 0.7; } 100% { transform: scale(1); opacity: 0; } }
     </style>
 </head>
 <body>
-    <!-- HUD -->
     <div id="game-ui" class="ui">
-        <div class="stat" style="color:#93c5fd;">⚡ <span id="s1">0</span></div>
-        <div class="stat" id="tm">30</div>
-        <div class="stat" style="color:#f9a8d4;"><span id="s2">0</span> ✨</div>
+        <div id="tm" class="fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2">30</div>
     </div>
 
-    <!-- Game area -->
-    <div id="game-area">
-        <div id="zone-left"  class="zone-label">⚡ ULTRAMAN</div>
-        <div id="zone-right" class="zone-label">MELODY ✨</div>
+    <div id="game-area"></div>
+
+    <!-- 技能遮罩 -->
+    <div id="skill-u" class="skill-overlay left-0"><img src="assets/skills/spiderman-block.png"></div>
+    <div id="skill-m" class="skill-overlay right-0"><img src="assets/skills/kuromi-block.png"></div>
+
+    <!-- 底部 HUD -->
+    <div class="bottom-hud">
+        <div class="hud-side">
+            <div class="text-blue-400 font-black text-xl">U: <span id="s1">0</span></div>
+            <div class="energy-container"><div id="bar1" class="energy-bar energy-u"></div></div>
+            <div id="btn1" class="skill-btn" onclick="useSkill('u')"><img src="assets/skills/spiderman-skill.png"></div>
+        </div>
+        <div class="hud-side hud-right">
+            <div class="text-pink-400 font-black text-xl">M: <span id="s2">0</span></div>
+            <div class="energy-container"><div id="bar2" class="energy-bar energy-m"></div></div>
+            <div id="btn2" class="skill-btn" onclick="useSkill('m')"><img src="assets/skills/kuromi-skill.png"></div>
+        </div>
     </div>
 
-    <!-- Result screen -->
-    <div id="result" class="screen hidden" style="z-index:200;">
-        <h1 class="text-3xl font-bold mb-8" style="color:#fbbf24;">GAME OVER</h1>
-        <div style="display:flex; gap:48px; margin-bottom:36px;">
-            <div style="text-align:center;">
-                <div class="result-avatar" style="background:#1e3a8a;">
-                    <img src="assets/ultraman.png" onerror="this.style.display='none';this.parentNode.textContent='⚡'">
-                </div>
-                <p style="font-size:0.8rem; color:#93c5fd; margin-bottom:4px;">ULTRAMAN</p>
-                <p id="f1" style="font-size:2.5rem; font-weight:900; color:#93c5fd;">0</p>
+    <!-- Result screen (Legacy integration) -->
+    <div id="result" class="screen hidden" style="z-index:1000;">
+        <h1 class="text-4xl font-black mb-8 text-yellow-400 italic">MISSION COMPLETE</h1>
+        <div class="flex gap-12 mb-10">
+            <div class="text-center">
+                <div class="result-avatar" style="background:#1e3a8a;"><img src="assets/ultraman.png"></div>
+                <p id="f1" class="text-5xl font-black text-blue-400">0</p>
             </div>
-            <div style="text-align:center;">
-                <div class="result-avatar" style="background:#ffffff;">
-                    <img src="assets/melody.png" onerror="this.style.display='none';this.parentNode.textContent='✨'">
-                </div>
-                <p style="font-size:0.8rem; color:#f9a8d4; margin-bottom:4px;">MELODY</p>
-                <p id="f2" style="font-size:2.5rem; font-weight:900; color:#f9a8d4;">0</p>
+            <div class="text-center">
+                <div class="result-avatar" style="background:#ffffff;"><img src="assets/melody.png"></div>
+                <p id="f2" class="text-5xl font-black text-pink-400">0</p>
             </div>
         </div>
-        <div id="winner-msg" style="font-size:1.2rem; font-weight:bold; margin-bottom:24px; color:#fbbf24;"></div>
-        <div>
-            <a href="main.html" class="btn">RESTART</a>
-            <a href="history.html" class="btn" style="background:#7c3aed;">VIEW HISTORY</a>
-            <a href="index.html" class="btn-secondary">HOME</a>
+        <div id="winner-msg" class="text-xl font-bold mb-8 text-white"></div>
+        <div class="flex gap-4">
+            <button onclick="location.reload()" class="btn px-8 py-3 bg-blue-600 rounded-xl font-bold">RESTART</button>
+            <a href="index.html" class="btn px-8 py-3 bg-slate-700 rounded-xl font-bold">HOME</a>
         </div>
     </div>
 
     <script src="js/history.js"></script>
     <script>
         var s1 = 0, s2 = 0, tm = 30, active = false;
+        var e1 = 0, e2 = 0; // Energy
         var spawnInterval = null;
-        var area = document.getElementById('game-area');
-
         var hitSound = new Audio('assets/sfx/hit.mp3');
         var endSound = new Audio('assets/sfx/gameover.mp3');
-        var bgm = new Audio('assets/sfx/bgm.mp3');
-        bgm.loop = true;
+        var bgm = new Audio('assets/sfx/bgm.mp3'); bgm.loop = true;
 
         function start() {
-            s1 = 0; s2 = 0; tm = 30;
-            document.getElementById('s1').innerText = 0;
-            document.getElementById('s2').innerText = 0;
-            document.getElementById('tm').innerText = 30;
+            document.getElementById('welcome')?.classList.add('hidden');
             active = true;
-
-            bgm.currentTime = 0;
-            bgm.play().catch(function(e){});
-
-            var timer = setInterval(function() {
+            bgm.play().catch(e=>{});
+            var timer = setInterval(() => {
                 tm--;
-                document.getElementById('tm').innerText = tm;
-                if (tm <= 0) { clearInterval(timer); end(); }
+                var tmEl = document.getElementById('tm');
+                tmEl.innerText = tm;
+                if(tm <= 5) tmEl.classList.add('timer-danger');
+                if(tm <= 0) { clearInterval(timer); end(); }
             }, 1000);
-
-            spawnInterval = setInterval(function() {
-                if (active) spawn();
-            }, 700);
+            spawnInterval = setInterval(() => { if(active) spawn(); }, 700);
         }
 
         function spawn() {
             var isU = Math.random() > 0.5;
-
             var item = document.createElement('div');
             item.className = 'falling-item';
-            item.dataset.type = isU ? 'ultraman' : 'melody';
+            item.dataset.type = isU ? 'u' : 'm';
             item.style.background = isU ? '#1e3a8a' : '#ffffff';
-
             var img = document.createElement('img');
             img.src = isU ? 'assets/ultraman.png' : 'assets/melody.png';
-            img.onerror = function() {
-                img.style.display = 'none';
-                item.textContent = isU ? '⚡' : '✨';
-            };
             item.appendChild(img);
-
-            var half = window.innerWidth / 2;
-            var x = isU
-                ? Math.random() * (half - 100)
-                : half + Math.random() * (half - 100);
-
-            item.style.left = x + 'px';
-            item.style.top = '-110px';
-            area.appendChild(item);
-
-            var pos = -110;
-            var speed = 3 + Math.random() * 4;
-            var move = setInterval(function() {
-                if (!active) { clearInterval(move); item.remove(); return; }
-                pos += speed;
-                item.style.top = pos + 'px';
-                if (pos > window.innerHeight) { clearInterval(move); item.remove(); }
+            var x = Math.random() * (window.innerWidth - 100);
+            item.style.left = x + 'px'; item.style.top = '-110px';
+            document.getElementById('game-area').appendChild(item);
+            var pos = -110; var speed = 4 + Math.random() * 5;
+            var move = setInterval(() => {
+                if(!active) { clearInterval(move); item.remove(); return; }
+                pos += speed; item.style.top = pos + 'px';
+                if(pos > window.innerHeight) { clearInterval(move); item.remove(); }
             }, 20);
         }
 
-        area.addEventListener('touchstart', function(e) {
-            if (!active) return;
-            e.preventDefault();
+        window.addEventListener('touchstart', (e) => {
+            if(!active) return;
             var t = e.changedTouches[0];
-            handleHit(t.clientX, t.clientY);
-        }, { passive: false });
-
-        area.addEventListener('mousedown', function(e) {
-            if (!active) return;
-            handleHit(e.clientX, e.clientY);
-        });
-
-        function handleHit(tx, ty) {
             var items = document.getElementsByClassName('falling-item');
-            for (let i = 0; i < items.length; i++) {
-                const item = items[i];
-                const r = item.getBoundingClientRect();
-                if (tx > r.left - 25 && tx < r.right + 25 &&
-                    ty > r.top  - 25 && ty < r.bottom + 25) {
-                    
-                    hitSound.currentTime = 0;
-                    hitSound.play().catch(function(e){});
-
-                    if (item.dataset.type === 'ultraman') {
-                        s1++;
-                        document.getElementById('s1').innerText = s1;
-                    } else {
-                        s2++;
-                        document.getElementById('s2').innerText = s2;
-                    }
-                    item.classList.add('hit-flash');
-                    item.addEventListener('animationend', function() { item.remove(); }, { once: true });
-                    break;
+            for(var i=0; i<items.length; i++){
+                var r = items[i].getBoundingClientRect();
+                if(t.clientX > r.left-20 && t.clientX < r.right+20 && t.clientY > r.top-20 && t.clientY < r.bottom+20){
+                    hitSound.currentTime = 0; hitSound.play().catch(e=>{});
+                    if(items[i].dataset.type === 'u') { s1++; e1 = Math.min(8, e1+1); } 
+                    else { s2++; e2 = Math.min(8, e2+1); }
+                    updateHUD();
+                    items[i].remove(); break;
                 }
             }
+        });
+
+        function updateHUD() {
+            document.getElementById('s1').innerText = s1;
+            document.getElementById('s2').innerText = s2;
+            document.getElementById('bar1').style.width = (e1/8*100) + '%';
+            document.getElementById('bar2').style.width = (e2/8*100) + '%';
+            if(e1>=8) document.getElementById('btn1').classList.add('skill-ready');
+            if(e2>=8) document.getElementById('btn2').classList.add('skill-ready');
+        }
+
+        function useSkill(type) {
+            if(type === 'u' && e1 < 8) return;
+            if(type === 'm' && e2 < 8) return;
+            if(type === 'u') { e1 = 0; document.getElementById('btn1').classList.remove('skill-ready'); showBlock('m'); }
+            else { e2 = 0; document.getElementById('btn2').classList.remove('skill-ready'); showBlock('u'); }
+            updateHUD();
+        }
+
+        function showBlock(target) {
+            var el = document.getElementById('skill-' + target);
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 3000);
         }
 
         function end() {
-            active = false;
-            clearInterval(spawnInterval);
-            spawnInterval = null;
-            document.querySelectorAll('.falling-item').forEach(function(el) { el.remove(); });
-
-            bgm.pause();
-            endSound.play().catch(function(e){});
-
-            saveRecord(s1, s2);
-
+            active = false; bgm.pause(); endSound.play().catch(e=>{});
+            document.getElementById('result').classList.remove('hidden');
             document.getElementById('f1').innerText = s1;
             document.getElementById('f2').innerText = s2;
-
-            var winner = computeWinner(s1, s2);
-            var msg = winner === 'ultraman' ? '⚡ Ultraman Wins!' :
-                      winner === 'melody'   ? '✨ Melody Wins!' : "It's a Tie!";
-            document.getElementById('winner-msg').innerText = msg;
-
-            document.getElementById('game-ui').style.display = 'none';
-            document.getElementById('game-area').style.display = 'none';
-            document.getElementById('result').classList.remove('hidden');
+            saveRecord(s1, s2);
         }
 
-        window.addEventListener('DOMContentLoaded', start);
+        window.onload = start;
     </script>
 </body>
 </html>
