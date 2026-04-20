@@ -11,10 +11,10 @@
         #game-area {
             position: fixed; inset: 0; z-index: 10;
             pointer-events: auto;
-            background: url('assets/common/background-portrait.jpg') no-repeat center center / cover;
+            background: url('assets/background-portrait.jpg') no-repeat center center / cover;
         }
         @media (orientation: landscape) {
-            #game-area { background-image: url('assets/common/background-landscape.jpg'); }
+            #game-area { background-image: url('assets/background-landscape.jpg'); }
         }
 
         /* 倒數計時：左右置中，距頂部 60px */
@@ -142,13 +142,13 @@
 
     <div class="bottom-hud">
         <div class="hud-side">
-            <div class="hud-avatar" style="border: 4px solid #3b82f6;"><img src="assets/games/hero-challenge/ultraman.png"></div>
+            <div class="hud-avatar" style="border: 4px solid #3b82f6;"><img src="assets/ultraman.png"></div>
             <div class="hud-score text-blue-400">U:<span id="s1">0</span></div>
             <div class="energy-container"><div id="bar1" class="energy-bar energy-u"></div></div>
             <div id="btn1" class="skill-btn" onclick="useSkill('u')"><img src="assets/skills/spiderman-skill.png"></div>
         </div>
         <div class="hud-side hud-right">
-            <div class="hud-avatar" style="border: 4px solid #ffffff; background: #ffffff;"><img src="assets/games/hero-challenge/melody.png"></div>
+            <div class="hud-avatar" style="border: 4px solid #ffffff; background: #ffffff;"><img src="assets/melody.png"></div>
             <div class="hud-score text-pink-400">M:<span id="s2">0</span></div>
             <div class="energy-container"><div id="bar2" class="energy-bar energy-m"></div></div>
             <div id="btn2" class="skill-btn" onclick="useSkill('m')"><img src="assets/skills/kuromi-skill.png"></div>
@@ -159,12 +159,12 @@
         <h1 class="text-5xl font-black mb-12 text-yellow-400 italic tracking-tighter">MISSION COMPLETE</h1>
         <div class="flex gap-16 mb-12">
             <div class="text-center">
-                <div class="w-32 h-32 rounded-full border-4 border-blue-500 overflow-hidden mb-4 bg-[#1e3a8a] shadow-xl"><img src="assets/games/hero-challenge/ultraman.png" class="w-full h-full object-cover"></div>
+                <div class="w-32 h-32 rounded-full border-4 border-blue-500 overflow-hidden mb-4 bg-[#1e3a8a] shadow-xl"><img src="assets/ultraman.png" class="w-full h-full object-cover"></div>
                 <p class="text-blue-400 font-bold mb-1">ULTRAMAN</p>
                 <p id="f1" class="text-6xl font-black text-white">0</p>
             </div>
             <div class="text-center">
-                <div class="w-32 h-32 rounded-full border-4 border-white overflow-hidden mb-4 bg-white shadow-xl"><img src="assets/games/hero-challenge/melody.png" class="w-full h-full object-cover"></div>
+                <div class="w-32 h-32 rounded-full border-4 border-white overflow-hidden mb-4 bg-white shadow-xl"><img src="assets/melody.png" class="w-full h-full object-cover"></div>
                 <p class="text-pink-400 font-bold mb-1">MELODY</p>
                 <p id="f2" class="text-6xl font-black text-white">0</p>
             </div>
@@ -207,7 +207,7 @@
             item.dataset.type = isU ? 'u' : 'm';
             item.style.background = isU ? '#1e3a8a' : '#ffffff';
             var img = document.createElement('img');
-            img.src = isU ? 'assets/games/hero-challenge/ultraman.png' : 'assets/games/hero-challenge/melody.png';
+            img.src = isU ? 'assets/ultraman.png' : 'assets/melody.png';
             item.appendChild(img);
 
             var half = window.innerWidth / 2;

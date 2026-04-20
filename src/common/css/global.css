@@ -8,14 +8,6 @@ body, html {
     touch-action: manipulation;
 }
 
-/* Background: portrait default, landscape via media query */
-body {
-    background: url('assets/background-portrait.jpg') no-repeat center center / cover #000;
-}
-@media (orientation: landscape) {
-    body { background-image: url('assets/background-landscape.jpg'); }
-}
-
 /* Full-screen centered overlay panel */
 .screen {
     position: fixed; inset: 0;

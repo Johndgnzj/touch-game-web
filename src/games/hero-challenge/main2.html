@@ -35,7 +35,7 @@
             top: 0;
             left: 0;
             transform-origin: 0 0;
-            background: url('../../../assets/common/background-portrait.jpg') no-repeat center center / cover;
+            background: url('assets/background-portrait.jpg') no-repeat center center / cover;
         }
         /* 左半場：順時針旋轉 90°，讓 local-top 貼齊中央分隔線 */
         .half-left  .half-inner { transform: translateX(50vw) rotate(90deg); }
@@ -170,12 +170,12 @@
         <div class="half-inner">
             <div class="tm" id="tm-u">30</div>
             <div class="game-area" data-player="u"></div>
-            <div class="skill-overlay" id="overlay-u"><img src="../../../assets/skills/kuromi-block.png"></div>
+            <div class="skill-overlay" id="overlay-u"><img src="assets/skills/kuromi-block.png"></div>
             <div class="hud">
-                <div class="hud-avatar" style="border: 4px solid #3b82f6;"><img src="../../../assets/games/hero-challenge/ultraman.png"></div>
+                <div class="hud-avatar" style="border: 4px solid #3b82f6;"><img src="assets/ultraman.png"></div>
                 <div class="hud-score score-u">U:<span id="s1">0</span></div>
                 <div class="energy-container"><div id="bar1" class="energy-bar energy-u"></div></div>
-                <div id="btn1" class="skill-btn" data-skill="u"><img src="../../../assets/skills/spiderman-skill.png"></div>
+                <div id="btn1" class="skill-btn" data-skill="u"><img src="assets/skills/spiderman-skill.png"></div>
             </div>
         </div>
     </div>
@@ -185,12 +185,12 @@
         <div class="half-inner">
             <div class="tm" id="tm-m">30</div>
             <div class="game-area" data-player="m"></div>
-            <div class="skill-overlay" id="overlay-m"><img src="../../../assets/skills/spiderman-block.png"></div>
+            <div class="skill-overlay" id="overlay-m"><img src="assets/skills/spiderman-block.png"></div>
             <div class="hud">
-                <div class="hud-avatar" style="border: 4px solid #ffffff; background: #ffffff;"><img src="../../../assets/games/hero-challenge/melody.png"></div>
+                <div class="hud-avatar" style="border: 4px solid #ffffff; background: #ffffff;"><img src="assets/melody.png"></div>
                 <div class="hud-score score-m">M:<span id="s2">0</span></div>
                 <div class="energy-container"><div id="bar2" class="energy-bar energy-m"></div></div>
-                <div id="btn2" class="skill-btn" data-skill="m"><img src="../../../assets/skills/kuromi-skill.png"></div>
+                <div id="btn2" class="skill-btn" data-skill="m"><img src="assets/skills/kuromi-skill.png"></div>
             </div>
         </div>
     </div>
@@ -200,12 +200,12 @@
         <h1>MISSION COMPLETE</h1>
         <div class="result-cards">
             <div class="result-card">
-                <div class="result-portrait" style="border: 4px solid #3b82f6; background: #1e3a8a;"><img src="../../../assets/games/hero-challenge/ultraman.png"></div>
+                <div class="result-portrait" style="border: 4px solid #3b82f6; background: #1e3a8a;"><img src="assets/ultraman.png"></div>
                 <p class="result-name score-u">ULTRAMAN</p>
                 <p id="f1" class="result-score">0</p>
             </div>
             <div class="result-card">
-                <div class="result-portrait" style="border: 4px solid #ffffff; background: #ffffff;"><img src="../../../assets/games/hero-challenge/melody.png"></div>
+                <div class="result-portrait" style="border: 4px solid #ffffff; background: #ffffff;"><img src="assets/melody.png"></div>
                 <p class="result-name score-m">MELODY</p>
                 <p id="f2" class="result-score">0</p>
             </div>
@@ -223,9 +223,9 @@
         var e1 = 0, e2 = 0;
         var ENERGY_MAX = 8;
 
-        var hitSound = new Audio('../../../assets/sfx/hit.mp3');
-        var endSound = new Audio('../../../assets/sfx/gameover.mp3');
-        var bgm = new Audio('../../../assets/sfx/bgm.mp3'); bgm.loop = true;
+        var hitSound = new Audio('assets/sfx/hit.mp3');
+        var endSound = new Audio('assets/sfx/gameover.mp3');
+        var bgm = new Audio('assets/sfx/bgm.mp3'); bgm.loop = true;
 
         function start() {
             active = true;
@@ -265,7 +265,7 @@
             item.style.background = player === 'u' ? '#1e3a8a' : '#ffffff';
 
             var img = document.createElement('img');
-            img.src = player === 'u' ? '../../../assets/games/hero-challenge/ultraman.png' : '../../../assets/games/hero-challenge/melody.png';
+            img.src = player === 'u' ? 'assets/ultraman.png' : 'assets/melody.png';
             item.appendChild(img);
 
             var size = 96;

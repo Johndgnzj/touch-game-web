@@ -22,9 +22,9 @@
 ## 📂 目錄結構規劃
 依照 Day 1 確立的模組化架構：
 - `src/games/fruit-hunt/index.html` : 遊戲主程式
-- `assets/games/fruit-hunt/` : 存放水果素材
-- `assets/sfx/fruit-pop.mp3` : 點擊音效
-- `assets/sfx/fruit-success.mp3` : 狂歡模式音樂
+- `src/games/fruit-hunt/assets/games/fruit-hunt/` : 存放水果素材
+- `src/games/fruit-hunt/assets/sfx/fruit-pop.mp3` : 點擊音效
+- `src/games/fruit-hunt/assets/sfx/fruit-success.mp3` : 狂歡模式音樂
 
 ## 🎨 素材產生 (AI Prompts)
 我將使用 Gemini 產生以下素材：
