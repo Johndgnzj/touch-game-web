@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fruit Hunt Adventure</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #061106; margin:0; padding:0; overflow:hidden; touch-action:none; font-family: sans-serif; }
+        #bg { position:fixed; inset:0; background: url('assets/background.jpg') center/cover; opacity: 0.6; z-index:0; }
+        .stage { position:relative; z-index:10; width:100vw; height:100vh; display:flex; flex-direction:column; }
+        
+        /* HUD */
+        .hud { height: 80px; background: rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:space-between; padding: 0 20px; border-bottom: 2px solid rgba(255,255,255,0.1); }
+        #target-card { background: rgba(255,255,255,0.1); border: 2px solid #fbbf24; padding: 5px 20px; border-radius: 15px; display:flex; align-items:center; gap: 10px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        #target-img { width: 40px; height: 40px; }
+        #timer { font-family: 'JetBrains Mono'; font-size: 2rem; color: #fff; }
+        .timer-danger { color: #ff4444 !important; animation: shake 0.1s infinite; }
+        @keyframes shake { 0% { transform: translate(1px,1px); } 50% { transform: translate(-1px,-1px); } }
+
+        /* Game Area */
+        #game-area { flex:1; position:relative; }
+        .hole { position:absolute; width: 120px; height: 80px; background: url('assets/tree-hole.png') center/contain no-repeat; transform: translateX(-50%); }
+        .fruit { position:absolute; width: 80px; height: 80px; bottom: 20px; left: 20px; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); transform: scale(0); cursor:pointer; }
+        .fruit.pop { transform: scale(1); }
+        .fruit img { width:100%; height:100%; object-fit:contain; }
+
+        /* Multi Mode */
+        .duo-line { position:fixed; top:50%; left:0; width:100vw; height:2px; background:rgba(255,255,255,0.2); border-top: 2px dashed rgba(255,255,255,0.3); z-index:50; display:none; }
+        .p2-area { transform: rotate(180deg); }
+
+        #result { position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:200; display:none; flex-direction:column; align-items:center; justify-content:center; color:white; }
+        .font-en { font-family: 'Bungee', sans-serif; }
+    </style>
+</head>
+<body>
+    <div id="bg"></div>
+    <div class="duo-line" id="line"></div>
+    <div class="stage" id="main-stage">
+        <div class="hud">
+            <div id="timer">30</div>
+            <div id="target-card">
+                <span class="text-xs text-amber-400 font-bold uppercase tracking-widest">Target</span>
+                <img id="target-img" src="">
+                <span id="target-name" class="font-en text-lg">APPLE</span>
+            </div>
+            <div id="score-box" class="text-2xl font-black">
+                <span id="p1-score">0</span>
+            </div>
+        </div>
+        <div id="game-area"></div>
+    </div>
+
+    <div id="result">
+        <h1 class="text-5xl font-black mb-8 text-amber-400 italic font-en">MISSION COMPLETE</h1>
+        <div class="text-6xl font-black mb-12" id="final-score">0</div>
+        <div class="flex gap-6">
+            <button onclick="location.reload()" class="px-8 py-4 bg-green-600 rounded-2xl font-black text-xl font-en">RESTART</button>
+            <a href="../menu.html" class="px-8 py-4 bg-slate-700 rounded-2xl font-black text-xl font-en">MENU</a>
+        </div>
+    </div>
+
+    <script src="../../common/js/history.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode') || 'solo';
+        const level = urlParams.get('level') || 'easy';
+        const timeLimit = parseInt(urlParams.get('time')) || 30;
+
+        const fruits = [
+            { name: 'APPLE', img: 'apple.png' },
+            { name: 'BANANA', img: 'banana.png' },
+            { name: 'STRAWBERRY', img: 'strawberry.png' },
+            { name: 'GRAPE', img: 'grape.png' },
+            { name: 'WATERMELON', img: 'watermelon.png' }
+        ];
+
+        let score = 0, timer = timeLimit, active = true, currentTarget = null;
+        const gameArea = document.getElementById('game-area');
+        const popSfx = new Audio('assets/sfx/pop.mp3');
+        const hitSfx = new Audio('assets/sfx/hit.mp3');
+        const bgm = new Audio('assets/sfx/bgm.mp3'); bgm.loop = true;
+
+        function init() {
+            if(mode === 'duo') document.getElementById('line').style.display = 'block';
+            spawnHoles();
+            newTarget();
+            startTimer();
+            bgm.play().catch(e=>{});
+            gameLoop();
+        }
+
+        function spawnHoles() {
+            const count = level === 'easy' ? 3 : 5;
+            for(let i=0; i<count; i++) {
+                const hole = document.createElement('div');
+                hole.className = 'hole';
+                hole.style.left = (100 / (count + 1) * (i + 1)) + '%';
+                hole.style.top = (30 + Math.random() * 40) + '%';
+                gameArea.appendChild(hole);
+                
+                // 每個樹洞有自己的邏輯
+                setInterval(() => {
+                    if(!active) return;
+                    if(Math.random() > 0.7) popFruit(hole);
+                }, 1500);
+            }
+        }
+
+        function popFruit(hole) {
+            if(hole.querySelector('.fruit')) return;
+            const fruitData = fruits[Math.floor(Math.random() * fruits.length)];
+            const fruit = document.createElement('div');
+            fruit.className = 'fruit';
+            fruit.innerHTML = `<img src="assets/fruits/${fruitData.img}">`;
+            fruit.dataset.name = fruitData.name;
+            hole.appendChild(fruit);
+            
+            setTimeout(() => fruit.classList.add('pop'), 50);
+            popSfx.play().catch(e=>{});
+
+            fruit.onclick = () => {
+                if(fruit.dataset.name === currentTarget.name) {
+                    score++;
+                    document.getElementById('p1-score').innerText = score;
+                    hitSfx.play().catch(e=>{});
+                    fruit.style.transform = 'scale(1.5)';
+                    fruit.style.opacity = '0';
+                    setTimeout(() => fruit.remove(), 200);
+                    if(score % 5 === 0) newTarget();
+                } else {
+                    fruit.style.animation = 'shake 0.1s 3';
+                }
+            };
+
+            setTimeout(() => {
+                if(fruit) {
+                    fruit.classList.remove('pop');
+                    setTimeout(() => fruit.remove(), 300);
+                }
+            }, 1200);
+        }
+
+        function newTarget() {
+            currentTarget = fruits[Math.floor(Math.random() * fruits.length)];
+            document.getElementById('target-img').src = `assets/fruits/${currentTarget.img}`;
+            document.getElementById('target-name').innerText = currentTarget.name;
+        }
+
+        function startTimer() {
+            const tEl = document.getElementById('timer');
+            const itv = setInterval(() => {
+                timer--;
+                tEl.innerText = timer;
+                if(timer <= 5) tEl.classList.add('timer-danger');
+                if(timer <= 0) {
+                    clearInterval(itv);
+                    active = false;
+                    showResult();
+                }
+            }, 1000);
+        }
+
+        function showResult() {
+            document.getElementById('result').style.display = 'flex';
+            document.getElementById('final-score').innerText = score;
+            saveRecord({ game: 'fruit-hunt', score: score });
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

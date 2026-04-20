@@ -16,544 +16,91 @@
             --accent-cyan: #22d3ee;
             --accent-pink: #ec4899;
             --accent-gold: #fbbf24;
+            --accent-green: #22c55e;
             --text:        #ffffff;
             --muted:       rgba(255, 255, 255, 0.55);
             --subtle:      rgba(255, 255, 255, 0.3);
         }
-
         * { -webkit-tap-highlight-color: transparent; }
-
-        html, body {
-            margin: 0; padding: 0;
-            min-height: 100vh;
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'M PLUS Rounded 1c', system-ui, -apple-system, sans-serif;
-            overflow-x: hidden;
-        }
-
-        .font-en { font-family: 'Bungee', system-ui, sans-serif; }
-
-        /* ========== Ambient layers ========== */
-        .nebula {
-            position: fixed; inset: 0; z-index: 0; pointer-events: none;
-            background:
-                radial-gradient(ellipse 80% 50% at 20% 0%, rgba(59, 130, 246, 0.22), transparent 60%),
-                radial-gradient(ellipse 60% 40% at 90% 100%, rgba(236, 72, 153, 0.15), transparent 55%),
-                radial-gradient(ellipse 40% 30% at 50% 80%, rgba(34, 211, 238, 0.08), transparent 50%);
-        }
-
-        /* CSS-only starfield: three density layers */
-        .stars {
-            position: fixed; inset: 0; z-index: 0; pointer-events: none;
-            background-image:
-                radial-gradient(1px 1px at 13% 27%, rgba(255,255,255,0.9), transparent),
-                radial-gradient(1px 1px at 37% 8%,  rgba(255,255,255,0.7), transparent),
-                radial-gradient(1.5px 1.5px at 58% 73%, rgba(255,255,255,0.9), transparent),
-                radial-gradient(1px 1px at 82% 44%, rgba(147,197,253,0.8), transparent),
-                radial-gradient(2px 2px at 24% 88%, rgba(255,255,255,0.7), transparent),
-                radial-gradient(1px 1px at 71% 19%, rgba(255,255,255,0.5), transparent),
-                radial-gradient(1px 1px at 46% 55%, rgba(252,165,165,0.6), transparent),
-                radial-gradient(1.5px 1.5px at 90% 82%, rgba(255,255,255,0.8), transparent),
-                radial-gradient(1px 1px at 6% 63%,  rgba(255,255,255,0.55), transparent),
-                radial-gradient(1px 1px at 63% 34%, rgba(196,181,253,0.7), transparent);
-            background-size: 100% 100%;
-            animation: twinkle 6s ease-in-out infinite alternate;
-        }
-        @keyframes twinkle {
-            from { opacity: 0.7; }
-            to   { opacity: 1; }
-        }
-
-        /* Technical grid — very subtle, masked radially */
-        .grid-overlay {
-            position: fixed; inset: 0; z-index: 0; pointer-events: none;
-            background-image:
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 56px 56px;
-            -webkit-mask-image: radial-gradient(ellipse at center, black 35%, transparent 78%);
-                    mask-image: radial-gradient(ellipse at center, black 35%, transparent 78%);
-        }
-
-        /* Scanline overlay for retro feel */
-        .scanlines {
-            position: fixed; inset: 0; z-index: 1; pointer-events: none;
-            background: repeating-linear-gradient(
-                to bottom,
-                rgba(255,255,255,0.015) 0px,
-                rgba(255,255,255,0.015) 1px,
-                transparent 1px,
-                transparent 3px
-            );
-            opacity: 0.6;
-            mix-blend-mode: overlay;
-        }
-
-        /* ========== Chrome elements ========== */
-        .back-btn {
-            position: fixed; top: 20px; left: 20px; z-index: 50;
-            display: inline-flex; align-items: center; gap: 10px;
-            padding: 10px 18px 10px 14px;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,0.08);
-            color: var(--muted);
-            text-decoration: none;
-            font-size: 11px; font-weight: 800;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .back-btn::before {
-            content: '';
-            width: 6px; height: 6px; border-radius: 50%;
-            background: var(--accent-blue);
-            box-shadow: 0 0 8px var(--accent-blue);
-        }
-        .back-btn:hover {
-            background: rgba(59,130,246,0.12);
-            border-color: rgba(59,130,246,0.4);
-            color: var(--text);
-            transform: translateX(-2px);
-        }
-
-        .corner-tag {
-            font-family: 'Bungee', sans-serif;
-            font-size: 10px;
-            letter-spacing: 0.32em;
-            color: rgba(255,255,255,0.32);
-        }
-
-        /* ========== Hero logo ========== */
-        .hero-logo {
-            filter: drop-shadow(0 0 28px rgba(59, 130, 246, 0.55)) drop-shadow(0 0 60px rgba(236, 72, 153, 0.15));
-            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            animation: float 5.5s ease-in-out infinite;
-        }
-        .hero-logo:hover {
-            transform: scale(1.06) rotate(-3deg);
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50%      { transform: translateY(-10px); }
-        }
-
-        /* ========== Page title ========== */
-        .page-title {
-            font-family: 'Bungee', sans-serif;
-            background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 55%, #94a3b8 100%);
-            -webkit-background-clip: text; background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 40px rgba(147,197,253,0.2));
-        }
-
-        .bracket { color: rgba(147, 197, 253, 0.6); }
-
-        /* ========== Cards ========== */
-        .game-card {
-            position: relative;
-            display: block;
-            border-radius: 28px;
-            isolation: isolate;
-            text-decoration: none;
-            color: inherit;
-            transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        /* --- Active card --- */
-        .card-active {
-            background:
-                linear-gradient(160deg, rgba(30, 64, 175, 0.25) 0%, rgba(11, 15, 30, 0.75) 70%),
-                rgba(11, 15, 30, 0.8);
-            backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
-            border: 1px solid rgba(59, 130, 246, 0.35);
-            box-shadow:
-                0 1px 0 rgba(255,255,255,0.08) inset,
-                0 0 0 1px rgba(59,130,246,0.08),
-                0 30px 80px -30px rgba(59,130,246,0.55),
-                0 0 40px -10px rgba(236,72,153,0.25);
-            overflow: hidden;
-        }
-
-        /* Rotating conic glow (just outside the card border) */
-        .card-active::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: 29px;
-            padding: 1px;
-            background: conic-gradient(
-                from var(--ang, 0deg),
-                transparent 0deg,
-                rgba(59,130,246,0.9) 50deg,
-                rgba(34,211,238,0.7) 110deg,
-                transparent 180deg,
-                rgba(236,72,153,0.6) 240deg,
-                transparent 310deg,
-                transparent 360deg
-            );
-            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-                    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-            -webkit-mask-composite: xor; mask-composite: exclude;
-            animation: spin 6s linear infinite;
-            pointer-events: none;
-            z-index: 1;
-        }
-        @keyframes spin {
-            to { --ang: 360deg; }
-        }
-        @property --ang {
-            syntax: '<angle>';
-            initial-value: 0deg;
-            inherits: false;
-        }
-
-        /* Diagonal sheen */
-        .card-active::after {
-            content: '';
-            position: absolute;
-            top: -50%; left: -120%;
-            width: 60%; height: 200%;
-            background: linear-gradient(
-                100deg,
-                transparent 0%,
-                rgba(255,255,255,0.05) 30%,
-                rgba(255,255,255,0.22) 50%,
-                rgba(255,255,255,0.05) 70%,
-                transparent 100%
-            );
-            transform: rotate(20deg);
-            animation: sheen 6s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 2;
-        }
-        @keyframes sheen {
-            0%, 100% { left: -120%; }
-            55%      { left: 160%; }
-        }
-
-        .card-active:hover  { transform: translateY(-6px) scale(1.015); }
-        .card-active:active { transform: translateY(-2px) scale(0.985); }
-
-        /* Hero portraits row inside active card */
-        .portrait {
-            width: 88px; height: 88px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid;
-            box-shadow: 0 10px 28px rgba(0,0,0,0.5);
-        }
+        html, body { margin: 0; padding: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: 'M PLUS Rounded 1c', sans-serif; overflow-x: hidden; }
+        .font-en { font-family: 'Bungee', sans-serif; }
+        .nebula { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(ellipse 80% 50% at 20% 0%, rgba(59, 130, 246, 0.22), transparent 60%), radial-gradient(ellipse 60% 40% at 90% 100%, rgba(236, 72, 153, 0.15), transparent 55%); }
+        .stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; background-image: radial-gradient(1px 1px at 13% 27%, rgba(255,255,255,0.9), transparent), radial-gradient(1.5px 1.5px at 58% 73%, rgba(255,255,255,0.9), transparent); background-size: 100% 100%; animation: twinkle 6s ease-in-out infinite alternate; }
+        @keyframes twinkle { from { opacity: 0.7; } to { opacity: 1; } }
+        .grid-overlay { position: fixed; inset: 0; z-index: 0; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 56px 56px; mask-image: radial-gradient(ellipse at center, black 35%, transparent 78%); }
+        .back-btn { position: fixed; top: 20px; left: 20px; z-index: 50; display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 999px; background: rgba(255,255,255,0.04); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); color: var(--muted); text-decoration: none; font-size: 11px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; }
+        .back-btn::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent-blue); box-shadow: 0 0 8px var(--accent-blue); }
+        .page-title { font-family: 'Bungee', sans-serif; background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 55%, #94a3b8 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .game-card { position: relative; display: block; border-radius: 28px; isolation: isolate; text-decoration: none; color: inherit; transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1); background: rgba(11, 15, 30, 0.8); backdrop-filter: blur(22px); border: 1px solid rgba(255,255,255,0.1); overflow: hidden; }
+        .game-card:hover { transform: translateY(-6px) scale(1.015); border-color: rgba(255,255,255,0.3); }
+        .card-hero { border-color: rgba(59, 130, 246, 0.35); }
+        .card-fruit { border-color: rgba(34, 197, 94, 0.35); }
+        .portrait { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; border: 3px solid; box-shadow: 0 10px 28px rgba(0,0,0,0.5); }
         .portrait-u { border-color: #3b82f6; background: #1e3a8a; transform: rotate(-6deg); }
         .portrait-m { border-color: #ffffff; background: #ffffff; transform: rotate(6deg) translateY(10px); }
-        @media (min-width: 640px) {
-            .portrait { width: 104px; height: 104px; }
-        }
-
-        .vs-badge {
-            font-family: 'Bungee', sans-serif;
-            font-size: 26px;
-            color: var(--accent-gold);
-            text-shadow: 0 0 18px rgba(251, 191, 36, 0.5);
-            transform: translateY(-4px);
-        }
-
-        /* --- Locked card --- */
-        .card-locked {
-            background:
-                linear-gradient(160deg, rgba(30,30,50,0.35) 0%, rgba(11,15,30,0.6) 100%);
-            backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-            border: 1px dashed rgba(255,255,255,0.12);
-            cursor: not-allowed;
-            overflow: hidden;
-        }
-        .card-locked::before {
-            /* subtle hatch pattern */
-            content: '';
-            position: absolute; inset: 0;
-            background: repeating-linear-gradient(
-                -45deg,
-                transparent 0 10px,
-                rgba(255,255,255,0.02) 10px 11px
-            );
-            pointer-events: none;
-        }
-        .card-locked:hover { animation: nudge 0.4s ease-out; }
-        @keyframes nudge {
-            0%, 100% { transform: translateX(0); }
-            25%      { transform: translateX(-4px); }
-            75%      { transform: translateX(4px); }
-        }
-
-        /* ========== Badges ========== */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 5px 11px;
-            border-radius: 999px;
-            font-family: 'Bungee', sans-serif;
-            font-size: 9px;
-            letter-spacing: 0.22em;
-        }
-        .badge-active {
-            background: rgba(251, 191, 36, 0.14);
-            color: var(--accent-gold);
-            border: 1px solid rgba(251, 191, 36, 0.35);
-        }
-        .badge-active .dot {
-            width: 6px; height: 6px; border-radius: 50%;
-            background: var(--accent-gold);
-            box-shadow: 0 0 10px var(--accent-gold);
-            animation: blink 1.4s infinite;
-        }
-        @keyframes blink {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50%      { opacity: 0.4; transform: scale(0.8); }
-        }
-        .badge-locked {
-            background: rgba(255,255,255,0.04);
-            color: rgba(255,255,255,0.4);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        /* ========== CTA ========== */
-        .cta-play {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 9px 18px;
-            border-radius: 999px;
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: #0b0b0b;
-            font-family: 'Bungee', sans-serif;
-            font-size: 12px;
-            letter-spacing: 0.12em;
-            box-shadow:
-                0 8px 22px -6px rgba(251, 191, 36, 0.7),
-                0 0 0 0 rgba(251, 191, 36, 0.4);
-            animation: pulseRing 2.4s infinite;
-        }
-        @keyframes pulseRing {
-            0%, 100% { box-shadow: 0 8px 22px -6px rgba(251,191,36,0.7), 0 0 0 0 rgba(251,191,36,0.5); }
-            50%      { box-shadow: 0 8px 22px -6px rgba(251,191,36,0.7), 0 0 0 10px rgba(251,191,36,0); }
-        }
-        .card-active:hover .cta-play .arrow { transform: translateX(4px); }
-        .cta-play .arrow { transition: transform 0.3s; }
-
-        .cta-locked {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 9px 18px;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.04);
-            color: rgba(255,255,255,0.35);
-            border: 1px solid rgba(255,255,255,0.08);
-            font-family: 'Bungee', sans-serif;
-            font-size: 12px;
-            letter-spacing: 0.12em;
-        }
-
-        .meta-row {
-            display: flex; gap: 10px;
-            font-family: 'Bungee', sans-serif;
-            font-size: 10px;
-            letter-spacing: 0.18em;
-        }
-
-        /* ========== Stagger reveal ========== */
-        @keyframes riseIn {
-            from { opacity: 0; transform: translateY(26px); filter: blur(4px); }
-            to   { opacity: 1; transform: translateY(0);     filter: blur(0);  }
-        }
+        .fruit-icon { width: 100px; height: 100px; object-fit: contain; filter: drop-shadow(0 0 15px rgba(34, 197, 94, 0.5)); }
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; font-family: 'Bungee', sans-serif; font-size: 9px; letter-spacing: 0.22em; background: rgba(251, 191, 36, 0.14); color: var(--accent-gold); border: 1px solid rgba(251, 191, 36, 0.35); }
+        .status-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-gold); box-shadow: 0 0 10px var(--accent-gold); animation: blink 1.4s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .cta-play { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 999px; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: #0b0b0b; font-family: 'Bungee', sans-serif; font-size: 12px; letter-spacing: 0.12em; box-shadow: 0 8px 22px -6px rgba(251, 191, 36, 0.7); }
+        @keyframes riseIn { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: translateY(0); } }
         .reveal { animation: riseIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
-        .d-1 { animation-delay: 0.05s; }
-        .d-2 { animation-delay: 0.25s; }
-        .d-3 { animation-delay: 0.45s; }
-        .d-4 { animation-delay: 0.65s; }
-        .d-5 { animation-delay: 0.82s; }
-
-        /* ========== Locked big glyph ========== */
-        .lock-glyph {
-            width: 88px; height: 88px;
-            border: 2px dashed rgba(255,255,255,0.18);
-            border-radius: 18px;
-            display: flex; align-items: center; justify-content: center;
-            color: rgba(255,255,255,0.35);
-            font-size: 36px;
-            position: relative;
-        }
-        .lock-glyph::before, .lock-glyph::after {
-            content: '';
-            position: absolute;
-            background: rgba(255,255,255,0.12);
-        }
-        .lock-glyph::before { width: 14px; height: 1px; top: 50%; left: -20px; }
-        .lock-glyph::after  { width: 14px; height: 1px; top: 50%; right: -20px; }
-
-        /* Desktop/tablet scale up */
-        @media (min-width: 768px) {
-            .page-title { font-size: 3.75rem; }
-        }
     </style>
 </head>
 <body>
     <div class="nebula"></div>
     <div class="stars"></div>
     <div class="grid-overlay"></div>
-    <div class="scanlines"></div>
 
-    <!-- Top chrome -->
-    <a href="../index.html" class="back-btn">
-        <span style="transform: translateY(-1px);">←</span>
-        <span>Back to HQ</span>
-    </a>
-    <div class="corner-tag fixed top-5 right-5 z-50">HUB · 01 / 01</div>
+    <a href="../index.html" class="back-btn"><span>Back to HQ</span></a>
 
-    <!-- Main -->
     <main class="relative z-10 min-h-screen flex flex-col items-center justify-center px-5 py-24">
-
-        <!-- Logo + Title block -->
-        <header class="text-center w-full max-w-3xl">
-            <div class="reveal d-1 flex justify-center mb-6">
-                <img class="hero-logo w-32 md:w-40 h-auto"
-                     src="./hero-challenge/assets/logo.png"
-                     alt="Heroes Logo"
-                     onerror="this.style.display='none'">
-            </div>
-
-            <div class="reveal d-2">
-                <div class="corner-tag mb-3">
-                    <span class="bracket">[</span> CHOOSE YOUR MISSION <span class="bracket">]</span>
-                </div>
-                <h1 class="page-title text-[2.5rem] sm:text-5xl md:text-6xl font-black leading-none">
-                    MISSION SELECT
-                </h1>
-                <p class="text-xs md:text-sm text-white/55 mt-4 tracking-wider">
-                    挑一場英雄任務開始今日冒險
-                </p>
-            </div>
+        <header class="text-center w-full max-w-3xl mb-12">
+            <h1 class="page-title text-5xl md:text-6xl font-black leading-none reveal">MISSION SELECT</h1>
+            <p class="text-white/55 mt-4 tracking-wider reveal" style="animation-delay: 0.2s">挑一場英雄任務開始今日冒險</p>
         </header>
 
-        <!-- Divider flourish -->
-        <div class="reveal d-3 flex items-center gap-3 my-8 md:my-10">
-            <div class="h-px w-12 bg-gradient-to-r from-transparent to-white/30"></div>
-            <div class="w-1.5 h-1.5 rotate-45 bg-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.8)]"></div>
-            <div class="h-px w-12 bg-gradient-to-l from-transparent to-white/30"></div>
-        </div>
-
-        <!-- Cards -->
-        <section class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 w-full max-w-4xl">
-
-            <!-- === Active: Hero Challenge === -->
-            <a href="./hero-challenge/welcome.html" class="reveal d-4 game-card card-active p-6 md:p-7">
-                <!-- Card header -->
-                <div class="relative z-10 flex items-center justify-between mb-5">
-                    <span class="status-badge badge-active">
-                        <span class="dot"></span>
-                        NOW LIVE
-                    </span>
-                    <span class="font-en text-[11px] tracking-[0.25em] text-white/40">MSN · 01</span>
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+            <!-- 任務 1: 英雄挑戰 -->
+            <a href="./hero-challenge/welcome.html" class="game-card card-hero p-7 reveal" style="animation-delay: 0.4s">
+                <div class="flex justify-between mb-5">
+                    <span class="status-badge"><span class="dot"></span>LIVE</span>
+                    <span class="font-en text-[10px] text-white/40">MSN · 01</span>
                 </div>
-
-                <!-- Visual: hero portrait face-off -->
-                <div class="relative z-10 h-32 md:h-36 mb-5 flex items-center justify-center gap-2">
-                    <img src="./hero-challenge/assets/ultraman.png"
-                         alt="Ultraman"
-                         class="portrait portrait-u"
-                         onerror="this.style.display='none'">
-                    <span class="vs-badge">VS</span>
-                    <img src="./hero-challenge/assets/melody.png"
-                         alt="Melody"
-                         class="portrait portrait-m"
-                         onerror="this.style.display='none'">
+                <div class="h-32 mb-5 flex items-center justify-center gap-2">
+                    <img src="./hero-challenge/assets/ultraman.png" class="portrait portrait-u">
+                    <span class="font-en text-2xl text-amber-400">VS</span>
+                    <img src="./hero-challenge/assets/melody.png" class="portrait portrait-m">
                 </div>
-
-                <!-- Body -->
-                <div class="relative z-10 mb-5">
-                    <h2 class="text-2xl md:text-[1.75rem] font-black tracking-tight leading-tight">英雄挑戰</h2>
-                    <p class="font-en text-[11px] md:text-xs tracking-[0.18em] text-blue-300 mt-1">
-                        HERO CHALLENGE
-                    </p>
-                    <p class="text-sm text-white/60 mt-3 leading-relaxed">
-                        奧特曼 × 美樂蒂 的雙人對戰競技，觸控落下的圖示累積分數，集滿能量釋放大招！
-                    </p>
+                <div>
+                    <h2 class="text-2xl font-black">英雄挑戰</h2>
+                    <p class="font-en text-[10px] text-blue-300">HERO CHALLENGE</p>
                 </div>
-
-                <!-- Meta + CTA -->
-                <div class="relative z-10 flex items-center justify-between pt-4 border-t border-white/10">
-                    <div class="meta-row text-white/45">
-                        <span>2P</span>
-                        <span class="text-white/15">/</span>
-                        <span>30<span class="text-white/30">s</span></span>
-                        <span class="text-white/15">/</span>
-                        <span>6<span class="text-white/30">+</span></span>
-                    </div>
-                    <div class="cta-play">
-                        PLAY
-                        <span class="arrow">→</span>
-                    </div>
+                <div class="flex justify-between items-center mt-6 pt-4 border-t border-white/10">
+                    <span class="font-en text-[10px] text-white/40">2P / 30S / 6+</span>
+                    <div class="cta-play">PLAY →</div>
                 </div>
             </a>
 
-            <!-- === Locked: Coming Soon === -->
-            <div class="reveal d-5 game-card card-locked p-6 md:p-7">
-                <!-- Card header -->
-                <div class="relative z-10 flex items-center justify-between mb-5">
-                    <span class="status-badge badge-locked">
-                        <span>◆</span>
-                        LOCKED
-                    </span>
-                    <span class="font-en text-[11px] tracking-[0.25em] text-white/25">MSN · 02</span>
+            <!-- 任務 2: 水果捉迷藏 -->
+            <a href="./fruit-hunt/welcome.html" class="game-card card-fruit p-7 reveal" style="animation-delay: 0.6s">
+                <div class="flex justify-between mb-5">
+                    <span class="status-badge"><span class="dot"></span>NEW</span>
+                    <span class="font-en text-[10px] text-white/40">MSN · 02</span>
                 </div>
-
-                <!-- Visual -->
-                <div class="relative z-10 h-32 md:h-36 mb-5 flex items-center justify-center">
-                    <div class="lock-glyph">
-                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="4" y="11" width="16" height="10" rx="2"/>
-                            <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
-                        </svg>
-                    </div>
+                <div class="h-32 mb-5 flex items-center justify-center">
+                    <img src="./fruit-hunt/assets/fruits/apple.png" class="fruit-icon">
                 </div>
-
-                <!-- Body -->
-                <div class="relative z-10 mb-5">
-                    <h2 class="text-2xl md:text-[1.75rem] font-black tracking-tight leading-tight text-white/45">
-                        未知關卡
-                    </h2>
-                    <p class="font-en text-[11px] md:text-xs tracking-[0.18em] text-white/30 mt-1">
-                        COMING SOON
-                    </p>
-                    <p class="text-sm text-white/35 mt-3 leading-relaxed">
-                        神秘的英雄任務正在準備中，下一段冒險即將解鎖。
-                    </p>
+                <div>
+                    <h2 class="text-2xl font-black">水果捉迷藏</h2>
+                    <p class="font-en text-[10px] text-green-400">FRUIT HUNT ADVENTURE</p>
                 </div>
-
-                <!-- Meta + CTA -->
-                <div class="relative z-10 flex items-center justify-between pt-4 border-t border-white/5">
-                    <div class="meta-row text-white/25">
-                        <span>??</span>
-                        <span class="text-white/15">/</span>
-                        <span>??<span class="text-white/20">s</span></span>
-                    </div>
-                    <div class="cta-locked">
-                        SOON
-                    </div>
+                <div class="flex justify-between items-center mt-6 pt-4 border-t border-white/10">
+                    <span class="font-en text-[10px] text-white/40">1-2P / 30-60S / 3+</span>
+                    <div class="cta-play">PLAY →</div>
                 </div>
-            </div>
-
+            </a>
         </section>
-
-        <!-- Footer hint -->
-        <footer class="reveal d-5 mt-10 md:mt-14 text-center">
-            <div class="corner-tag mb-2">
-                <span class="bracket">·</span> SYS READY <span class="bracket">·</span>
-            </div>
-            <p class="text-[11px] md:text-xs text-white/30 tracking-wider">
-                點擊卡片開始任務 <span class="mx-2 text-white/15">/</span> Tap a card to launch
-            </p>
-        </footer>
-
     </main>
 </body>
 </html>

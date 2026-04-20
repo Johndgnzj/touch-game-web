@@ -1,36 +1,34 @@
-var HISTORY_KEY = 'touch-game-history';
-var MAX_RECORDS = 50;
+/**
+ * Kids Hero Playground - Unified History System
+ */
+const STORAGE_KEY = 'kids-hero-history-v2';
 
-function loadHistory() {
-    try {
-        return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
-    } catch (e) {
-        return [];
-    }
+function saveRecord(data) {
+    let history = loadFullHistory();
+    const entry = {
+        id: Date.now(),
+        date: new Date().toISOString(),
+        game: data.game || 'hero-challenge',
+        score: data.score || 0,
+        scores: data.scores || null, // For duo mode
+        winner: data.winner || null,
+        mode: data.mode || 'solo'
+    };
+    history.unshift(entry);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history.slice(0, 50)));
 }
 
-function saveRecord(s1, s2) {
-    var records = loadHistory();
-    records.unshift({
-        timestamp: Date.now(),
-        s1: s1,
-        s2: s2,
-        winner: computeWinner(s1, s2)
+function loadFullHistory() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+}
+
+// Backward compatibility for hero-challenge
+function saveRecordLegacy(s1, s2) {
+    saveRecord({
+        game: 'hero-challenge',
+        scores: { u: s1, m: s2 },
+        winner: s1 > s2 ? 'ultraman' : s2 > s1 ? 'melody' : 'tie',
+        mode: 'duo'
     });
-    if (records.length > MAX_RECORDS) records.length = MAX_RECORDS;
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(records));
-}
-
-function clearHistory() {
-    localStorage.removeItem(HISTORY_KEY);
-}
-
-function computeWinner(s1, s2) {
-    if (s1 > s2) return 'ultraman';
-    if (s2 > s1) return 'melody';
-    return 'tie';
-}
-
-function formatTimestamp(ts) {
-    return new Date(ts).toLocaleString();
 }
