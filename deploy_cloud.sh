@@ -31,14 +31,17 @@ cp ${PROJECT_ROOT}/src/common/js/history.js ${DEPLOY_HUB}/public/design/js/
 echo "🔥 正在上傳至 Firebase ($PROJECT_ID)..."
 export GOOGLE_APPLICATION_CREDENTIALS="${KEY_PATH}"
 
-# 使用與原本 auto_deploy_all.sh 相同的權限機制
+# 獲取臨時 Token
 TOKEN=$(gcloud auth application-default print-access-token 2>/dev/null)
-FIREBASE_JSON="${DEPLOY_HUB}/firebase.json"
+FIREBASE_CONFIG="${DEPLOY_HUB}/firebase.json"
+
+# 先進入該目錄確保上下文正確
+cd "${DEPLOY_HUB}"
 
 if [ -n "$TOKEN" ]; then
-    firebase deploy --only hosting --project ${PROJECT_ID} --non-interactive --token "$TOKEN" --config "$FIREBASE_JSON"
+    firebase deploy --only hosting --project ${PROJECT_ID} --non-interactive --token "$TOKEN" --config "${FIREBASE_CONFIG}"
 else
-    firebase deploy --only hosting --project ${PROJECT_ID} --non-interactive --config "$FIREBASE_JSON"
+    firebase deploy --only hosting --project ${PROJECT_ID} --non-interactive --config "${FIREBASE_CONFIG}"
 fi
 
 echo "✨ 部署完成！"
