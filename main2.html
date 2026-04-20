@@ -119,9 +119,11 @@
         .skill-btn img { width: 85%; height: 85%; object-fit: contain; }
         .skill-ready { opacity: 1 !important; filter: grayscale(0) !important; border-color: #fbbf24 !important; transform: scale(1.08); box-shadow: 0 0 20px #fbbf24; }
 
-        /* 技能遮罩：蓋住對方半場 (在 half-inner 內部) */
+        /* 技能遮罩：由對方 local-top (中央分隔線側) 垂落，覆蓋對方半場的上半 */
         .skill-overlay {
-            position: absolute; inset: 0;
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 50%;
             z-index: 200; display: none;
             pointer-events: none;
         }
