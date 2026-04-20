@@ -79,7 +79,6 @@
 
         let score = 0, timer = timeLimit, active = true, currentTarget = null;
         const gameArea = document.getElementById('game-area');
-        const popSfx = new Audio('assets/sfx/pop.mp3');
         const hitSfx = new Audio('assets/sfx/hit.mp3');
         const bgm = new Audio('assets/sfx/bgm.mp3'); bgm.loop = true;
 
@@ -119,7 +118,6 @@
             hole.appendChild(fruit);
             
             setTimeout(() => fruit.classList.add('pop'), 50);
-            popSfx.play().catch(e=>{});
 
             fruit.onclick = () => {
                 if(fruit.dataset.name === currentTarget.name) {
