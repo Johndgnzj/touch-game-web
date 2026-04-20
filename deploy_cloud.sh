@@ -2,10 +2,10 @@
 # Kids Hero Play - 雲端部署腳本 (v3.0)
 # 這個腳本會自動處理結構搬運與 Firebase 部署權限
 
-PROJECT_ROOT="/Users/ws011/Documents/vibe_projects/touch-game-web"
-DEPLOY_HUB="/Users/ws011/Documents/vibe_projects/ai-hero-platform"
+PROJECT_ROOT="./"
+DEPLOY_HUB="./ai-hero-platform"
 PROJECT_ID="ai-agent-492807"
-KEY_PATH="/Users/ws011/Documents/vibe_projects/cloud-migration-docs/key.json"
+KEY_PATH="./key.json"
 
 echo "🚀 開始執行 Kids Hero Play 雲端部署流程..."
 
