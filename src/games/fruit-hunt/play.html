@@ -8,54 +8,46 @@
     <link href="https://fonts.googleapis.com/css2?family=Bungee&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
         body { background: #061106; margin:0; padding:0; overflow:hidden; touch-action:none; font-family: sans-serif; }
-        #bg { position:fixed; inset:0; background: url('assets/background.jpg') center/cover; opacity: 0.6; z-index:0; }
         .stage { position:relative; z-index:10; width:100vw; height:100vh; display:flex; flex-direction:column; }
-        
+
+        /* Per-player view */
+        .player-view { position:relative; flex:1; display:flex; flex-direction:column; overflow:hidden; min-height:0; }
+        .player-view + .player-view { border-top: 2px dashed rgba(255,255,255,0.25); }
+        .view-bg { position:absolute; inset:0; background: url('assets/background.jpg') center/cover; opacity: 0.6; z-index:0; }
+        .p2-area { transform: rotate(180deg); }
+
         /* HUD */
-        .hud { height: 80px; background: rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:space-between; padding: 0 20px; border-bottom: 2px solid rgba(255,255,255,0.1); }
-        #target-card { background: rgba(255,255,255,0.1); border: 2px solid #fbbf24; padding: 5px 20px; border-radius: 15px; display:flex; align-items:center; gap: 10px; animation: pulse 2s infinite; }
+        .hud { position:relative; z-index:2; height: 80px; background: rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:space-between; padding: 0 20px; border-bottom: 2px solid rgba(255,255,255,0.1); flex-shrink:0; }
+        .target-card { background: rgba(255,255,255,0.1); border: 2px solid #fbbf24; padding: 5px 20px; border-radius: 15px; display:flex; align-items:center; gap: 10px; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        #target-img { width: 40px; height: 40px; }
-        #timer { font-family: 'JetBrains Mono'; font-size: 2rem; color: #fff; }
+        .target-img { width: 40px; height: 40px; }
+        .timer { font-family: 'JetBrains Mono'; font-size: 2rem; color: #fff; }
         .timer-danger { color: #ff4444 !important; animation: shake 0.1s infinite; }
         @keyframes shake { 0% { transform: translate(1px,1px); } 50% { transform: translate(-1px,-1px); } }
+        .score { color: #fff; }
 
-        /* Game Area */
-        #game-area { flex:1; position:relative; }
-        .hole { position:absolute; width: 120px; height: 80px; background: url('assets/tree-hole.png') center/contain no-repeat; transform: translateX(-50%); }
-        .fruit { position:absolute; width: 80px; height: 80px; bottom: 20px; left: 20px; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); transform: scale(0); cursor:pointer; }
+        /* Game area */
+        .game-area { position:relative; z-index:1; flex:1; min-height:0; }
+        .hole { position:absolute; background: url('assets/tree-hole.png') center/contain no-repeat; transform: translateX(-50%); }
+        .fruit { position:absolute; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); transform: scale(0); cursor:pointer; }
         .fruit.pop { transform: scale(1); }
         .fruit img { width:100%; height:100%; object-fit:contain; }
 
-        /* Multi Mode */
-        .duo-line { position:fixed; top:50%; left:0; width:100vw; height:2px; background:rgba(255,255,255,0.2); border-top: 2px dashed rgba(255,255,255,0.3); z-index:50; display:none; }
-        .p2-area { transform: rotate(180deg); }
-
-        #result { position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:200; display:none; flex-direction:column; align-items:center; justify-content:center; color:white; }
+        #result { position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:200; display:none; flex-direction:column; align-items:center; justify-content:center; color:white; padding:20px; text-align:center; }
         .font-en { font-family: 'Bungee', sans-serif; }
+        .duo-result { display:flex; gap:32px; margin-bottom:32px; flex-wrap:wrap; justify-content:center; }
+        .player-card { padding:20px 36px; border:2px solid rgba(255,255,255,0.2); border-radius:16px; min-width:160px; }
+        .player-card.winner { border-color:#fbbf24; background:rgba(251,191,36,0.1); }
+        .player-label { font-size:1rem; letter-spacing:0.2em; opacity:0.7; }
+        .player-score { font-size:3.5rem; font-weight:900; }
     </style>
 </head>
 <body>
-    <div id="bg"></div>
-    <div class="duo-line" id="line"></div>
-    <div class="stage" id="main-stage">
-        <div class="hud">
-            <div id="timer">30</div>
-            <div id="target-card">
-                <span class="text-xs text-amber-400 font-bold uppercase tracking-widest">Target</span>
-                <img id="target-img" src="">
-                <span id="target-name" class="font-en text-lg">APPLE</span>
-            </div>
-            <div id="score-box" class="text-2xl font-black">
-                <span id="p1-score">0</span>
-            </div>
-        </div>
-        <div id="game-area"></div>
-    </div>
+    <div class="stage" id="main-stage"></div>
 
     <div id="result">
         <h1 class="text-5xl font-black mb-8 text-amber-400 italic font-en">MISSION COMPLETE</h1>
-        <div class="text-6xl font-black mb-12" id="final-score">0</div>
+        <div id="result-body"></div>
         <div class="flex gap-6">
             <button onclick="location.reload()" class="px-8 py-4 bg-green-600 rounded-2xl font-black text-xl font-en">RESTART</button>
             <a href="../menu.html" class="px-8 py-4 bg-slate-700 rounded-2xl font-black text-xl font-en">MENU</a>
@@ -77,66 +69,122 @@
             { name: 'WATERMELON', img: 'watermelon.png' }
         ];
 
-        let score = 0, timer = timeLimit, active = true, currentTarget = null;
-        const gameArea = document.getElementById('game-area');
+        const HOLE_ASPECT = 80 / 120; // height / width, preserves original proportions
+        const HOLE_COUNT = level === 'easy' ? 3 : 5;
+
+        let timer = timeLimit, active = true, currentTarget = null;
+        const views = [];
+        const stage = document.getElementById('main-stage');
         const popSfx = new Audio('assets/sfx/pop.mp3');
         const hitSfx = new Audio('assets/sfx/hit.mp3');
         const bgm = new Audio('assets/sfx/bgm.mp3'); bgm.loop = true;
 
-        function init() {
-            if(mode === 'duo') document.getElementById('line').style.display = 'block';
-            spawnHoles();
-            newTarget();
-            startTimer();
-            bgm.play().catch(e=>{});
-            gameLoop();
+        function buildView(isP2) {
+            const root = document.createElement('div');
+            root.className = 'player-view' + (isP2 ? ' p2-area' : '');
+            root.innerHTML = `
+                <div class="view-bg"></div>
+                <div class="hud">
+                    <div class="timer">${timeLimit}</div>
+                    <div class="target-card">
+                        <span class="text-xs text-amber-400 font-bold uppercase tracking-widest">Target</span>
+                        <img class="target-img" src="">
+                        <span class="target-name font-en text-lg">APPLE</span>
+                    </div>
+                    <div class="score text-2xl font-black">0</div>
+                </div>
+                <div class="game-area"></div>
+            `;
+            stage.appendChild(root);
+            return {
+                root,
+                gameArea: root.querySelector('.game-area'),
+                timerEl: root.querySelector('.timer'),
+                targetImg: root.querySelector('.target-img'),
+                targetName: root.querySelector('.target-name'),
+                scoreEl: root.querySelector('.score'),
+                holes: [],
+                score: 0,
+                holeSize: null
+            };
         }
 
-        function spawnHoles() {
-            const count = level === 'easy' ? 3 : 5;
-            for(let i=0; i<count; i++) {
+        function computeHoleSize(areaEl) {
+            const w = areaEl.clientWidth || window.innerWidth;
+            const h = areaEl.clientHeight || window.innerHeight;
+            let holeWidth = Math.min(180, Math.max(60, (w / (HOLE_COUNT + 1)) * 0.8));
+            holeWidth = Math.min(holeWidth, (h * 0.45) / HOLE_ASPECT);
+            const holeHeight = holeWidth * HOLE_ASPECT;
+            const fruitSize = holeWidth * HOLE_ASPECT;
+            return { holeWidth, holeHeight, fruitSize };
+        }
+
+        function applyFruitPosition(fruit, size, holeWidth, holeHeight) {
+            fruit.style.width = size + 'px';
+            fruit.style.height = size + 'px';
+            fruit.style.left = ((holeWidth - size) / 2) + 'px';
+            fruit.style.bottom = (holeHeight * 0.25) + 'px';
+        }
+
+        function applySizesToView(view) {
+            const { holeWidth, holeHeight, fruitSize } = computeHoleSize(view.gameArea);
+            view.holeSize = { holeWidth, holeHeight, fruitSize };
+            view.holes.forEach(hole => {
+                hole.style.width = holeWidth + 'px';
+                hole.style.height = holeHeight + 'px';
+                const fruit = hole.querySelector('.fruit');
+                if (fruit) applyFruitPosition(fruit, fruitSize, holeWidth, holeHeight);
+            });
+        }
+
+        function spawnHoles(view) {
+            for (let i = 0; i < HOLE_COUNT; i++) {
                 const hole = document.createElement('div');
                 hole.className = 'hole';
-                hole.style.left = (100 / (count + 1) * (i + 1)) + '%';
+                hole.style.left = (100 / (HOLE_COUNT + 1) * (i + 1)) + '%';
                 hole.style.top = (30 + Math.random() * 40) + '%';
-                gameArea.appendChild(hole);
-                
-                // 每個樹洞有自己的邏輯
+                view.gameArea.appendChild(hole);
+                view.holes.push(hole);
+
                 setInterval(() => {
-                    if(!active) return;
-                    if(Math.random() > 0.7) popFruit(hole);
+                    if (!active) return;
+                    if (Math.random() > 0.7) popFruit(hole, view);
                 }, 1500);
             }
+            applySizesToView(view);
         }
 
-        function popFruit(hole) {
-            if(hole.querySelector('.fruit')) return;
+        function popFruit(hole, view) {
+            if (hole.querySelector('.fruit')) return;
             const fruitData = fruits[Math.floor(Math.random() * fruits.length)];
             const fruit = document.createElement('div');
             fruit.className = 'fruit';
             fruit.innerHTML = `<img src="assets/fruits/${fruitData.img}">`;
             fruit.dataset.name = fruitData.name;
+            const { holeWidth, holeHeight, fruitSize } = view.holeSize || computeHoleSize(view.gameArea);
+            applyFruitPosition(fruit, fruitSize, holeWidth, holeHeight);
             hole.appendChild(fruit);
-            
+
             setTimeout(() => fruit.classList.add('pop'), 50);
-            popSfx.play().catch(e=>{});
+            popSfx.play().catch(e => {});
 
             fruit.onclick = () => {
-                if(fruit.dataset.name === currentTarget.name) {
-                    score++;
-                    document.getElementById('p1-score').innerText = score;
-                    hitSfx.play().catch(e=>{});
+                if (!active) return;
+                if (fruit.dataset.name === currentTarget.name) {
+                    view.score++;
+                    view.scoreEl.innerText = view.score;
+                    hitSfx.play().catch(e => {});
                     fruit.style.transform = 'scale(1.5)';
                     fruit.style.opacity = '0';
                     setTimeout(() => fruit.remove(), 200);
-                    if(score % 5 === 0) newTarget();
+                    newTarget();
                 } else {
                     fruit.style.animation = 'shake 0.1s 3';
                 }
             };
 
             setTimeout(() => {
-                if(fruit) {
+                if (fruit && fruit.parentNode) {
                     fruit.classList.remove('pop');
                     setTimeout(() => fruit.remove(), 300);
                 }
@@ -145,17 +193,20 @@
 
         function newTarget() {
             currentTarget = fruits[Math.floor(Math.random() * fruits.length)];
-            document.getElementById('target-img').src = `assets/fruits/${currentTarget.img}`;
-            document.getElementById('target-name').innerText = currentTarget.name;
+            views.forEach(v => {
+                v.targetImg.src = `assets/fruits/${currentTarget.img}`;
+                v.targetName.innerText = currentTarget.name;
+            });
         }
 
         function startTimer() {
-            const tEl = document.getElementById('timer');
             const itv = setInterval(() => {
                 timer--;
-                tEl.innerText = timer;
-                if(timer <= 5) tEl.classList.add('timer-danger');
-                if(timer <= 0) {
+                views.forEach(v => {
+                    v.timerEl.innerText = timer;
+                    if (timer <= 5) v.timerEl.classList.add('timer-danger');
+                });
+                if (timer <= 0) {
                     clearInterval(itv);
                     active = false;
                     showResult();
@@ -164,9 +215,42 @@
         }
 
         function showResult() {
+            const resultBody = document.getElementById('result-body');
             document.getElementById('result').style.display = 'flex';
-            document.getElementById('final-score').innerText = score;
-            saveRecord({ game: 'fruit-hunt', score: score });
+            if (mode === 'duo' && views.length === 2) {
+                const s1 = views[0].score, s2 = views[1].score;
+                let label = 'DRAW';
+                if (s1 > s2) label = 'P1 WINS';
+                else if (s2 > s1) label = 'P2 WINS';
+                resultBody.innerHTML = `
+                    <div class="text-3xl font-black mb-6 font-en text-amber-400">${label}</div>
+                    <div class="duo-result">
+                        <div class="player-card ${s1 >= s2 ? 'winner' : ''}">
+                            <div class="player-label font-en">PLAYER 1</div>
+                            <div class="player-score">${s1}</div>
+                        </div>
+                        <div class="player-card ${s2 >= s1 ? 'winner' : ''}">
+                            <div class="player-label font-en">PLAYER 2</div>
+                            <div class="player-score">${s2}</div>
+                        </div>
+                    </div>
+                `;
+                saveRecord({ game: 'fruit-hunt', score: Math.max(s1, s2) });
+            } else {
+                const s = views[0].score;
+                resultBody.innerHTML = `<div class="text-6xl font-black mb-12">${s}</div>`;
+                saveRecord({ game: 'fruit-hunt', score: s });
+            }
+        }
+
+        function init() {
+            views.push(buildView(false));
+            if (mode === 'duo') views.push(buildView(true));
+            views.forEach(spawnHoles);
+            newTarget();
+            startTimer();
+            bgm.play().catch(e => {});
+            window.addEventListener('resize', () => views.forEach(applySizesToView));
         }
 
         window.onload = init;
