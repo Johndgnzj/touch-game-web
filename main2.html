@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ULTRAMAN x MELODY: HEROES — TABLET DUEL</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; background: #000; overflow: hidden; touch-action: none; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #fff; }
+
+        /* 中央分隔線 */
+        .divider {
+            position: fixed; top: 0; left: 50vw; width: 2px; height: 100vh;
+            background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.35) 50%, rgba(255,255,255,0) 100%);
+            z-index: 50; pointer-events: none;
+        }
+
+        /* 外層：半螢幕實際版面槽位 (不旋轉) */
+        .half {
+            position: fixed;
+            top: 0;
+            width: 50vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #000;
+        }
+        .half-left  { left: 0; }
+        .half-right { left: 50vw; }
+
+        /* 內層：旋轉後的「直向」遊戲框 */
+        .half-inner {
+            position: absolute;
+            width: 100vh;     /* 旋轉前長邊 = 外槽的高度 */
+            height: 50vw;     /* 旋轉前短邊 = 外槽的寬度 */
+            top: 0;
+            left: 0;
+            transform-origin: 0 0;
+            background: url('assets/background-portrait.jpg') no-repeat center center / cover;
+        }
+        /* 左半場：順時針旋轉 90°，讓 local-top 貼齊中央分隔線 */
+        .half-left  .half-inner { transform: translateX(50vw) rotate(90deg); }
+        /* 右半場：逆時針旋轉 90°，讓 local-top 貼齊中央分隔線 */
+        .half-right .half-inner { transform: translateY(100vh) rotate(-90deg); }
+
+        /* 計時器：於各自「上方」(靠中央分隔線) */
+        .tm {
+            position: absolute;
+            top: 24px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 4.5rem; font-weight: 900;
+            text-shadow: 6px 6px 14px rgba(0,0,0,0.7);
+            z-index: 60; pointer-events: none;
+        }
+        .timer-danger { color: #ff4444 !important; animation: shake 0.15s infinite; }
+        @keyframes shake {
+            0% { transform: translate(-48%, 2px); }
+            50% { transform: translate(-52%, -2px); }
+            100% { transform: translate(-50%, 0); }
+        }
+
+        /* 遊戲區：佔滿 half-inner，道具自 top=0 向下落 */
+        .game-area {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 90px; /* 預留 HUD 空間 */
+            overflow: hidden;
+        }
+
+        /* 落下道具 */
+        .falling-item {
+            position: absolute;
+            width: 96px; height: 96px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            pointer-events: none;
+            z-index: 20;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+        }
+        .falling-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* HUD：位於玩家側 (旋轉後的世界外緣) */
+        .hud {
+            --hud-h: 90px;
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            height: var(--hud-h);
+            background: rgba(0, 0, 0, 0.78);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(255,255,255,0.15);
+            display: flex; align-items: center; gap: 12px;
+            padding: 0 14px;
+            z-index: 100;
+            box-sizing: border-box;
+        }
+        .hud-avatar {
+            width: var(--hud-h); height: var(--hud-h);
+            border-radius: 50%; overflow: hidden; flex-shrink: 0;
+            background: rgba(255,255,255,0.05);
+            box-sizing: border-box;
+        }
+        .hud-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .hud-score { font-size: 3.5rem; line-height: 1; font-weight: 900; flex-shrink: 0; min-width: 130px; }
+        .score-u { color: #60a5fa; }
+        .score-m { color: #f472b6; }
+
+        .energy-container { flex: 1; min-width: 0; height: 20px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; border: 2px solid rgba(255,255,255,0.12); }
+        .energy-bar { height: 100%; width: 0%; transition: width 0.3s; }
+        .energy-u { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .energy-m { background: linear-gradient(90deg, #f472b6, #ec4899); }
+
+        .skill-btn {
+            width: var(--hud-h); height: var(--hud-h); border-radius: 50%;
+            background: rgba(255,255,255,0.05); border: 3px solid rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; pointer-events: auto; transition: all 0.3s;
+            opacity: 0.25; filter: grayscale(1);
+            flex-shrink: 0;
+            box-sizing: border-box;
+        }
+        .skill-btn img { width: 85%; height: 85%; object-fit: contain; }
+        .skill-ready { opacity: 1 !important; filter: grayscale(0) !important; border-color: #fbbf24 !important; transform: scale(1.08); box-shadow: 0 0 20px #fbbf24; }
+
+        /* 技能遮罩：蓋住對方半場 (在 half-inner 內部) */
+        .skill-overlay {
+            position: absolute; inset: 0;
+            z-index: 200; display: none;
+            pointer-events: none;
+        }
+        .skill-overlay.on { display: block; animation: bounceInDown 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .skill-overlay img { width: 100%; height: 100%; object-fit: cover; }
+        @keyframes bounceInDown {
+            from { transform: translate3d(0, -100%, 0); opacity: 0; }
+            60%  { transform: translate3d(0, 20px, 0); opacity: 1; }
+            to   { transform: translate3d(0, 0, 0); }
+        }
+
+        .hit-flash { animation: hitFlash 0.2s ease-out forwards; }
+        @keyframes hitFlash { 0% { transform: scale(1.4); opacity: 0.8; } 100% { transform: scale(1); opacity: 0; } }
+
+        /* 結果畫面：橫向置中，不旋轉 */
+        #result {
+            position: fixed; inset: 0;
+            display: none;
+            flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.92);
+            z-index: 1000;
+        }
+        #result.show { display: flex; }
+        #result h1 { font-size: 3rem; font-weight: 900; font-style: italic; color: #facc15; margin: 0 0 2rem; letter-spacing: -0.03em; }
+        .result-cards { display: flex; gap: 4rem; margin-bottom: 2rem; }
+        .result-card { text-align: center; }
+        .result-portrait { width: 128px; height: 128px; border-radius: 50%; overflow: hidden; margin: 0 auto 1rem; box-shadow: 0 10px 24px rgba(0,0,0,0.5); }
+        .result-portrait img { width: 100%; height: 100%; object-fit: cover; }
+        .result-card p { margin: 0; }
+        .result-name { font-weight: 700; margin-bottom: 0.25rem; }
+        .result-score { font-size: 4rem; font-weight: 900; }
+        #winner-msg { font-size: 1.5rem; font-weight: 900; color: #facc15; margin-bottom: 2rem; }
+        .result-btn { padding: 0.9rem 2.4rem; border-radius: 1rem; font-weight: 900; font-size: 1.1rem; border: none; cursor: pointer; box-shadow: 0 8px 18px rgba(0,0,0,0.5); text-decoration: none; color: #fff; display: inline-block; }
+        .result-btn.primary { background: #2563eb; }
+        .result-btn.secondary { background: #334155; }
+        .result-actions { display: flex; gap: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="divider"></div>
+
+    <!-- 左半場：奧特曼玩家 (坐在平板左短邊) -->
+    <div class="half half-left">
+        <div class="half-inner">
+            <div class="tm" id="tm-u">30</div>
+            <div class="game-area" data-player="u"></div>
+            <div class="skill-overlay" id="overlay-u"><img src="assets/skills/kuromi-block.png"></div>
+            <div class="hud">
+                <div class="hud-avatar" style="border: 4px solid #3b82f6;"><img src="assets/ultraman.png"></div>
+                <div class="hud-score score-u">U:<span id="s1">0</span></div>
+                <div class="energy-container"><div id="bar1" class="energy-bar energy-u"></div></div>
+                <div id="btn1" class="skill-btn" data-skill="u"><img src="assets/skills/spiderman-skill.png"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右半場：美樂蒂玩家 (坐在平板右短邊) -->
+    <div class="half half-right">
+        <div class="half-inner">
+            <div class="tm" id="tm-m">30</div>
+            <div class="game-area" data-player="m"></div>
+            <div class="skill-overlay" id="overlay-m"><img src="assets/skills/spiderman-block.png"></div>
+            <div class="hud">
+                <div class="hud-avatar" style="border: 4px solid #ffffff; background: #ffffff;"><img src="assets/melody.png"></div>
+                <div class="hud-score score-m">M:<span id="s2">0</span></div>
+                <div class="energy-container"><div id="bar2" class="energy-bar energy-m"></div></div>
+                <div id="btn2" class="skill-btn" data-skill="m"><img src="assets/skills/kuromi-skill.png"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 結算畫面 -->
+    <div id="result">
+        <h1>MISSION COMPLETE</h1>
+        <div class="result-cards">
+            <div class="result-card">
+                <div class="result-portrait" style="border: 4px solid #3b82f6; background: #1e3a8a;"><img src="assets/ultraman.png"></div>
+                <p class="result-name score-u">ULTRAMAN</p>
+                <p id="f1" class="result-score">0</p>
+            </div>
+            <div class="result-card">
+                <div class="result-portrait" style="border: 4px solid #ffffff; background: #ffffff;"><img src="assets/melody.png"></div>
+                <p class="result-name score-m">MELODY</p>
+                <p id="f2" class="result-score">0</p>
+            </div>
+        </div>
+        <div id="winner-msg"></div>
+        <div class="result-actions">
+            <button onclick="location.reload()" class="result-btn primary">RESTART</button>
+            <a href="index.html" class="result-btn secondary">HOME</a>
+        </div>
+    </div>
+
+    <script src="js/history.js"></script>
+    <script>
+        var s1 = 0, s2 = 0, tm = 30, active = false;
+        var e1 = 0, e2 = 0;
+        var ENERGY_MAX = 8;
+
+        var hitSound = new Audio('assets/sfx/hit.mp3');
+        var endSound = new Audio('assets/sfx/gameover.mp3');
+        var bgm = new Audio('assets/sfx/bgm.mp3'); bgm.loop = true;
+
+        function start() {
+            active = true;
+            bgm.currentTime = 0;
+            bgm.play().catch(function(){});
+
+            var timer = setInterval(function() {
+                if (!active) { clearInterval(timer); return; }
+                tm--;
+                var danger = tm <= 5;
+                ['tm-u', 'tm-m'].forEach(function(id) {
+                    var el = document.getElementById(id);
+                    el.innerText = tm;
+                    if (danger) el.classList.add('timer-danger');
+                });
+                if (tm <= 0) { clearInterval(timer); end(); }
+            }, 1000);
+
+            setInterval(function() {
+                if (!active) return;
+                spawn('u');
+                spawn('m');
+            }, 700);
+        }
+
+        // 在對應半場生成玩家的英雄圖示，從 local-top (中央分隔線) 落向 local-bottom (玩家側)
+        function spawn(player) {
+            var area = document.querySelector('.game-area[data-player="' + player + '"]');
+            if (!area) return;
+            var w = area.clientWidth;
+            var h = area.clientHeight;
+            if (!w || !h) return;
+
+            var item = document.createElement('div');
+            item.className = 'falling-item';
+            item.dataset.type = player;
+            item.style.background = player === 'u' ? '#1e3a8a' : '#ffffff';
+
+            var img = document.createElement('img');
+            img.src = player === 'u' ? 'assets/ultraman.png' : 'assets/melody.png';
+            item.appendChild(img);
+
+            var size = 96;
+            var x = Math.random() * Math.max(1, w - size - 20) + 10;
+            item.style.left = x + 'px';
+            item.style.top = -size + 'px';
+            area.appendChild(item);
+
+            var pos = -size;
+            var speed = 4 + Math.random() * 5;
+            var move = setInterval(function() {
+                if (!active) { clearInterval(move); item.remove(); return; }
+                pos += speed;
+                item.style.top = pos + 'px';
+                if (pos > h) { clearInterval(move); item.remove(); }
+            }, 20);
+        }
+
+        function handleHit(clientX, clientY) {
+            if (!active) return;
+            var items = document.getElementsByClassName('falling-item');
+            for (var i = 0; i < items.length; i++) {
+                var r = items[i].getBoundingClientRect();
+                if (clientX > r.left - 20 && clientX < r.right + 20 &&
+                    clientY > r.top - 20 && clientY < r.bottom + 20) {
+                    hitSound.currentTime = 0; hitSound.play().catch(function(){});
+                    if (items[i].dataset.type === 'u') { s1++; e1 = Math.min(ENERGY_MAX, e1 + 1); }
+                    else                                { s2++; e2 = Math.min(ENERGY_MAX, e2 + 1); }
+                    updateHUD();
+                    items[i].classList.add('hit-flash');
+                    var target = items[i];
+                    setTimeout(function() { target.remove(); }, 200);
+                    break;
+                }
+            }
+        }
+
+        window.addEventListener('touchstart', function(e) {
+            for (var i = 0; i < e.changedTouches.length; i++) {
+                var t = e.changedTouches[i];
+                handleHit(t.clientX, t.clientY);
+            }
+        }, { passive: false });
+        window.addEventListener('mousedown', function(e) { handleHit(e.clientX, e.clientY); });
+
+        function updateHUD() {
+            document.getElementById('s1').innerText = s1;
+            document.getElementById('s2').innerText = s2;
+            document.getElementById('bar1').style.width = (e1 / ENERGY_MAX * 100) + '%';
+            document.getElementById('bar2').style.width = (e2 / ENERGY_MAX * 100) + '%';
+            if (e1 >= ENERGY_MAX) document.getElementById('btn1').classList.add('skill-ready');
+            if (e2 >= ENERGY_MAX) document.getElementById('btn2').classList.add('skill-ready');
+        }
+
+        function useSkill(type) {
+            if (type === 'u' && e1 < ENERGY_MAX) return;
+            if (type === 'm' && e2 < ENERGY_MAX) return;
+            if (type === 'u') {
+                e1 = 0;
+                document.getElementById('btn1').classList.remove('skill-ready');
+                showBlock('m'); // 奧特曼放技能 → 遮住美樂蒂半場
+            } else {
+                e2 = 0;
+                document.getElementById('btn2').classList.remove('skill-ready');
+                showBlock('u'); // 美樂蒂放技能 → 遮住奧特曼半場
+            }
+            updateHUD();
+        }
+
+        function showBlock(targetPlayer) {
+            var el = document.getElementById('overlay-' + targetPlayer);
+            if (!el) return;
+            el.classList.add('on');
+            setTimeout(function() { el.classList.remove('on'); }, 3000);
+        }
+
+        document.querySelectorAll('.skill-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                useSkill(btn.dataset.skill);
+            });
+            btn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                useSkill(btn.dataset.skill);
+            }, { passive: false });
+        });
+
+        function end() {
+            active = false; bgm.pause(); endSound.play().catch(function(){});
+            document.getElementById('result').classList.add('show');
+            document.getElementById('f1').innerText = s1;
+            document.getElementById('f2').innerText = s2;
+            var msg = s1 > s2 ? 'ULTRAMAN WINS!' : s2 > s1 ? 'MELODY WINS!' : 'HEROIC TIE!';
+            document.getElementById('winner-msg').innerText = msg;
+            if (typeof saveRecord === 'function') saveRecord(s1, s2);
+        }
+
+        window.onload = start;
+    </script>
+</body>
+</html>
