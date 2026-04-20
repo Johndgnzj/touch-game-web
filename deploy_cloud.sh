@@ -16,4 +16,4 @@ cp -R ${PROJECT_ROOT}/src/games/hero-challenge/assets/* ${DEPLOY_HUB}/public/des
 
 # 部署
 cd ${DEPLOY_HUB}
-firebase deploy --only hosting
+firebase deploy --only hosting --project ai-agent-492807
