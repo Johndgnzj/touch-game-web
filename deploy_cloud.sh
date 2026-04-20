@@ -54,23 +54,11 @@ if [ ! -f "${DEPLOY_HUB}/.firebaserc" ]; then
 JSON
 fi
 
-# 1. 搬運重構後的檔案
+# 1. 鏡射 src/ → public/，結構 1:1 對應（保持開發與部署路徑一致）
 echo "📦 準備實體檔案結構..."
-rm -rf ${DEPLOY_HUB}/public/*
-mkdir -p ${DEPLOY_HUB}/public/news
-mkdir -p ${DEPLOY_HUB}/public/design/assets
-mkdir -p ${DEPLOY_HUB}/public/design/js
-
-# 入口與早報
-cp ${PROJECT_ROOT}/src/index.html ${DEPLOY_HUB}/public/
-cp ${PROJECT_ROOT}/src/news/*.html ${DEPLOY_HUB}/public/news/
-
-# 遊戲模組與 Assets
-cp ${PROJECT_ROOT}/src/games/hero-challenge/*.html ${DEPLOY_HUB}/public/design/
-cp -R ${PROJECT_ROOT}/src/games/hero-challenge/assets/* ${DEPLOY_HUB}/public/design/assets/
-
-# 公用 JS
-cp ${PROJECT_ROOT}/src/common/js/history.js ${DEPLOY_HUB}/public/design/js/
+rm -rf "${DEPLOY_HUB}/public"
+mkdir -p "${DEPLOY_HUB}/public"
+rsync -a --exclude='.DS_Store' "${PROJECT_ROOT}/src/" "${DEPLOY_HUB}/public/"
 
 # 3. 部署至 Firebase
 echo "🔥 正在上傳至 Firebase ($PROJECT_ID)..."

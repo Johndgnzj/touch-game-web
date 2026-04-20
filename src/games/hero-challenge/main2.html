@@ -219,7 +219,12 @@
 
     <script src="../../common/js/history.js"></script>
     <script>
-        var s1 = 0, s2 = 0, tm = 30, active = false;
+        var ALLOWED_TIMES = [30, 45, 60];
+        var requestedTime = parseInt(new URLSearchParams(location.search).get('time'), 10);
+        var INITIAL_TIME = ALLOWED_TIMES.indexOf(requestedTime) >= 0 ? requestedTime : 30;
+        var s1 = 0, s2 = 0, tm = INITIAL_TIME, active = false;
+        document.getElementById('tm-u').innerText = tm;
+        document.getElementById('tm-m').innerText = tm;
         var e1 = 0, e2 = 0;
         var ENERGY_MAX = 8;
 
