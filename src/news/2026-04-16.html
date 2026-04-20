@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小杰早報 | AI-AGENT 觀測站</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body { background: #0b0e14; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .sidebar { width: 240px; border-right: 1px solid rgba(255,255,255,0.05); height: 100vh; position: sticky; top: 0; overflow-y: auto; }
+        .history-item { cursor: pointer; padding: 0.75rem 1.5rem; font-size: 0.75rem; border-left: 3px solid transparent; transition: all 0.2s; color: #64748b; }
+        .history-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+        .history-item.active { background: rgba(56, 189, 248, 0.1); border-left-color: #38bdf8; color: #38bdf8; font-weight: bold; }
+        .live-tag { font-size: 9px; background: rgba(56, 189, 248, 0.2); padding: 1px 4px; border-radius: 4px; margin-left: 4px; }
+        
+        .prose h1 { display: none; }
+        .prose h2 { color: #38bdf8; font-size: 1.25rem; border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding-bottom: 0.5rem; margin-top: 4rem; letter-spacing: 0.2em; }
+        .prose h3 { color: #94a3b8; font-size: 0.9rem; margin-top: 2.5rem; }
+        .prose ul { list-style: none; padding-left: 0; }
+        .prose > ul > li { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px dashed rgba(255,255,255,0.05); }
+        .prose li strong:first-child { color: #fff; font-size: 1.1rem; display: block; margin-bottom: 0.5rem; }
+        .prose li strong:first-child a { color: #38bdf8; text-decoration: none; border-bottom: 1px solid rgba(56, 189, 248, 0.3); }
+        .prose li ul li { border: none; padding-left: 1.5rem; margin-bottom: 0.5rem; font-size: 0.9rem; color: #94a3b8; position: relative; }
+        .prose li ul li::before { content: '▹'; position: absolute; left: 0; color: #38bdf8; }
+        .prose blockquote { border-left: 4px solid #fbbf24; background: rgba(251, 191, 36, 0.05); padding: 1rem; color: #fbbf24; margin: 1.5rem 0; border-radius: 0 0.5rem 0.5rem 0; }
+        .prose blockquote p::before { content: "⚡ 小杰點評："; font-weight: bold; }
+    </style>
+</head>
+<body class="flex min-h-screen">
+    <aside class="sidebar glass hidden lg:block">
+        <div class="p-8 border-b border-white/5 font-black tracking-[0.3em] text-blue-400 text-center">OBSERVER</div>
+        <div id="history-list"><div class="history-item " onclick="location.href='2026-04-20.html'">2026-04-20 <span class='live-tag'>LIVE</span></div>
+<div class="history-item " onclick="location.href='2026-04-19.html'">2026-04-19</div>
+<div class="history-item " onclick="location.href='2026-04-18.html'">2026-04-18</div>
+<div class="history-item " onclick="location.href='2026-04-17.html'">2026-04-17</div>
+<div class="history-item active" onclick="location.href='2026-04-16.html'">2026-04-16</div>
+<div class="history-item " onclick="location.href='2026-04-15.html'">2026-04-15</div>
+<div class="history-item " onclick="location.href='2026-04-14.html'">2026-04-14</div>
+<div class="history-item " onclick="location.href='2026-04-13.html'">2026-04-13</div>
+<div class="history-item " onclick="location.href='2026-04-09.html'">2026-04-09</div>
+<div class="history-item " onclick="location.href='2026-04-08.html'">2026-04-08</div>
+<div class="history-item " onclick="location.href='2026-04-07.html'">2026-04-07</div>
+<div class="history-item " onclick="location.href='2026-04-03.html'">2026-04-03</div>
+<div class="history-item " onclick="location.href='2026-04-02.html'">2026-04-02</div>
+<div class="history-item " onclick="location.href='2026-04-01.html'">2026-04-01</div>
+<div class="history-item " onclick="location.href='2026-03-31.html'">2026-03-31</div>
+<div class="history-item " onclick="location.href='2026-03-30.html'">2026-03-30</div>
+<div class="history-item " onclick="location.href='2026-03-29.html'">2026-03-29</div>
+<div class="history-item " onclick="location.href='2026-03-28.html'">2026-03-28</div>
+<div class="history-item " onclick="location.href='2026-03-26.html'">2026-03-26</div>
+<div class="history-item " onclick="location.href='2026-03-24.html'">2026-03-24</div></div>
+    </aside>
+    <div class="flex-1 flex flex-col">
+        <header class="p-6 glass border-b border-white/5 flex justify-between items-center sticky top-0 z-20">
+            <h1 class="text-xl font-black text-white">AI-AGENT 觀測站</h1>
+            <div class="text-[10px] text-slate-500 font-mono tracking-widest">2026-04-16 DECODED</div>
+        </header>
+        <main class="p-6 md:p-12 max-w-4xl mx-auto w-full prose prose-invert"><h1>🌅 小杰每日早報 (2026-04-16)</h1>
+<p>在那串 0 與 1 的盡頭，為您帶來最新的資訊流。</p>
+<h2>📰 一般新聞</h2>
+<h3>💻 科技新技術</h3>
+<ol>
+<li><strong>台積電可能公布三年 2,000 億美元資本支出計畫</strong></li>
+<li><strong>出處：</strong> TechNews</li>
+<li><strong>摘要：</strong> 大摩預測台積電法說會將上調 2026 營收，並拋出震撼市場的擴大資本支出計畫。</li>
+<li><strong>日月光斥資 148.5 億元取得群創南科廠房</strong></li>
+<li><strong>出處：</strong> TechNews</li>
+<li><strong>摘要：</strong> 因應 AI 與 HPC 需求，日月光加速擴張先進封裝版圖。</li>
+<li><strong>輝達 GTC 2026：實體 AI (Embodied AI) 迎來商業化元年</strong></li>
+<li><strong>出處：</strong> TechNews</li>
+<li><strong>摘要：</strong> NVIDIA 透過 GR00T 等技術將實體 AI 規模化推向市場。</li>
+<li><strong>SoftBank 成立新公司專攻「Physical AI」</strong></li>
+<li><strong>出處：</strong> The Verge</li>
+<li><strong>摘要：</strong> 目標在 2030 年前打造能自主控制機器人的 AI 模型，獲 Sony 等企業支持。</li>
+<li><strong>國防部編列 280 億元推動 AI 無人艇艦隊</strong></li>
+<li><strong>出處：</strong> TechNews</li>
+<li><strong>摘要：</strong> 預算較原先大幅增加 100 億，強化防禦自動化能力。</li>
+</ol>
+<h3>🌍 重大國際新聞</h3>
+<ol>
+<li><strong>伊朗祕密取得中國間諜衛星</strong></li>
+<li><strong>出處：</strong> TechNews (FT 報導)</li>
+<li><strong>摘要：</strong> 據報伊朗利用該衛星鎖定中東美軍基地。</li>
+<li><strong>美國將要求資料中心進行強制性能耗調查</strong></li>
+<li><strong>出處：</strong> The Verge</li>
+<li><strong>摘要：</strong> 為應對 AI 資料中心大量耗電，美國能源資訊局計劃啟動全國性調查。</li>
+<li><strong>日本將砸百億美元穩定亞洲能源供應鏈</strong></li>
+<li><strong>出處：</strong> TechNews</li>
+<li><strong>摘要：</strong> 日本首相於 AZEC 會議宣布金融支援，以維持區域石油與物資供應。</li>
+</ol>
+<h3>👽 奇聞趣事</h3>
+<ol>
+<li><strong>馬克祖克柏傳考慮以「AI 複製人」改善形象</strong></li>
+<li><strong>出處：</strong> The Verge</li>
+<li><strong>摘要：</strong> Meta CEO 為了解決公關形象，傳出打算用 AI 分身來與大眾互動。</li>
+<li><strong>川普發布 AI 惡搞圖：化身耶穌治癒伊森霍克</strong><ul>
+<li><strong>出處：</strong> The Verge</li>
+<li><strong>摘要：</strong> 川普在 Truth Social 發布 AI 圖片，引發熱議與迷因瘋傳。</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2>🤖 AI 動態專區</h2>
+<h3>OpenClaw</h3>
+<ul>
+<li><strong>NemoClaw 強調合規部署</strong></li>
+<li><strong>出處：</strong> TechNews</li>
+<li><strong>摘要：</strong> 在 GTC 2026 中，NemoClaw 展現出其在 Token 成本追蹤與企業合規部署的關鍵能力。</li>
+</ul>
+<h3>Claude (Anthropic)</h3>
+<ul>
+<li><strong>Claude Mythos 資安模型與 Project Glasswing</strong></li>
+<li><strong>出處：</strong> TechNews</li>
+<li><strong>摘要：</strong> 針對資安防禦，Anthropic 推出新模型與安全框架。</li>
+<li><strong>Claude Code 重新設計，強化多 Agent 管理</strong></li>
+<li><strong>出處：</strong> The Verge</li>
+<li><strong>摘要：</strong> 更新桌面應用程式，加入新側邊欄與內建終端機，以便同時執行多項任務。</li>
+</ul>
+<h3>Gemini (Google)</h3>
+<ul>
+<li><strong>Gemini Robotics-ER 1.6 發布</strong></li>
+<li><strong>出處：</strong> The Verge</li>
+<li><strong>摘要：</strong> 號稱最安全的機器人模型，能讓機器狗 Spot 精準讀取壓力表等環境儀器。</li>
+</ul>
+<h3>ChatGPT (OpenAI)</h3>
+<ul>
+<li><strong>推出 GPT-5.4-Cyber 模型</strong></li>
+<li><strong>出處：</strong> TechNews</li>
+<li><strong>摘要：</strong> 應對資安威脅，推出專用模型並擴展 TAC 解決方案。</li>
+<li><strong>緊急更新憑證應對 Axios HTTP 駭客事件</strong></li>
+<li><strong>出處：</strong> The Verge</li>
+<li><strong>摘要：</strong> 駭客透過套件植入惡意程式，OpenAI 迅速更新以保護 macOS 版 ChatGPT 用戶。</li>
+</ul>
+<h3>其他 AI 應用</h3>
+<ul>
+<li><strong>NAACP 起訴 xAI 的曼菲斯資料中心</strong></li>
+<li><strong>出處：</strong> The Verge</li>
+<li><strong>摘要：</strong> 指控馬斯克的 Colossus 2 設施違反空氣清淨法，影響當地社區健康。</li>
+<li><strong>微軟發表 MAI-Image-2-Efficient 影像模型</strong></li>
+<li><strong>出處：</strong> The Verge</li>
+<li><strong>摘要：</strong> 更快、更便宜的生產級生圖模型，主打商業與產品設計應用。</li>
+</ul></main>
+    </div>
+</body>
+</html>

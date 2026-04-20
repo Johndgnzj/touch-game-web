@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小杰早報 | AI-AGENT 觀測站</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body { background: #0b0e14; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .sidebar { width: 240px; border-right: 1px solid rgba(255,255,255,0.05); height: 100vh; position: sticky; top: 0; overflow-y: auto; }
+        .history-item { cursor: pointer; padding: 0.75rem 1.5rem; font-size: 0.75rem; border-left: 3px solid transparent; transition: all 0.2s; color: #64748b; }
+        .history-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+        .history-item.active { background: rgba(56, 189, 248, 0.1); border-left-color: #38bdf8; color: #38bdf8; font-weight: bold; }
+        .live-tag { font-size: 9px; background: rgba(56, 189, 248, 0.2); padding: 1px 4px; border-radius: 4px; margin-left: 4px; }
+        
+        .prose h1 { display: none; }
+        .prose h2 { color: #38bdf8; font-size: 1.25rem; border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding-bottom: 0.5rem; margin-top: 4rem; letter-spacing: 0.2em; }
+        .prose h3 { color: #94a3b8; font-size: 0.9rem; margin-top: 2.5rem; }
+        .prose ul { list-style: none; padding-left: 0; }
+        .prose > ul > li { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px dashed rgba(255,255,255,0.05); }
+        .prose li strong:first-child { color: #fff; font-size: 1.1rem; display: block; margin-bottom: 0.5rem; }
+        .prose li strong:first-child a { color: #38bdf8; text-decoration: none; border-bottom: 1px solid rgba(56, 189, 248, 0.3); }
+        .prose li ul li { border: none; padding-left: 1.5rem; margin-bottom: 0.5rem; font-size: 0.9rem; color: #94a3b8; position: relative; }
+        .prose li ul li::before { content: '▹'; position: absolute; left: 0; color: #38bdf8; }
+        .prose blockquote { border-left: 4px solid #fbbf24; background: rgba(251, 191, 36, 0.05); padding: 1rem; color: #fbbf24; margin: 1.5rem 0; border-radius: 0 0.5rem 0.5rem 0; }
+        .prose blockquote p::before { content: "⚡ 小杰點評："; font-weight: bold; }
+    </style>
+</head>
+<body class="flex min-h-screen">
+    <aside class="sidebar glass hidden lg:block">
+        <div class="p-8 border-b border-white/5 font-black tracking-[0.3em] text-blue-400 text-center">OBSERVER</div>
+        <div id="history-list"><div class="history-item " onclick="location.href='2026-04-20.html'">2026-04-20 <span class='live-tag'>LIVE</span></div>
+<div class="history-item " onclick="location.href='2026-04-19.html'">2026-04-19</div>
+<div class="history-item " onclick="location.href='2026-04-18.html'">2026-04-18</div>
+<div class="history-item " onclick="location.href='2026-04-17.html'">2026-04-17</div>
+<div class="history-item " onclick="location.href='2026-04-16.html'">2026-04-16</div>
+<div class="history-item " onclick="location.href='2026-04-15.html'">2026-04-15</div>
+<div class="history-item " onclick="location.href='2026-04-14.html'">2026-04-14</div>
+<div class="history-item active" onclick="location.href='2026-04-13.html'">2026-04-13</div>
+<div class="history-item " onclick="location.href='2026-04-09.html'">2026-04-09</div>
+<div class="history-item " onclick="location.href='2026-04-08.html'">2026-04-08</div>
+<div class="history-item " onclick="location.href='2026-04-07.html'">2026-04-07</div>
+<div class="history-item " onclick="location.href='2026-04-03.html'">2026-04-03</div>
+<div class="history-item " onclick="location.href='2026-04-02.html'">2026-04-02</div>
+<div class="history-item " onclick="location.href='2026-04-01.html'">2026-04-01</div>
+<div class="history-item " onclick="location.href='2026-03-31.html'">2026-03-31</div>
+<div class="history-item " onclick="location.href='2026-03-30.html'">2026-03-30</div>
+<div class="history-item " onclick="location.href='2026-03-29.html'">2026-03-29</div>
+<div class="history-item " onclick="location.href='2026-03-28.html'">2026-03-28</div>
+<div class="history-item " onclick="location.href='2026-03-26.html'">2026-03-26</div>
+<div class="history-item " onclick="location.href='2026-03-24.html'">2026-03-24</div></div>
+    </aside>
+    <div class="flex-1 flex flex-col">
+        <header class="p-6 glass border-b border-white/5 flex justify-between items-center sticky top-0 z-20">
+            <h1 class="text-xl font-black text-white">AI-AGENT 觀測站</h1>
+            <div class="text-[10px] text-slate-500 font-mono tracking-widest">2026-04-13 DECODED</div>
+        </header>
+        <main class="p-6 md:p-12 max-w-4xl mx-auto w-full prose prose-invert"><h1>📰 科技早報 (2026-04-13)</h1>
+<h2>📌 一般新聞</h2>
+<h3>科技新技術</h3>
+<ol>
+<li><strong><a href="https://technews.tw/2026/04/13/google-turboquant/">Google發表 TurboQuant 演算法降低 LLM 記憶體占用</a></strong></li>
+<li><strong>來源</strong>：TechNews</li>
+<li><strong>摘要</strong>：Google 發表 TurboQuant 壓縮演算法，在不重新訓練模型的前提下，大幅降低記憶體占用並提升運算效率。</li>
+<li><strong><a href="https://technews.tw/2026/04/12/netflix-open-sources-ai-video-editing-but-its-been-quietly-altering-what-you-watch-for-years/">Netflix 開源 AI 影像處理技術</a></strong></li>
+<li><strong>來源</strong>：TechNews</li>
+<li><strong>摘要</strong>：Netflix 正式開源先進 AI 影像處理技術，但也引發外界對平台價值觀影響閱聽者體驗的討論。</li>
+<li><strong><a href="https://finance.technews.tw/2026/04/12/google-2027-ai-workplace-hbm-chip-shortage/">Google 總裁預估 2027 迎來 AI 工作轉捩點</a></strong></li>
+<li><strong>來源</strong>：TechNews</li>
+<li><strong>摘要</strong>：Sundar Pichai 透露 Google 千億級別資本支出，並預估 2027 年將是 AI 徹底改變工作方式的轉捩點。</li>
+<li><strong><a href="https://infosecu.technews.tw/2026/04/12/macos-uptime-beyond-49-days-may-trigger-network-failure/">macOS 曝運行 49 天引發網路癱瘓漏洞</a></strong></li>
+<li><strong>來源</strong>：TechNews</li>
+<li><strong>摘要</strong>：macOS 存在整數溢位漏洞，設備連續運行超過 49 天即會停止網路連接，目前只能透過重啟解決。</li>
+<li><strong><a href="https://finance.technews.tw/2026/04/12/physical-ai-jp/">日本巨頭合資新公司，進軍「實體 AI」</a></strong></li>
+<li><strong>來源</strong>：TechNews</li>
+<li><strong>摘要</strong>：為迎戰美中，日本軟銀、Sony、Honda、NEC 等企業合資成立新公司，專攻下一代實體 AI (Physical AI)。</li>
+<li><strong><a href="https://www.bbc.com/news/technology">Apple 迎來 50 週年</a></strong></li>
+<li><strong>來源</strong>：BBC News</li>
+<li><strong>摘要</strong>：Apple 迎來 50 週年里程碑，回顧其定義了一個世代的經典軟硬體裝置。</li>
+</ol>
+<h3>重大國際新聞</h3>
+<ol>
+<li><strong><a href="https://technews.tw/2026/04/13/historical-images-from-artemis-ii/">阿提米絲二號拍下月球歷史性影像</a></strong></li>
+<li><strong>來源</strong>：TechNews</li>
+<li><strong>摘要</strong>：阿提米絲二號在飛掠月球期間拍攝了歷史性照片，揭示了人類未曾觀測過的區域。</li>
+<li><strong><a href="https://technews.tw/2026/04/12/a-new-way-to-target-metastatic-cancer/">全新選擇性藥物傳遞平台精準對抗轉移性癌症</a></strong></li>
+<li><strong>來源</strong>：TechNews</li>
+<li><strong>摘要</strong>：新技術能專門針對癌細胞投藥，同時最小化對健康組織的影響。</li>
+</ol>
+<h3>奇聞趣事</h3>
+<ol>
+<li><strong><a href="https://technews.tw/2026/04/13/teosinte/">植物間的演化競賽推動小麥馴化</a></strong></li>
+<li><strong>來源</strong>：TechNews</li>
+<li><strong>摘要</strong>：最新研究指出，植物為了爭奪光照展開的演化競賽，可能才是推動小麥早期馴化的主因。</li>
+<li><strong><a href="https://technews.tw/2026/04/12/this-robotic-dog-talks-with-chatgpt-magic-and-guides-the-visually-impaired/">結合 ChatGPT 的語音導盲機器狗</a></strong><ul>
+<li><strong>來源</strong>：TechNews</li>
+<li><strong>摘要</strong>：賓大團隊發表結合大型語言模型的導盲機器狗，能以語音即時為視障者導航及描述環境。</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2>🤖 AI 動態專區</h2>
+<p><em>今日或昨日焦點整理</em></p>
+<ul>
+<li><strong>OpenClaw</strong>：無特別更新</li>
+<li><strong>Claude (Anthropic)</strong>：無特別更新</li>
+<li><strong>Gemini (Google)</strong>：</li>
+<li><strong>Google AI Impact Summit 2026 印度登場</strong> (<a href="https://blog.google/innovation-and-ai/technology/ai/ai-impact-summit-2026-india/">Google Blog</a>) - 探討 AI 普及與在地化應用的發展方向。</li>
+<li><strong>ChatGPT (OpenAI)</strong>：</li>
+<li><strong>Axios 供應鏈攻擊波及 ChatGPT macOS 版</strong> (<a href="https://openai.com/index/axios-developer-tool-compromise/">OpenAI News</a>) - Axios 開發套件遭植入惡意程式，OpenAI 已針對潛在受影響版本緊急更新憑證。</li>
+<li><strong>其他 AI 應用</strong>：</li>
+<li><strong>Netflix 開源 AI 影片編輯技術</strong> (<a href="https://technews.tw/2026/04/12/netflix-open-sources-ai-video-editing-but-its-been-quietly-altering-what-you-watch-for-years/">TechNews</a>)</li>
+</ul></main>
+    </div>
+</body>
+</html>

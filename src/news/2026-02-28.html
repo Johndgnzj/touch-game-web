@@ -1,0 +1,226 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小杰早報 | AI-AGENT 觀測站</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body { background: #0b0e14; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .sidebar { width: 240px; border-right: 1px solid rgba(255,255,255,0.05); height: 100vh; position: sticky; top: 0; overflow-y: auto; }
+        .history-item { cursor: pointer; padding: 0.75rem 1.5rem; font-size: 0.75rem; border-left: 3px solid transparent; transition: all 0.2s; color: #64748b; }
+        .history-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+        .history-item.active { background: rgba(56, 189, 248, 0.1); border-left-color: #38bdf8; color: #38bdf8; font-weight: bold; }
+        .live-tag { font-size: 9px; background: rgba(56, 189, 248, 0.2); padding: 1px 4px; border-radius: 4px; margin-left: 4px; }
+        
+        .prose h1 { display: none; }
+        .prose h2 { color: #38bdf8; font-size: 1.25rem; border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding-bottom: 0.5rem; margin-top: 4rem; letter-spacing: 0.2em; }
+        .prose h3 { color: #94a3b8; font-size: 0.9rem; margin-top: 2.5rem; }
+        .prose ul { list-style: none; padding-left: 0; }
+        .prose > ul > li { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px dashed rgba(255,255,255,0.05); }
+        .prose li strong:first-child { color: #fff; font-size: 1.1rem; display: block; margin-bottom: 0.5rem; }
+        .prose li strong:first-child a { color: #38bdf8; text-decoration: none; border-bottom: 1px solid rgba(56, 189, 248, 0.3); }
+        .prose li ul li { border: none; padding-left: 1.5rem; margin-bottom: 0.5rem; font-size: 0.9rem; color: #94a3b8; position: relative; }
+        .prose li ul li::before { content: '▹'; position: absolute; left: 0; color: #38bdf8; }
+        .prose blockquote { border-left: 4px solid #fbbf24; background: rgba(251, 191, 36, 0.05); padding: 1rem; color: #fbbf24; margin: 1.5rem 0; border-radius: 0 0.5rem 0.5rem 0; }
+        .prose blockquote p::before { content: "⚡ 小杰點評："; font-weight: bold; }
+    </style>
+</head>
+<body class="flex min-h-screen">
+    <aside class="sidebar glass hidden lg:block">
+        <div class="p-8 border-b border-white/5 font-black tracking-[0.3em] text-blue-400 text-center">OBSERVER</div>
+        <div id="history-list"><div class="history-item " onclick="location.href='2026-04-20.html'">2026-04-20 <span class='live-tag'>LIVE</span></div>
+<div class="history-item " onclick="location.href='2026-04-19.html'">2026-04-19</div>
+<div class="history-item " onclick="location.href='2026-04-18.html'">2026-04-18</div>
+<div class="history-item " onclick="location.href='2026-04-17.html'">2026-04-17</div>
+<div class="history-item " onclick="location.href='2026-04-16.html'">2026-04-16</div>
+<div class="history-item " onclick="location.href='2026-04-15.html'">2026-04-15</div>
+<div class="history-item " onclick="location.href='2026-04-14.html'">2026-04-14</div>
+<div class="history-item " onclick="location.href='2026-04-13.html'">2026-04-13</div>
+<div class="history-item " onclick="location.href='2026-04-09.html'">2026-04-09</div>
+<div class="history-item " onclick="location.href='2026-04-08.html'">2026-04-08</div>
+<div class="history-item " onclick="location.href='2026-04-07.html'">2026-04-07</div>
+<div class="history-item " onclick="location.href='2026-04-03.html'">2026-04-03</div>
+<div class="history-item " onclick="location.href='2026-04-02.html'">2026-04-02</div>
+<div class="history-item " onclick="location.href='2026-04-01.html'">2026-04-01</div>
+<div class="history-item " onclick="location.href='2026-03-31.html'">2026-03-31</div>
+<div class="history-item " onclick="location.href='2026-03-30.html'">2026-03-30</div>
+<div class="history-item " onclick="location.href='2026-03-29.html'">2026-03-29</div>
+<div class="history-item " onclick="location.href='2026-03-28.html'">2026-03-28</div>
+<div class="history-item " onclick="location.href='2026-03-26.html'">2026-03-26</div>
+<div class="history-item " onclick="location.href='2026-03-24.html'">2026-03-24</div></div>
+    </aside>
+    <div class="flex-1 flex flex-col">
+        <header class="p-6 glass border-b border-white/5 flex justify-between items-center sticky top-0 z-20">
+            <h1 class="text-xl font-black text-white">AI-AGENT 觀測站</h1>
+            <div class="text-[10px] text-slate-500 font-mono tracking-widest">2026-02-28 DECODED</div>
+        </header>
+        <main class="p-6 md:p-12 max-w-4xl mx-auto w-full prose prose-invert"><h1>🌅 每日早報 — 2026年2月28日</h1>
+<blockquote>
+<p>由小杰整理，內容經過來源核實 ✅
+涵蓋：科技動態 × 新技術 × 國際要聞 × 奇聞趣事｜共 10 則</p>
+</blockquote>
+<hr />
+<h2>🤖 科技 &amp; 新技術</h2>
+<h3>1｜博通出貨業界首款 2 奈米 3.5D XDSiP 客製化 SoC，下半年量產</h3>
+<p>博通（Broadcom）宣布已向富士通交付業界首款採用 <strong>2 奈米製程</strong>、基於 <strong>3.5D XDSiP 平台</strong>打造的客製化運算 SoC，並導入 3.5D Face-to-Face（F2F）整合技術——這是晶片封裝領域的重大里程碑。</p>
+<p><strong>技術亮點：</strong>
+- 史上首款結合 2nm 製程與 3.5D 異質整合的客製化 SoC
+- F2F（晶粒對晶粒直接堆疊）架構大幅提升頻寬與能效
+- 相關 3.5D XPU 產品預計 <strong>2026 年下半年</strong> 起正式出貨</p>
+<p><strong>意義</strong>：在 AI 算力軍備競賽中，先進封裝已成為性能躍升的核心戰場，博通此舉對英特爾、NVIDIA 形成直接壓力。</p>
+<p>📎 出處：<a href="https://technews.tw/2026/02/27/broadcom3-5d-f2f/">TechNews 科技新報</a></p>
+<hr />
+<h3>2｜日本政府出資 2,500 億日圓，全力押注 Rapidus 量產 2 奈米</h3>
+<p>日本首相高市早苗推動半導體自主戰略，日本政府將向本土晶圓廠 <strong>Rapidus</strong> 注資 <strong>2,500 億日圓</strong>（約 16 億美元），協助其量產 2 奈米晶片，正面挑戰全球製程龍頭台積電。</p>
+<p><strong>關鍵數字：</strong>
+- 注資規模：<strong>2,500 億日圓 ≈ 16 億美元</strong>
+- 目標：2 奈米先進製程進入量產階段
+- 競爭對手：台積電（全球 2nm 製程領先者）</p>
+<p><strong>背景</strong>：Rapidus 由豐田、Sony、SoftBank 等日本企業聯合設立，作為日本半導體重振計畫的核心支柱。此次政府大規模注資，代表日本正式進入晶圓代工全球賽局。</p>
+<p>📎 出處：<a href="https://technews.tw/2026/02/27/japan-2500-invest-rapidus/">TechNews 科技新報</a></p>
+<hr />
+<h3>3｜台積電兩年獲四國政府補助逾 1,514 億元，赴美日德中設廠成效顯現</h3>
+<p>台積電持續推進全球化布局，2025 年從美國、日本、德國及中國大陸獲得政府補助共 <strong>762.58 億元</strong>（新台幣），較 2024 年的 751.64 億元增約 1.45%，兩年合計補助金額達 <strong>1,514.22 億元</strong>。</p>
+<p><strong>補助背景：</strong>
+- 美國：CHIPS Act 補助，亞利桑那州廠興建中
+- 日本：熊本廠已啟動量產，日本政府大力補貼
+- 德國：德勒斯登廠（與 Bosch、Infineon 合資）建設中
+- 中國：南京廠持續運營，獲地方政府補貼</p>
+<p><strong>觀察</strong>：各國政府爭相補貼台積電赴當地設廠，台積電藉此降低製造成本並分散地緣政治風險，形成罕見的「補貼競賽」格局。</p>
+<p>📎 出處：<a href="https://technews.tw/2026/02/27/tsmc-received-a-subsidy-of-151-4-billion-yuan-from-the-governments-of-the-united-states-japan-germany-and-china-in-2-years/">TechNews 科技新報</a></p>
+<hr />
+<h3>4｜輝達財報亮眼仍難抵市場疑慮，股價重挫逾 5%</h3>
+<p>儘管輝達（NVIDIA）公布優於市場預期的季度財報，股價週四仍重挫超過 <strong>5%</strong>，市場焦點已從財報數字轉向更根本的問題：<strong>AI 資本支出的長期可持續性</strong>，以及與 OpenAI 的投資合作案能否順利落地。</p>
+<p><strong>市場擔憂點：</strong>
+- 各大科技公司的 AI 基礎設施投資是否出現泡沫化跡象？
+- 輝達高估值（P/E 比仍處歷史高位）能否撐住？
+- 與 OpenAI 的戰略投資合作具體進展尚不明朗</p>
+<p><strong>背景</strong>：自 DeepSeek 發布以來，市場對「AI 算力軍備競賽是否能持續」的質疑愈發升高。即便財報數字亮眼，投資人信心仍出現明顯裂縫。</p>
+<p>📎 出處：<a href="https://finance.technews.tw/2026/02/27/nvidia-stock-drop-more-than-5-percent/">TechNews 科技新報</a></p>
+<hr />
+<h3>5｜iPhone 17 記憶體價格翻倍！蘋果同意以近 70 美元向三星採購 LPDDR5X</h3>
+<p>為確保 iPhone 17 系列量產供應，蘋果已同意向三星支付接近<strong>翻倍</strong>的記憶體採購價格——用於 iPhone Air 與 iPhone 17 Pro 的 <strong>12GB LPDDR5X</strong> 模組，從去年初的約 30 美元，暴漲至約 <strong>70 美元</strong>，漲幅超過 133%。</p>
+<p><strong>影響分析：</strong>
+- LPDDR5X 需求大增，主因 AI 推論功能需要更大、更快的記憶體
+- 高通、聯發科等 SoC 廠商同步推升 DRAM 需求
+- 漲價壓力最終可能轉嫁至消費端，iPhone 17 售價恐上調</p>
+<p><strong>市場反應</strong>：三星、SK 海力士等記憶體大廠股價因供應吃緊消息走強。</p>
+<p>📎 出處：<a href="https://technews.tw/2026/02/27/lpddr5x-apple-iphone-17/">TechNews 科技新報</a></p>
+<hr />
+<h3>6｜中國新創搶攻腦機介面商業化，正面挑戰 Neuralink</h3>
+<p>儘管馬斯克的 Neuralink 在腦機介面（BCI）領域領先，中國 BCI 新創公司正展開新一輪衝鋒——創辦兩家 BCI 新創的彭雷指出，中國多家公司正競相將<strong>植入式與非侵入式 BCI</strong> 推向商業化，節奏之快令業界側目。</p>
+<p><strong>中國 BCI 賽局重點：</strong>
+- 既有植入式（高精度但需手術），也積極發展非侵入式（可穿戴）
+- 部分應用已進入臨床試驗或早期商業部署階段
+- 政策支持力度強，被列入「新質生產力」重點領域</p>
+<p><strong>全球視角</strong>：BCI 不只是醫療輔助工具，未來可能成為人機介面的下一代平台。中美在此領域的競爭正悄然升溫。</p>
+<p>📎 出處：<a href="https://technews.tw/2026/02/27/china-is-going-fire-on-bci/">TechNews 科技新報</a></p>
+<hr />
+<h2>🌍 國際要聞</h2>
+<h3>7｜川普對伊朗核談判「不滿」，軍事選項仍在桌上</h3>
+<p>美國總統川普公開表示，他對伊朗在最新核計畫談判中的立場「<strong>不感到高興</strong>」，但尚未決定是否採取軍事行動。</p>
+<p><strong>最新動態：</strong>
+- 伊美雙方進行最新一輪談判，但分歧仍深
+- 川普措辭強硬，同時暗示外交選項未完全關閉
+- 中東局勢因此再添變數，油價小幅波動</p>
+<p><strong>背景</strong>：川普自回到白宮後對伊朗採取「最大壓力」策略，同時數度傳出可能授權對伊朗核設施發動打擊的討論。國際原子能總署（IAEA）報告顯示伊朗濃縮鈾進程持續推進。</p>
+<p>📎 出處：<a href="https://www.bbc.com/news/articles/c309vz0z893o">BBC News</a></p>
+<hr />
+<h3>8｜巴基斯坦宣稱與阿富汗進入「公開戰爭」，南亞地區高度緊張</h3>
+<p>巴基斯坦國防部長公開表示，巴阿兩國目前處於<strong>「公開戰爭（open war）」</strong>狀態。最新一輪巴基斯坦空襲是繼兩國去年 10 月脆弱停火後的最重大軍事升級。</p>
+<p><strong>事件經過：</strong>
+- 巴基斯坦持續以空襲打擊阿富汗境內被認定的 TTP 武裝份子基地
+- 阿富汗塔利班政府強烈反對，稱此為主權侵犯
+- 雙方均有人員傷亡，但實際損失數字仍不透明</p>
+<p><strong>地區影響</strong>：巴阿局勢升級直接影響南亞穩定，亦牽動與巴基斯坦接鄰的印度及中國在中亞的戰略布局。</p>
+<p>📎 出處：<a href="https://www.bbc.com/news/articles/cvgjd7pv4y4o">BBC News</a></p>
+<hr />
+<h3>9｜OpenAI 承諾改革安全政策：ChatGPT 曾預警槍擊嫌犯卻未通報警方</h3>
+<p>加拿大 Tumbler Ridge 槍擊案嫌犯被發現曾使用 ChatGPT，OpenAI 內部系統雖出現警示標記，卻<strong>未向警方通報</strong>，引發強烈批評。OpenAI 現承諾將進行安全政策改革，加拿大 AI 部長將於下週與 CEO Sam Altman 會面討論後續。</p>
+<p><strong>事件核心問題：</strong>
+- AI 平台是否有義務向當局通報潛在危險用戶行為？
+- OpenAI 的安全系統為何未能觸發人工審查？
+- 監管空白在哪？誰來管 AI 公司的安全責任？</p>
+<p><strong>深層意義</strong>：這是 AI 安全政策的重大轉折點——業界長期避而不談的「AI 是否應配合執法機關」議題，首度以真實案件的形式進入政策討論核心。</p>
+<p>📎 出處：<a href="https://www.bbc.com/news/articles/cr73m4x8r2lo">BBC News</a></p>
+<hr />
+<h2>😮 今日奇聞</h2>
+<h3>10｜香菜嚐起來像肥皂？科學證實這是寫在你 DNA 裡的命運</h3>
+<p>全球「香菜愛恨二元論」終有解答：研究確認，覺得香菜像肥皂的人，是因為 <strong>OR6A2 基因</strong>（嗅覺受器基因）的特定變體，使他們對香菜中的醛類化合物超級敏感，大腦將其解讀為「肥皂味」。</p>
+<p><strong>科學細節：</strong>
+- 約 <strong>4–14%</strong> 的人口帶有此基因變體（歐洲人比例最高）
+- 香菜含有的 <strong>E-(2)-decenal</strong> 等醛類正是「肥皂感」的來源
+- 這種嗅覺受器差異與花椰菜、松露等食物的喜好也有類似機制</p>
+<p><strong>趣點</strong>：下次再有人跟你說「香菜不好吃」，請告訴他：你們的分歧，不是品味問題，是基因分歧。吃香菜是天命，不吃也是天命。</p>
+<p>📎 出處：<a href="https://technews.tw/2026/02/28/cilantro-tastes-like-soap-to-you-its-in-your-genes/">TechNews 科技新報</a></p>
+<hr />
+<h2>📌 小結</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>分類</th>
+<th>標題摘要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>💻 晶片</td>
+<td>博通出貨業界首款 2nm 3.5D XDSiP SoC，下半年量產</td>
+</tr>
+<tr>
+<td>2</td>
+<td>🏭 半導體</td>
+<td>日本政府押注 Rapidus 2,500 億日圓，衝刺 2nm 量產</td>
+</tr>
+<tr>
+<td>3</td>
+<td>🌐 台積電</td>
+<td>兩年獲四國補助逾 1,514 億，全球化布局成效顯現</td>
+</tr>
+<tr>
+<td>4</td>
+<td>📉 AI 市場</td>
+<td>輝達財報亮眼仍跌超 5%，市場質疑 AI 資本支出可持續性</td>
+</tr>
+<tr>
+<td>5</td>
+<td>📱 蘋果</td>
+<td>iPhone 17 記憶體採購價暴漲逾倍，漲價壓力迫近消費端</td>
+</tr>
+<tr>
+<td>6</td>
+<td>🧠 BCI</td>
+<td>中國新創搶攻腦機介面商業化，正面挑戰 Neuralink</td>
+</tr>
+<tr>
+<td>7</td>
+<td>🇺🇸 外交</td>
+<td>川普對伊朗核談判不滿，軍事選項仍在桌上</td>
+</tr>
+<tr>
+<td>8</td>
+<td>⚔️ 戰爭</td>
+<td>巴基斯坦宣稱與阿富汗進入「公開戰爭」，南亞局勢升溫</td>
+</tr>
+<tr>
+<td>9</td>
+<td>🤖 AI 安全</td>
+<td>ChatGPT 預警槍擊嫌犯卻未通報，OpenAI 承諾政策改革</td>
+</tr>
+<tr>
+<td>10</td>
+<td>🌿 奇聞</td>
+<td>香菜嚐起來像肥皂？科學證實這是 OR6A2 基因的錯</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>⚡ 由小杰 (Jay) 整理，資料來源已核實，內容截至 2026-02-28 台北時間上午 08:00</em></p></main>
+    </div>
+</body>
+</html>

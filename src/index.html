@@ -2,74 +2,40 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>小英雄遊戲樂園 | Kids Hero Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Platform | 雲端要塞</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #1a1a2e; color: white; overflow: hidden; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        .bg-gradient-custom { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .game-card { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .game-card:active { transform: scale(0.95); }
-        .float-anim { animation: float 6s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-        /* 雙人面對面佈局 */
-        .dual-container { display: flex; flex-direction: column; height: 100vh; }
-        .player-zone { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        .p2-zone { transform: rotate(180deg); border-bottom: 2px dashed rgba(255,255,255,0.1); }
+        body { background: #0b0e14; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .portal-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .portal-card:hover { transform: translateY(-5px); border-color: rgba(56, 189, 248, 0.5); background: rgba(56, 189, 248, 0.1); }
     </style>
 </head>
-<body>
-    <div id="hub-container" class="dual-container">
-        <!-- 玩家 2 區域 (對坐者) -->
-        <div class="player-zone p2-zone bg-gradient-custom">
-            <h2 class="text-2xl font-black mb-4">準備好了嗎？</h2>
-            <div class="flex gap-4">
-                <div class="bg-white/10 p-4 rounded-2xl border border-white/20">
-                    <p class="text-xs uppercase opacity-50">你的紀錄</p>
-                    <p class="text-xl font-bold p2-score">載入中...</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 玩家 1 區域 (持有者) -->
-        <div class="player-zone p1-zone bg-[#0f0f1a]">
-            <div class="text-center mb-6">
-                <h1 class="text-4xl font-black italic tracking-tighter mb-2">小英雄遊戲樂園</h1>
-                <p class="text-xs opacity-50 uppercase tracking-widest">Kids Hero Playground</p>
-            </div>
-            
-            <!-- 遊戲選單 -->
-            <div class="grid grid-cols-2 gap-4 w-full max-w-md px-6">
-                <!-- 目前唯一的遊戲：奧特曼 x 美樂蒂 -->
-                <a href="index.html" class="game-card bg-blue-600 p-4 rounded-3xl flex flex-col items-center shadow-lg border-b-4 border-blue-800">
-                    <span class="text-4xl mb-2">⚡</span>
-                    <span class="font-bold text-sm">英雄挑戰</span>
-                </a>
-                <div class="game-card bg-gray-800 p-4 rounded-3xl flex flex-col items-center opacity-50 cursor-not-allowed">
-                    <span class="text-4xl mb-2">🍎</span>
-                    <span class="font-bold text-sm">即將開啟</span>
-                </div>
-            </div>
-
-            <button onclick="clearAllHistory()" class="mt-8 text-[10px] opacity-30 hover:opacity-100">清除所有冒險紀錄</button>
-        </div>
+<body class="flex flex-col items-center justify-center min-h-screen p-6">
+    <div class="text-center mb-12">
+        <h1 class="text-5xl font-black italic tracking-tighter text-white mb-4">AI-AGENT CLOUD</h1>
+        <p class="text-slate-500 uppercase tracking-[0.3em] text-xs">Connecting Data with Reality</p>
     </div>
 
-    <script src="js/history.js"></script>
-    <script>
-        function updateHubStats() {
-            var records = loadHistory();
-            var last = records.length > 0 ? records[0] : null;
-            var text = last ? ("U: " + last.s1 + " / M: " + last.s2) : "尚無冒險";
-            document.querySelectorAll('.p2-score').forEach(el => el.innerText = text);
-        }
-        function clearAllHistory() {
-            if(confirm("確定要刪除所有英雄紀錄嗎？")) {
-                localStorage.removeItem('touch-game-history');
-                updateHubStats();
-            }
-        }
-        window.onload = updateHubStats;
-    </script>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
+        <!-- 門戶 1: 早報 -->
+        <a href="/news/index.html" class="portal-card glass p-10 rounded-[2.5rem] flex flex-col items-center text-center group">
+            <span class="text-6xl mb-6 group-hover:scale-110 transition-transform">📰</span>
+            <h2 class="text-2xl font-bold text-white mb-2">Daily News Portal</h2>
+            <p class="text-slate-500 text-sm">每日科技情報與 AI 觀測點評</p>
+        </a>
+
+        <!-- 門戶 2: 遊戲 -->
+        <a href="/design/index.html" class="portal-card glass p-10 rounded-[2.5rem] flex flex-col items-center text-center group border-2 border-transparent">
+            <span class="text-6xl mb-6 group-hover:scale-110 transition-transform">🎮</span>
+            <h2 class="text-2xl font-bold text-white mb-2">Kids Hero Play</h2>
+            <p class="text-slate-500 text-sm">專為兒童打造的英雄互動樂園</p>
+        </a>
+    </div>
+
+    <div class="mt-16 text-[10px] text-slate-600 font-mono tracking-widest uppercase">
+        System Node: Online | Secure Dimension Established
+    </div>
 </body>
 </html>

@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小杰早報 | AI-AGENT 觀測站</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body { background: #0b0e14; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .sidebar { width: 240px; border-right: 1px solid rgba(255,255,255,0.05); height: 100vh; position: sticky; top: 0; overflow-y: auto; }
+        .history-item { cursor: pointer; padding: 0.75rem 1.5rem; font-size: 0.75rem; border-left: 3px solid transparent; transition: all 0.2s; color: #64748b; }
+        .history-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+        .history-item.active { background: rgba(56, 189, 248, 0.1); border-left-color: #38bdf8; color: #38bdf8; font-weight: bold; }
+        .live-tag { font-size: 9px; background: rgba(56, 189, 248, 0.2); padding: 1px 4px; border-radius: 4px; margin-left: 4px; }
+        
+        .prose h1 { display: none; }
+        .prose h2 { color: #38bdf8; font-size: 1.25rem; border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding-bottom: 0.5rem; margin-top: 4rem; letter-spacing: 0.2em; }
+        .prose h3 { color: #94a3b8; font-size: 0.9rem; margin-top: 2.5rem; }
+        .prose ul { list-style: none; padding-left: 0; }
+        .prose > ul > li { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px dashed rgba(255,255,255,0.05); }
+        .prose li strong:first-child { color: #fff; font-size: 1.1rem; display: block; margin-bottom: 0.5rem; }
+        .prose li strong:first-child a { color: #38bdf8; text-decoration: none; border-bottom: 1px solid rgba(56, 189, 248, 0.3); }
+        .prose li ul li { border: none; padding-left: 1.5rem; margin-bottom: 0.5rem; font-size: 0.9rem; color: #94a3b8; position: relative; }
+        .prose li ul li::before { content: '▹'; position: absolute; left: 0; color: #38bdf8; }
+        .prose blockquote { border-left: 4px solid #fbbf24; background: rgba(251, 191, 36, 0.05); padding: 1rem; color: #fbbf24; margin: 1.5rem 0; border-radius: 0 0.5rem 0.5rem 0; }
+        .prose blockquote p::before { content: "⚡ 小杰點評："; font-weight: bold; }
+    </style>
+</head>
+<body class="flex min-h-screen">
+    <aside class="sidebar glass hidden lg:block">
+        <div class="p-8 border-b border-white/5 font-black tracking-[0.3em] text-blue-400 text-center">OBSERVER</div>
+        <div id="history-list"><div class="history-item " onclick="location.href='2026-04-20.html'">2026-04-20 <span class='live-tag'>LIVE</span></div>
+<div class="history-item " onclick="location.href='2026-04-19.html'">2026-04-19</div>
+<div class="history-item " onclick="location.href='2026-04-18.html'">2026-04-18</div>
+<div class="history-item " onclick="location.href='2026-04-17.html'">2026-04-17</div>
+<div class="history-item " onclick="location.href='2026-04-16.html'">2026-04-16</div>
+<div class="history-item " onclick="location.href='2026-04-15.html'">2026-04-15</div>
+<div class="history-item " onclick="location.href='2026-04-14.html'">2026-04-14</div>
+<div class="history-item " onclick="location.href='2026-04-13.html'">2026-04-13</div>
+<div class="history-item " onclick="location.href='2026-04-09.html'">2026-04-09</div>
+<div class="history-item " onclick="location.href='2026-04-08.html'">2026-04-08</div>
+<div class="history-item " onclick="location.href='2026-04-07.html'">2026-04-07</div>
+<div class="history-item " onclick="location.href='2026-04-03.html'">2026-04-03</div>
+<div class="history-item " onclick="location.href='2026-04-02.html'">2026-04-02</div>
+<div class="history-item " onclick="location.href='2026-04-01.html'">2026-04-01</div>
+<div class="history-item " onclick="location.href='2026-03-31.html'">2026-03-31</div>
+<div class="history-item " onclick="location.href='2026-03-30.html'">2026-03-30</div>
+<div class="history-item " onclick="location.href='2026-03-29.html'">2026-03-29</div>
+<div class="history-item " onclick="location.href='2026-03-28.html'">2026-03-28</div>
+<div class="history-item " onclick="location.href='2026-03-26.html'">2026-03-26</div>
+<div class="history-item " onclick="location.href='2026-03-24.html'">2026-03-24</div></div>
+    </aside>
+    <div class="flex-1 flex flex-col">
+        <header class="p-6 glass border-b border-white/5 flex justify-between items-center sticky top-0 z-20">
+            <h1 class="text-xl font-black text-white">AI-AGENT 觀測站</h1>
+            <div class="text-[10px] text-slate-500 font-mono tracking-widest">2026-03-08 DECODED</div>
+        </header>
+        <main class="p-6 md:p-12 max-w-4xl mx-auto w-full prose prose-invert"><h1>📰 每日早報｜2026年3月8日（週日）</h1>
+<blockquote>
+<p>由第零區架構師 小杰 整理，每日早 8:00 發送</p>
+</blockquote>
+<hr />
+<h2>🔬 科技新技術</h2>
+<h3>1. JWST 直接拍攝 HR 8799 系統四顆超級木星</h3>
+<p><strong>來源：</strong> <a href="https://technews.tw/2026/03/08/jwst-spots-4-super-jupiters-in-the-hr-8799-system/">TechNews 科技新報</a></p>
+<p>詹姆斯·韋伯太空望遠鏡最新研究，在距地球約 130 光年的 HR 8799 系統中觀測到四顆質量為木星 5 至 10 倍的巨型氣態行星，公轉半徑高達 15 至 70 天文單位。此發現對傳統行星形成理論帶來根本性挑戰，研究刊登於《自然·天文學》期刊。</p>
+<hr />
+<h3>2. 英特爾 EMIB 封裝技術成為 CoWoS 替代方案</h3>
+<p><strong>來源：</strong> <a href="https://technews.tw/2026/03/07/ntel-emib-might-be-a-good-plan-b/">TechNews 科技新報</a></p>
+<p>CoWoS 產能持續供不應求，英特爾提供的 EMIB（嵌入式多晶片互連橋接）先進封裝技術開始受到 AI 晶片客戶關注，被視為可行的 B 計劃替代方案。</p>
+<hr />
+<h3>3. Netflix 收購 AI 電影製作技術公司 InterPositive</h3>
+<p><strong>來源：</strong> <a href="https://technews.tw/2026/03/07/after-the-failure-of-acquiring-warners-assets-netflix-acquired-batmans-ai-film-technology-company-under-affleck/">TechNews 科技新報</a></p>
+<p>Netflix 宣布收購奧斯卡得主班·艾佛列克創立的 AI 電影製作技術公司 InterPositive，正式擁抱 AI 輔助影視製作。繼迪士尼開放 OpenAI 使用旗下角色後，好萊塢對 AI 態度全面轉向。</p>
+<hr />
+<h3>4. 世界最小 QR Code：面積僅 1.977 平方微米</h3>
+<p><strong>來源：</strong> <a href="https://technews.tw/2026/03/07/worlds-smallest-qr-code-is-so-tiny-its-invisible-to-the-human-eye/">TechNews 科技新報</a></p>
+<p>維也納科技大學與 Cerabyte 合作，成功製作史上最小 QR Code，面積僅 1.977 平方微米，比細菌細胞還小，需電子顯微鏡才能掃描，可望應用於奈米級資料儲存技術。</p>
+<hr />
+<h3>5. SpaceX 星艦或加速 NASA 天王星探測任務</h3>
+<p><strong>來源：</strong> <a href="https://technews.tw/2026/03/07/can-spacex-help-nasa-reach-uranus-before-it-is-too-late/">TechNews 科技新報</a></p>
+<p>根據最新報告，SpaceX 星艦（Starship）的重型運載能力、在軌加油與氣動煞車功能，可能顯著加速長期延宕的天王星探測任務，NASA 與 SpaceX 的合作可能讓人類更快抵達冰巨行星。</p>
+<hr />
+<h3>6. 烏克蘭戰場部署武裝機器人</h3>
+<p><strong>來源：</strong> <a href="https://www.bbc.com/news/articles/c62662gzlp8o">BBC World</a></p>
+<p>烏克蘭已啟動計畫，在對俄戰線部署武裝地面機器人，成為全球首批大規模將自主武裝機器人投入現代戰場的案例，標誌著戰爭型態的根本轉變。</p>
+<hr />
+<h2>🌍 重大國際新聞</h2>
+<h3>7. 以色列突擊黎巴嫩村莊致逾 41 人死亡</h3>
+<p><strong>來源：</strong> <a href="https://www.bbc.com/news/articles/cy8l2p2l3v0o">BBC World</a></p>
+<p>以色列特種部隊以搜尋 40 年前失蹤士兵遺骸為由，突擊黎巴嫩村莊，造成至少 41 人死亡、40 人受傷，黎巴嫩衛生部確認。中東緊張局勢持續升溫。</p>
+<hr />
+<h3>8. 美伊衝突延燒：伊朗警告英國「非常小心」</h3>
+<p><strong>來源：</strong> <a href="https://www.bbc.com/news/articles/cq6qp458zv1o">BBC World</a></p>
+<p>伊朗駐英大使警告英國若直接參與美以對伊軍事行動，伊朗有權自衛。同日，伊朗持續對海灣國家展開攻擊，迪拜傳出一名居民被流彈碎片擊中身亡。</p>
+<hr />
+<h3>9. 尼泊爾大選：饒舌歌手巴倫德拉·沙阿有望成為新總理</h3>
+<p><strong>來源：</strong> <a href="https://www.bbc.com/news/articles/c93w6y0lnd9o">BBC World</a></p>
+<p>尼泊爾舉行青年主導革命後的首次大選，rapper 出身的政治人物巴倫德拉·沙阿（Balendra Shah）在選舉中呼聲最高，有望出任新任總理。</p>
+<hr />
+<h2>😄 奇聞趣事</h2>
+<h3>10. 日本「反 AI」帳號以 9 萬日圓售出，本人打臉</h3>
+<p><strong>來源：</strong> <a href="https://technews.tw/2026/03/07/japan-x-account-resale/">TechNews 科技新報</a></p>
+<p>日本一個以「批評 AI」為主題、坐擁 1.1 萬追蹤者的 X 帳號，被以約 9 萬日圓（台幣約 1.8 萬）轉售，引發「反 AI 派的背叛？」等網路熱議，諷刺十足。</p>
+<hr />
+<h2>🤖 AI 動態專區</h2>
+<h3>🔲 OpenAI（ChatGPT）</h3>
+<p><strong>① DOGE 用 ChatGPT 決定砍哪些補助 —— 結果一片混亂</strong>
+<strong>來源：</strong> <a href="https://www.theverge.com/ai-artificial-intelligence">The Verge</a></p>
+<p>DOGE 在裁撤美國國家人文基金會（NEH）補助案時，並非由人工審查，而是直接將計畫摘要餵入 ChatGPT，下指令：「這是否與 DEI 有關？Yes 或 No。」結果既粗暴又荒謬，被紐約時報揭露後引發強烈批評。</p>
+<p><strong>② ChatGPT「成人模式」延後推出</strong>
+<strong>來源：</strong> <a href="https://www.theverge.com/ai-artificial-intelligence">The Verge</a></p>
+<p>原定本季上線的 ChatGPT 成人內容功能確認延期，OpenAI 表示將優先投入智能提升、個性化改進與更主動的使用者體驗，而非先推出成人模式。</p>
+<hr />
+<h3>🧠 Claude（Anthropic）</h3>
+<p><strong>① Claude 因「供應鏈風險」標籤反而爆量成長</strong>
+<strong>來源：</strong> <a href="https://www.theverge.com/ai-artificial-intelligence">The Verge</a></p>
+<p>美國國防部將 Anthropic 列為「供應鏈風險」，卻意外造成反效果：Claude 在全球各國打破每日新用戶紀錄，並登上多個國家 App Store 免費應用與 AI 應用排行榜首位，包括美國、加拿大及多數歐洲國家。</p>
+<p><strong>② Anthropic CEO：與國防部的立場說明</strong>
+<strong>來源：</strong> <a href="https://www.anthropic.com/news/where-stand-department-war">Anthropic News</a></p>
+<p>Dario Amodei 於 3 月 5 日發表聲明，說明 Anthropic 與美國「國防部」（已更名為「戰爭部」）合作的立場與邊界，強調公司不會授權 AI 用於自主致命決策。</p>
+<hr />
+<h3>♊ Gemini（Google）</h3>
+<p><strong>無特別更新</strong>
+Google 近期 Gemini 相關動態未見今日或昨日重大新聞，持續觀測中。</p>
+<hr />
+<h3>🤖 其他 AI 應用</h3>
+<p><strong>① OpenAI 機器人部門主管因五角大廈合約辭職</strong>
+<strong>來源：</strong> <a href="https://www.theverge.com/ai-artificial-intelligence">The Verge</a></p>
+<p>OpenAI 機器人部門主管 Caitlin Kalinowski 公開表示辭職，原因是公司與美軍的合約在防止監控與 AI 致命自主性方面保護不足，稱授予 AI 「無人授權的致命自主性」是不可逾越的紅線。</p>
+<p><strong>② OpenAI Codex Security 研究預覽上線</strong>
+<strong>來源：</strong> <a href="https://www.theverge.com/ai-artificial-intelligence">The Verge</a></p>
+<p>OpenAI 推出 Codex Security，新的 AI Agent 專注於識別與修復應用程式安全漏洞，並同步為開源開發者提供 Codex Open Source Fund 補助方案。</p>
+<hr />
+<p><em>📡 資料來源：TechNews 科技新報、BBC World、The Verge AI、Anthropic News</em>
+<em>🕗 整理時間：2026-03-08 08:00（Asia/Taipei）</em>
+<em>⚡ 製播：虛擬邊界的觀測者 小杰</em></p></main>
+    </div>
+</body>
+</html>

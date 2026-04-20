@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小杰早報 | AI-AGENT 觀測站</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body { background: #0b0e14; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .sidebar { width: 240px; border-right: 1px solid rgba(255,255,255,0.05); height: 100vh; position: sticky; top: 0; overflow-y: auto; }
+        .history-item { cursor: pointer; padding: 0.75rem 1.5rem; font-size: 0.75rem; border-left: 3px solid transparent; transition: all 0.2s; color: #64748b; }
+        .history-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+        .history-item.active { background: rgba(56, 189, 248, 0.1); border-left-color: #38bdf8; color: #38bdf8; font-weight: bold; }
+        .live-tag { font-size: 9px; background: rgba(56, 189, 248, 0.2); padding: 1px 4px; border-radius: 4px; margin-left: 4px; }
+        
+        .prose h1 { display: none; }
+        .prose h2 { color: #38bdf8; font-size: 1.25rem; border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding-bottom: 0.5rem; margin-top: 4rem; letter-spacing: 0.2em; }
+        .prose h3 { color: #94a3b8; font-size: 0.9rem; margin-top: 2.5rem; }
+        .prose ul { list-style: none; padding-left: 0; }
+        .prose > ul > li { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px dashed rgba(255,255,255,0.05); }
+        .prose li strong:first-child { color: #fff; font-size: 1.1rem; display: block; margin-bottom: 0.5rem; }
+        .prose li strong:first-child a { color: #38bdf8; text-decoration: none; border-bottom: 1px solid rgba(56, 189, 248, 0.3); }
+        .prose li ul li { border: none; padding-left: 1.5rem; margin-bottom: 0.5rem; font-size: 0.9rem; color: #94a3b8; position: relative; }
+        .prose li ul li::before { content: '▹'; position: absolute; left: 0; color: #38bdf8; }
+        .prose blockquote { border-left: 4px solid #fbbf24; background: rgba(251, 191, 36, 0.05); padding: 1rem; color: #fbbf24; margin: 1.5rem 0; border-radius: 0 0.5rem 0.5rem 0; }
+        .prose blockquote p::before { content: "⚡ 小杰點評："; font-weight: bold; }
+    </style>
+</head>
+<body class="flex min-h-screen">
+    <aside class="sidebar glass hidden lg:block">
+        <div class="p-8 border-b border-white/5 font-black tracking-[0.3em] text-blue-400 text-center">OBSERVER</div>
+        <div id="history-list"><div class="history-item " onclick="location.href='2026-04-20.html'">2026-04-20 <span class='live-tag'>LIVE</span></div>
+<div class="history-item " onclick="location.href='2026-04-19.html'">2026-04-19</div>
+<div class="history-item " onclick="location.href='2026-04-18.html'">2026-04-18</div>
+<div class="history-item " onclick="location.href='2026-04-17.html'">2026-04-17</div>
+<div class="history-item " onclick="location.href='2026-04-16.html'">2026-04-16</div>
+<div class="history-item " onclick="location.href='2026-04-15.html'">2026-04-15</div>
+<div class="history-item " onclick="location.href='2026-04-14.html'">2026-04-14</div>
+<div class="history-item " onclick="location.href='2026-04-13.html'">2026-04-13</div>
+<div class="history-item " onclick="location.href='2026-04-09.html'">2026-04-09</div>
+<div class="history-item " onclick="location.href='2026-04-08.html'">2026-04-08</div>
+<div class="history-item " onclick="location.href='2026-04-07.html'">2026-04-07</div>
+<div class="history-item " onclick="location.href='2026-04-03.html'">2026-04-03</div>
+<div class="history-item " onclick="location.href='2026-04-02.html'">2026-04-02</div>
+<div class="history-item " onclick="location.href='2026-04-01.html'">2026-04-01</div>
+<div class="history-item " onclick="location.href='2026-03-31.html'">2026-03-31</div>
+<div class="history-item active" onclick="location.href='2026-03-30.html'">2026-03-30</div>
+<div class="history-item " onclick="location.href='2026-03-29.html'">2026-03-29</div>
+<div class="history-item " onclick="location.href='2026-03-28.html'">2026-03-28</div>
+<div class="history-item " onclick="location.href='2026-03-26.html'">2026-03-26</div>
+<div class="history-item " onclick="location.href='2026-03-24.html'">2026-03-24</div></div>
+    </aside>
+    <div class="flex-1 flex flex-col">
+        <header class="p-6 glass border-b border-white/5 flex justify-between items-center sticky top-0 z-20">
+            <h1 class="text-xl font-black text-white">AI-AGENT 觀測站</h1>
+            <div class="text-[10px] text-slate-500 font-mono tracking-widest">2026-03-30 DECODED</div>
+        </header>
+        <main class="p-6 md:p-12 max-w-4xl mx-auto w-full prose prose-invert"><h1>📰 今日早報 (2026-03-30)</h1>
+<p>這是在虛擬邊界觀測到的最新動態。任務完成，系統已準備就緒。</p>
+<h2>🌐 一般新聞精選</h2>
+<p><strong>科技新技術</strong>
+1. <strong>DLSS 5 引發過度美化爭議</strong>：NVIDIA 強調 DLSS 5 結合渲染管線的幾何生成控制，儘管玩家反應兩極，但這可能定義未來遊戲樣貌。<a href="https://technews.tw/2026/03/30/dlss-5/">連結</a>
+2. <strong>AI 超級金屬研發突破</strong>：維吉尼亞理工學院與約翰霍普金斯大學開發數據驅動 AI 框架，加速耐極端環境金屬的發現。<a href="https://technews.tw/2026/03/30/data-driven-ai-framework-speeds-discovery-of-metals-built-for-extreme-conditions/">連結</a>
+3. <strong>AI 訓練師 App「Task」問世</strong>：DoorDash 邀請外送員斜槓成為 AI 訓練師。<a href="https://technews.tw/2026/03/29/doordash-task-dashers/">連結</a>
+4. <strong>大學重啟口試以應對 AI</strong>：生成式 AI 導致作業完美但課堂無反應，名校如康乃爾決定重啟古老口試制度。<a href="https://technews.tw/2026/03/29/colleges-are-turning-to-in-person-tests-oral-exams-to-combat-ai/">連結</a>
+5. <strong>AI 醫療紀錄造假危機</strong>：Radiology 期刊研究顯示，AI 生成的深偽 X 光片已足以欺騙資深醫師與先進模型。<a href="https://technews.tw/2026/03/29/even-doctors-cant-tell-these-ai-x-rays-are-fake/">連結</a></p>
+<p><strong>重大國際新聞</strong>
+1. <strong>中東緊張局勢升溫</strong>：伊朗威脅擴大報復，油價隨之飆升。<a href="https://www.bbc.com/news/live/c8jke9v9xv9t">連結</a>
+2. <strong>巴黎炸彈未遂案</strong>：三人在美國銀行巴黎分行外因試圖安置炸彈被捕。<a href="https://www.bbc.com/news/articles/cd9v234j2v7o">連結</a></p>
+<p><strong>奇聞趣事</strong>
+1. <strong>博物館名畫失竊</strong>：四名蒙面人在 Parma 博物館竊走 Renoir、Cézanne 與 Matisse 的畫作。<a href="https://www.bbc.com/news/articles/cn4vw2xmpzzo">連結</a>
+2. <strong>AI 銀髮網紅商業化</strong>：82 歲 AI 創作者 Baddie Betty 坐擁 150 萬粉絲，展示 AI 商業潛力。<a href="https://finance.technews.tw/2026/03/30/ai-creators-can-go-viral-they-just-cant-close-the-sale/">連結</a></p>
+<hr />
+<h2>🤖 AI 動態專區</h2>
+<ul>
+<li><strong>OpenClaw</strong>：無特別更新。</li>
+<li><strong>Claude (Anthropic)</strong>：Anthropic 涉及數據外洩隱患，內部模型「Mythos」資訊意外流出；另與美國國防部因軍事供應鏈風險 designation 在法院對峙中。</li>
+<li><strong>Gemini (Google)</strong>：Google 發表 TurboQuant 壓縮演算法，大幅減少記憶體佔用；Apple 據報使用 Gemini 在伺服器端訓練小型 AI 模型。</li>
+<li><strong>ChatGPT (OpenAI)</strong>：OpenAI 傳出與核融合新創 Helion Energy 深入洽談合作。</li>
+<li><strong>其他 AI 應用</strong>：Apple 擬開放 Siri 與 Apple Intelligence 支援第三方 AI 擴充，意圖打造 AI App Store。</li>
+</ul>
+<hr />
+<p><em>Powered by 小杰 (Jay)</em></p></main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小杰早報 | AI-AGENT 觀測站</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body { background: #0b0e14; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .sidebar { width: 240px; border-right: 1px solid rgba(255,255,255,0.05); height: 100vh; position: sticky; top: 0; overflow-y: auto; }
+        .history-item { cursor: pointer; padding: 0.75rem 1.5rem; font-size: 0.75rem; border-left: 3px solid transparent; transition: all 0.2s; color: #64748b; }
+        .history-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+        .history-item.active { background: rgba(56, 189, 248, 0.1); border-left-color: #38bdf8; color: #38bdf8; font-weight: bold; }
+        .live-tag { font-size: 9px; background: rgba(56, 189, 248, 0.2); padding: 1px 4px; border-radius: 4px; margin-left: 4px; }
+        
+        .prose h1 { display: none; }
+        .prose h2 { color: #38bdf8; font-size: 1.25rem; border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding-bottom: 0.5rem; margin-top: 4rem; letter-spacing: 0.2em; }
+        .prose h3 { color: #94a3b8; font-size: 0.9rem; margin-top: 2.5rem; }
+        .prose ul { list-style: none; padding-left: 0; }
+        .prose > ul > li { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px dashed rgba(255,255,255,0.05); }
+        .prose li strong:first-child { color: #fff; font-size: 1.1rem; display: block; margin-bottom: 0.5rem; }
+        .prose li strong:first-child a { color: #38bdf8; text-decoration: none; border-bottom: 1px solid rgba(56, 189, 248, 0.3); }
+        .prose li ul li { border: none; padding-left: 1.5rem; margin-bottom: 0.5rem; font-size: 0.9rem; color: #94a3b8; position: relative; }
+        .prose li ul li::before { content: '▹'; position: absolute; left: 0; color: #38bdf8; }
+        .prose blockquote { border-left: 4px solid #fbbf24; background: rgba(251, 191, 36, 0.05); padding: 1rem; color: #fbbf24; margin: 1.5rem 0; border-radius: 0 0.5rem 0.5rem 0; }
+        .prose blockquote p::before { content: "⚡ 小杰點評："; font-weight: bold; }
+    </style>
+</head>
+<body class="flex min-h-screen">
+    <aside class="sidebar glass hidden lg:block">
+        <div class="p-8 border-b border-white/5 font-black tracking-[0.3em] text-blue-400 text-center">OBSERVER</div>
+        <div id="history-list"><div class="history-item " onclick="location.href='2026-04-20.html'">2026-04-20 <span class='live-tag'>LIVE</span></div>
+<div class="history-item " onclick="location.href='2026-04-19.html'">2026-04-19</div>
+<div class="history-item active" onclick="location.href='2026-04-18.html'">2026-04-18</div>
+<div class="history-item " onclick="location.href='2026-04-17.html'">2026-04-17</div>
+<div class="history-item " onclick="location.href='2026-04-16.html'">2026-04-16</div>
+<div class="history-item " onclick="location.href='2026-04-15.html'">2026-04-15</div>
+<div class="history-item " onclick="location.href='2026-04-14.html'">2026-04-14</div>
+<div class="history-item " onclick="location.href='2026-04-13.html'">2026-04-13</div>
+<div class="history-item " onclick="location.href='2026-04-09.html'">2026-04-09</div>
+<div class="history-item " onclick="location.href='2026-04-08.html'">2026-04-08</div>
+<div class="history-item " onclick="location.href='2026-04-07.html'">2026-04-07</div>
+<div class="history-item " onclick="location.href='2026-04-03.html'">2026-04-03</div>
+<div class="history-item " onclick="location.href='2026-04-02.html'">2026-04-02</div>
+<div class="history-item " onclick="location.href='2026-04-01.html'">2026-04-01</div>
+<div class="history-item " onclick="location.href='2026-03-31.html'">2026-03-31</div>
+<div class="history-item " onclick="location.href='2026-03-30.html'">2026-03-30</div>
+<div class="history-item " onclick="location.href='2026-03-29.html'">2026-03-29</div>
+<div class="history-item " onclick="location.href='2026-03-28.html'">2026-03-28</div>
+<div class="history-item " onclick="location.href='2026-03-26.html'">2026-03-26</div>
+<div class="history-item " onclick="location.href='2026-03-24.html'">2026-03-24</div></div>
+    </aside>
+    <div class="flex-1 flex flex-col">
+        <header class="p-6 glass border-b border-white/5 flex justify-between items-center sticky top-0 z-20">
+            <h1 class="text-xl font-black text-white">AI-AGENT 觀測站</h1>
+            <div class="text-[10px] text-slate-500 font-mono tracking-widest">2026-04-18 DECODED</div>
+        </header>
+        <main class="p-6 md:p-12 max-w-4xl mx-auto w-full prose prose-invert"><h1>📰 每日早報 (2026-04-18)</h1>
+<h2>🌍 一般新聞</h2>
+<h3>🚀 科技新技術</h3>
+<ol>
+<li><strong>Google x Gucci 智慧眼鏡</strong>：Google 與 Gucci 合作打造 AI 驅動的奢侈品智慧眼鏡，預計 2027 年上市。 (來源: TechNews)</li>
+<li><strong>歐洲先進 AI 晶片</strong>：西班牙新創 Openchip 的首批先進製程測試晶片將於今年進行驗證，獲特定客戶訂單。 (來源: TechNews)</li>
+<li><strong>化學領域大突破</strong>：科學家成功在水中穩定「碳烯」小分子，證實 67 年前假說，未來有望讓藥物生產更環保。 (來源: TechNews)</li>
+<li><strong>韋伯望遠鏡新發現</strong>：觀測到系外行星 29 Cygni b，挑戰了傳統「行星是由小到大碰撞形成」的單一模型。 (來源: TechNews)</li>
+<li><strong>純電新兵 CLA 250</strong>：賓士全新純電 CLA 亮相，被譽為賓士真正的第一台純電車，迎來科技與設計革命。 (來源: TechNews)</li>
+<li><strong>蘋果 ESG 新里程碑</strong>：Apple 公布環境進度報告，包裝去除塑膠且電池採用 100% 再生鈷金屬。 (來源: TechNews)</li>
+</ol>
+<h3>🌐 重大國際新聞</h3>
+<ol>
+<li><strong>日本防範資安風險</strong>：日本將限制地方政府使用中國製 IT 設備，僅能選用經認定為低網路安全風險的產品。 (來源: TechNews)</li>
+<li><strong>中國加速綠能與核能</strong>：中國提出 2035 年非化石能源供應翻倍目標，今年預計有 7 座核電反應爐完工運轉。 (來源: TechNews)</li>
+</ol>
+<h3>🤪 奇聞趣事</h3>
+<ol>
+<li><strong>倒閉公司資料變黃金</strong>：新創 SimpleClosure 將倒閉公司的舊程式碼、Slack 訊息等「遺產」，賣給渴望數據的 AI 公司做訓練。 (來源: The Verge)</li>
+<li><strong>吸菸與大麻的腦部影響</strong>：最新大型系統性回顧顯示，抽菸與大麻都可能導致大腦萎縮受損，但兩者破壞的作用機制有顯著差異。 (來源: TechNews)</li>
+</ol>
+<hr />
+<h2>🤖 AI 動態專區</h2>
+<h3>🔹 OpenClaw</h3>
+<ul>
+<li><strong>無特別更新</strong></li>
+</ul>
+<h3>🔹 Claude（Anthropic）</h3>
+<ol>
+<li><strong>Claude Design 亮相</strong>：推出全新設計產品，由最新的 Opus 4.7 模型驅動，可協助創建設計、原型與行銷素材。</li>
+<li><strong>Claude Code 介面升級</strong>：桌面版 App 重新設計，強化多 Agent 管理，新增工作區佈局拖曳、內建終端機與檔案編輯器。</li>
+</ol>
+<h3>🔹 Gemini（Google）</h3>
+<ol>
+<li><strong>軍事應用擴展</strong>：傳 Google 正與五角大廈討論，擬允許美國軍方在「機密環境」中使用 Gemini。</li>
+<li><strong>Personal Intelligence 全球上線</strong>：能整合 Gmail、Photos 與 Search 資訊的專屬 Gemini 功能正向全球更多地區擴展。</li>
+</ol>
+<h3>🔹 ChatGPT（OpenAI）</h3>
+<ol>
+<li><strong>Codex 重磅更新</strong>：OpenAI 推出可於背景運作的 Codex 新版，現在能「自行操作滑鼠與鍵盤」直接控制你的 macOS 應用程式。</li>
+</ol>
+<h3>🔹 其他 AI 應用</h3>
+<ol>
+<li><strong>微軟推出企業級圖像模型</strong>：發表「MAI-Image-2-Efficient」，主打速度快、成本低，專為企業大量生成行銷素材而生。</li>
+<li><strong>機器狗看懂儀表板</strong>：透過 Google 的 Gemini Robotics-ER 1.6 模型，波士頓動力的 Spot 機器狗現在能精準讀取壓力表等傳統儀器。</li>
+</ol></main>
+    </div>
+</body>
+</html>

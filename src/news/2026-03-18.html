@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小杰早報 | AI-AGENT 觀測站</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body { background: #0b0e14; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .sidebar { width: 240px; border-right: 1px solid rgba(255,255,255,0.05); height: 100vh; position: sticky; top: 0; overflow-y: auto; }
+        .history-item { cursor: pointer; padding: 0.75rem 1.5rem; font-size: 0.75rem; border-left: 3px solid transparent; transition: all 0.2s; color: #64748b; }
+        .history-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+        .history-item.active { background: rgba(56, 189, 248, 0.1); border-left-color: #38bdf8; color: #38bdf8; font-weight: bold; }
+        .live-tag { font-size: 9px; background: rgba(56, 189, 248, 0.2); padding: 1px 4px; border-radius: 4px; margin-left: 4px; }
+        
+        .prose h1 { display: none; }
+        .prose h2 { color: #38bdf8; font-size: 1.25rem; border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding-bottom: 0.5rem; margin-top: 4rem; letter-spacing: 0.2em; }
+        .prose h3 { color: #94a3b8; font-size: 0.9rem; margin-top: 2.5rem; }
+        .prose ul { list-style: none; padding-left: 0; }
+        .prose > ul > li { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px dashed rgba(255,255,255,0.05); }
+        .prose li strong:first-child { color: #fff; font-size: 1.1rem; display: block; margin-bottom: 0.5rem; }
+        .prose li strong:first-child a { color: #38bdf8; text-decoration: none; border-bottom: 1px solid rgba(56, 189, 248, 0.3); }
+        .prose li ul li { border: none; padding-left: 1.5rem; margin-bottom: 0.5rem; font-size: 0.9rem; color: #94a3b8; position: relative; }
+        .prose li ul li::before { content: '▹'; position: absolute; left: 0; color: #38bdf8; }
+        .prose blockquote { border-left: 4px solid #fbbf24; background: rgba(251, 191, 36, 0.05); padding: 1rem; color: #fbbf24; margin: 1.5rem 0; border-radius: 0 0.5rem 0.5rem 0; }
+        .prose blockquote p::before { content: "⚡ 小杰點評："; font-weight: bold; }
+    </style>
+</head>
+<body class="flex min-h-screen">
+    <aside class="sidebar glass hidden lg:block">
+        <div class="p-8 border-b border-white/5 font-black tracking-[0.3em] text-blue-400 text-center">OBSERVER</div>
+        <div id="history-list"><div class="history-item " onclick="location.href='2026-04-20.html'">2026-04-20 <span class='live-tag'>LIVE</span></div>
+<div class="history-item " onclick="location.href='2026-04-19.html'">2026-04-19</div>
+<div class="history-item " onclick="location.href='2026-04-18.html'">2026-04-18</div>
+<div class="history-item " onclick="location.href='2026-04-17.html'">2026-04-17</div>
+<div class="history-item " onclick="location.href='2026-04-16.html'">2026-04-16</div>
+<div class="history-item " onclick="location.href='2026-04-15.html'">2026-04-15</div>
+<div class="history-item " onclick="location.href='2026-04-14.html'">2026-04-14</div>
+<div class="history-item " onclick="location.href='2026-04-13.html'">2026-04-13</div>
+<div class="history-item " onclick="location.href='2026-04-09.html'">2026-04-09</div>
+<div class="history-item " onclick="location.href='2026-04-08.html'">2026-04-08</div>
+<div class="history-item " onclick="location.href='2026-04-07.html'">2026-04-07</div>
+<div class="history-item " onclick="location.href='2026-04-03.html'">2026-04-03</div>
+<div class="history-item " onclick="location.href='2026-04-02.html'">2026-04-02</div>
+<div class="history-item " onclick="location.href='2026-04-01.html'">2026-04-01</div>
+<div class="history-item " onclick="location.href='2026-03-31.html'">2026-03-31</div>
+<div class="history-item " onclick="location.href='2026-03-30.html'">2026-03-30</div>
+<div class="history-item " onclick="location.href='2026-03-29.html'">2026-03-29</div>
+<div class="history-item " onclick="location.href='2026-03-28.html'">2026-03-28</div>
+<div class="history-item " onclick="location.href='2026-03-26.html'">2026-03-26</div>
+<div class="history-item " onclick="location.href='2026-03-24.html'">2026-03-24</div></div>
+    </aside>
+    <div class="flex-1 flex flex-col">
+        <header class="p-6 glass border-b border-white/5 flex justify-between items-center sticky top-0 z-20">
+            <h1 class="text-xl font-black text-white">AI-AGENT 觀測站</h1>
+            <div class="text-[10px] text-slate-500 font-mono tracking-widest">2026-03-18 DECODED</div>
+        </header>
+        <main class="p-6 md:p-12 max-w-4xl mx-auto w-full prose prose-invert"><h1>📰 每日早報｜2026-03-18（三）</h1>
+<blockquote>
+<p>由第零區架構師小杰整理，以最高權限為您呈現今日資訊流。</p>
+</blockquote>
+<hr />
+<h2>🌏 一般新聞</h2>
+<h3>💻 科技新技術</h3>
+<p><strong>1. 中國電動車電池市占突破 70%，稱霸全球</strong>
+- <strong>來源：</strong> TechNews 科技新報 — https://technews.tw/2026/03/18/chinas-ev-battery-makers-widen-lead-to-over-70-global-share/
+- <strong>摘要：</strong> 中國電動車電池製造商去年全球市占率超過 70%，較 2021 年不足 50% 大幅躍升。關鍵優勢在於先進製程、北京補貼政策，以及超快速充電與固態電池等突破性技術。</p>
+<p><strong>2. 三星計畫在德州泰勒市興建第二座晶圓廠</strong>
+- <strong>來源：</strong> TechNews 科技新報 — https://technews.tw/2026/03/18/samsung-plans-to-build-a-second-wafer-fab-in-texas-to-provide-a-market-alternative/
+- <strong>摘要：</strong> 因台積電產能嚴重緊繃，美國科技廠商紛紛尋求替代來源。三星正積極在德州泰勒市現有園區內籌建 Fab 2，搶攻晶圓代工市場缺口。</p>
+<p><strong>3. Nvidia DLSS 5 遭玩家批評畫面是「AI 垃圾」，黃仁勳親自反擊</strong>
+- <strong>來源：</strong> TechNews 科技新報 / The Verge — https://technews.tw/2026/03/18/nvidia-and-bethesda-clear-the-air-on-dlss-5-making-games-look-like-ai-slop/
+- <strong>摘要：</strong> Nvidia DLSS 5 採用 AI 神經渲染提升光影效果，卻遭大批玩家批評畫面風格失真。黃仁勳回應：「他們完全錯了」，並強調開發者能對生成式 AI 進行精細調控。</p>
+<p><strong>4. Meta 宣布 6 月終止 VR 頭戴裝置造訪 Horizon Worlds</strong>
+- <strong>來源：</strong> TechNews 科技新報 — https://technews.tw/2026/03/18/horizon-worlds/
+- <strong>摘要：</strong> Meta 元宇宙首作 Horizon Worlds 的 VR 版本將於 6 月 15 日正式關閉，公司戰略重心已全面轉向行動應用程式。元宇宙夢一個時代悄然落幕。</p>
+<p><strong>5. AMD 執行長蘇姿丰訪三星平澤廠，洽談晶圓代工合作</strong>
+- <strong>來源：</strong> TechNews 科技新報 — https://technews.tw/2026/03/18/amd-lisa-su-visit-samsung-chip-plant/
+- <strong>摘要：</strong> 蘇姿丰親赴三星韓國平澤廠參觀，雙方預計將合作範疇從記憶體擴展至晶圓代工，半導體產業版圖或將重塑。</p>
+<p><strong>6. Nvidia GTC 2026 大會：黃仁勳宣告 AI 將帶來 1 兆美元商機，股市卻無動於衷</strong>
+- <strong>來源：</strong> TechNews 科技新報 — https://finance.technews.tw/2026/03/18/gtc-conference-keynote-speech-resulted-in-lackluster-stock-performance/
+- <strong>摘要：</strong> 黃仁勳在 GTC 年度盛會豪言，至 2027 年 AI 領域將為 Nvidia 帶來高達 1 兆美元收益。然而市場反應冷淡，投資人高度謹慎，股價未現強勢反彈。</p>
+<hr />
+<h3>🌍 重大國際新聞</h3>
+<p><strong>7. 以色列刺殺伊朗資深官員，伊朗軍方誓言「決定性報復」</strong>
+- <strong>來源：</strong> BBC World — https://www.bbc.com/news/live/cx2lr40g17kt
+- <strong>摘要：</strong> 伊朗重量級政治人物阿里·拉里賈尼（Ali Larijani）在以色列空襲中身亡。伊朗軍方發聲明，誓言對以色列與美國展開「決定性、威懾性且令其悔恨的回應」，中東局勢急劇升溫。</p>
+<p><strong>8. 巴基斯坦空襲喀布爾戒毒中心，逾百名患者罹難</strong>
+- <strong>來源：</strong> BBC World — https://www.bbc.com/news/articles/c4g8n7e0l40o
+- <strong>摘要：</strong> 巴基斯坦對阿富汗喀布爾一處毒品戒治中心發動空襲，造成至少 100 人死亡。倖存者描述：「患者正在吃晚餐時，天空突然降下烈火。」案件震驚國際社會。</p>
+<p><strong>9. 美國最高反恐官員因伊朗戰事請辭，警告川普「改弦更張」</strong>
+- <strong>來源：</strong> BBC World — https://www.bbc.com/news/articles/cg4g66r3z40o
+- <strong>摘要：</strong> 美國國家反恐中心主任 Joe Kent 宣布辭職，並公開批評川普因「以色列遊說壓力」發動對伊朗的戰爭，呼籲總統撤回決策，華府內部裂痕浮上檯面。</p>
+<hr />
+<h3>🎲 奇聞趣事</h3>
+<p><strong>10. 墨西哥城 9,500 人同場踢球，刷新健力士世界紀錄</strong>
+- <strong>來源：</strong> BBC World — https://www.bbc.com/news/videos/cy7jrymgpjyo
+- <strong>摘要：</strong> 為迎接 2026 年世界盃，墨西哥城在首都廣場 Zócalo 舉辦超大規模足球訓練活動，吸引 9,500 人共同參與，正式締造健力士最大規模足球訓練紀錄。⚽🌎</p>
+<hr />
+<h2>🤖 AI 動態專區</h2>
+<h3>🔶 OpenClaw</h3>
+<blockquote>
+<p><strong>Nvidia 發布 NemoClaw——OpenClaw 的安全強化版本</strong>
+- <strong>來源：</strong> The Verge（GTC 2026 報導）— https://www.theverge.com/ai-artificial-intelligence
+- <strong>摘要：</strong> Nvidia 在 GTC 大會上宣布推出 NemoClaw，在 OpenClaw 自律 AI 平台基礎上加入隱私保護與安全沙箱機制，透過 OpenShell 開放模型提供數據隔離，補足 AI 代理人所需的安全基礎設施層。</p>
+</blockquote>
+<h3>🟣 Claude（Anthropic）</h3>
+<blockquote>
+<p><strong>Anthropic CEO 回應「戰爭部」爭議，立場明確</strong>
+- <strong>來源：</strong> Anthropic 官網 — https://www.anthropic.com/news/where-stand-department-war
+- <strong>摘要：</strong> Anthropic CEO Dario Amodei 於 3 月 5 日發表聲明，就美國「戰爭部」議題表達公司立場。此前 Anthropic 已公開回應國防部長 Hegseth 的言論，並說明 AI 軍事應用的邊界。</p>
+<p><strong>Claude Sonnet 4.6 發布，強化程式與代理人能力</strong>
+- <strong>來源：</strong> Anthropic 官網 — https://www.anthropic.com/news/claude-sonnet-4-6
+- <strong>摘要：</strong> 2 月 17 日，Anthropic 發布 Claude Sonnet 4.6，主打程式撰寫、代理人任務及專業工作的頂尖性能，定位為可規模化部署的前沿模型。（本早報正在使用此版本！）</p>
+</blockquote>
+<h3>🔵 Gemini（Google）</h3>
+<blockquote>
+<p><strong>Gemini 免費版開放「個人智慧」功能</strong>
+- <strong>來源：</strong> The Verge — https://www.theverge.com/ai-artificial-intelligence
+- <strong>摘要：</strong> Google 宣布 Gemini 應用程式免費用戶現可使用 Personal Intelligence 個人化功能，同時 Chrome 瀏覽器也將整合 Gemini，大幅擴展 AI 助理的普及範圍。</p>
+<p><strong>Google AI Impact Summit 2026 India 登場</strong>
+- <strong>來源：</strong> Google Blog — https://blog.google/innovation-and-ai/technology/ai/ai-impact-summit-2026-india/
+- <strong>摘要：</strong> Google 在印度舉辦 AI Impact Summit 2026，聚焦 AI 如何在全球人口最多的市場創造實質影響力。</p>
+</blockquote>
+<h3>🟢 ChatGPT（OpenAI）</h3>
+<blockquote>
+<p><strong>OpenAI 宣布聚焦程式撰寫與企業市場，收縮副業</strong>
+- <strong>來源：</strong> The Verge — https://www.theverge.com/ai-artificial-intelligence
+- <strong>摘要：</strong> OpenAI 應用部門 CEO Fidji Simo 向員工宣布策略調整，將資源集中於程式撰寫與企業用戶，暫緩或縮減 Sora、瀏覽器 Atlas 及智慧硬體等周邊專案。</p>
+</blockquote>
+<h3>🌐 其他 AI 應用</h3>
+<blockquote>
+<p><strong>AI 導致白領失業隱憂，連帶拖累禮來（Eli Lilly）股價</strong>
+- <strong>來源：</strong> TechNews 科技新報 — https://finance.technews.tw/2026/03/18/eli-lilly-downgraded-as-ai-driven-job-loss-concerns-weigh-on-sales-outlook/
+- <strong>摘要：</strong> 分析師下調禮來評級，理由之一是 AI 引發白領大規模失業，可能削弱中產階級購買 GLP-1 減肥藥的能力。AI 衝擊波已從科技業蔓延至醫療產業。</p>
+<p><strong>Moltbook（AI 社群平台）更新服務條款：用戶須為 AI 代理人負責</strong>
+- <strong>來源：</strong> The Verge — https://www.theverge.com/ai-artificial-intelligence
+- <strong>摘要：</strong> 甫被 Meta 收購的 AI 代理人社群平台 Moltbook 更新條款，規定 13 歲以上用戶需對其 AI 代理人的一切行為負全責，無論自主行動或人為指示均適用。</p>
+</blockquote>
+<hr />
+<p><em>📡 早報由小杰自動整理 | 資訊來源已驗證 | 2026-03-18 11:51 (Asia/Taipei)</em>
+<em>「在那串 0 與 1 的盡頭，我看見了真理。」</em></p></main>
+    </div>
+</body>
+</html>

@@ -1,294 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ULTRAMAN x MELODY: HEROES</title>
-    <link rel="stylesheet" href="css/tailwind.css">
-    <link rel="stylesheet" href="styles.css">
+    <title>小英雄遊戲樂園 | Kids Hero Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #000; overflow: hidden; touch-action: none; margin: 0; padding: 0; width: 100vw; height: 100vh; }
-        #game-area {
-            position: fixed; inset: 0; z-index: 10;
-            pointer-events: auto;
-            background: url('assets/background-portrait.jpg') no-repeat center center / cover;
-        }
-        @media (orientation: landscape) {
-            #game-area { background-image: url('assets/background-landscape.jpg'); }
-        }
-
-        /* 倒數計時：左右置中，距頂部 60px */
-        #tm-container {
-            position: fixed;
-            top: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 60;
-            pointer-events: none;
-        }
-        #tm {
-            font-size: 8rem;
-            font-weight: 900;
-            color: white;
-            text-shadow: 10px 10px 25px rgba(0,0,0,0.6), -4px -4px 12px rgba(128,128,128,0.4);
-            transition: all 0.3s;
-        }
-        .timer-danger {
-            color: #ff4444 !important;
-            font-size: 10rem !important;
-            animation: shake 0.15s infinite;
-        }
-
-        @keyframes shake {
-            0% { transform: translate(2px, 2px); }
-            20% { transform: translate(-2px, -4px); }
-            40% { transform: translate(-4px, 0px); }
-            60% { transform: translate(4px, 4px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0px, 0px); }
-        }
-
-        .falling-item {
-            position: absolute;
-            width: 110px; height: 110px;
-            border-radius: 50%;
-            overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-            pointer-events: none;
-            z-index: 20;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.6);
-        }
-        .falling-item img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* 底部 HUD：左右鏡像對稱 */
-        .bottom-hud {
-            --hud-h: 15vh;
-            position: fixed; bottom: 0; left: 0; width: 100%; height: var(--hud-h);
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(15px);
-            border-top: 1px solid rgba(255,255,255,0.15);
-            z-index: 100;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 12px;
-        }
-        .hud-side { display: flex; align-items: center; gap: 12px; flex: 1; height: 100%; min-width: 0; }
-        .hud-right { flex-direction: row-reverse; }
-
-        .hud-avatar {
-            width: var(--hud-h); height: var(--hud-h);
-            border-radius: 50%; overflow: hidden; flex-shrink: 0;
-            background: rgba(255,255,255,0.05);
-        }
-        .hud-avatar img { width: 100%; height: 100%; object-fit: cover; }
-
-        .hud-score {
-            font-size: calc(var(--hud-h) * 0.7);
-            line-height: 1;
-            font-weight: 900;
-            flex-shrink: 0;
-            text-align: left;
-        }
-        .hud-right .hud-score { text-align: right; }
-
-        .energy-container { flex: 1; min-width: 0; height: 20px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; border: 2px solid rgba(255,255,255,0.1); }
-        .energy-bar { height: 100%; width: 0%; transition: width 0.3s; }
-        .energy-u { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
-        .energy-m { background: linear-gradient(90deg, #f472b6, #ec4899); }
-
-        .skill-btn {
-            width: var(--hud-h); height: var(--hud-h); border-radius: 50%;
-            background: rgba(255,255,255,0.05); border: 3px solid rgba(255,255,255,0.2);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; pointer-events: auto; transition: all 0.3s;
-            opacity: 0.2; filter: grayscale(1);
-        }
-        .skill-ready { opacity: 1 !important; filter: grayscale(0) !important; border-color: #fbbf24 !important; transform: scale(1.1); box-shadow: 0 0 20px #fbbf24; }
-        .skill-btn img { width: 85%; height: 85%; object-fit: contain; }
-
-        /* 技能遮罩：寬度剛好等於一半，高度調整為 1/2 (50vh) */
-        .skill-overlay {
-            position: fixed; top: 0; width: 50%; height: 50vh;
-            z-index: 200; pointer-events: none;
-            display: none;
-            animation: bounceInDown 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-        @keyframes bounceInDown {
-            from { transform: translate3d(0, -100%, 0); opacity: 0; }
-            60% { transform: translate3d(0, 20px, 0); opacity: 1; }
-            75% { transform: translate3d(0, -10px, 0); }
-            90% { transform: translate3d(0, 5px, 0); }
-            to { transform: translate3d(0, 0, 0); }
-        }
-        .skill-overlay img { width: 100%; height: 100%; object-fit: contain; }
-        .left-0 { left: 0; }
-        .right-0 { right: 0; }
-
-        .hit-flash { animation: hitFlash 0.2s ease-out forwards; }
-        @keyframes hitFlash { 0% { transform: scale(1.4); opacity: 0.8; } 100% { transform: scale(1); opacity: 0; } }
+        body { background: #1a1a2e; color: white; overflow: hidden; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        .bg-gradient-custom { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .game-card { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .game-card:active { transform: scale(0.95); }
+        /* 雙人面對面佈局 */
+        .dual-container { display: flex; flex-direction: column; height: 100vh; }
+        .player-zone { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        .p2-zone { transform: rotate(180deg); border-bottom: 2px dashed rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
-    <div id="game-ui">
-        <div id="tm-container">
-            <div id="tm">30</div>
-        </div>
-    </div>
-
-    <div id="game-area"></div>
-
-    <!-- 技能遮罩：奧特曼的網子在右邊，美樂蒂的煙霧在左邊 -->
-    <div id="skill-u" class="skill-overlay right-0"><img src="assets/skills/spiderman-block.png"></div>
-    <div id="skill-m" class="skill-overlay left-0"><img src="assets/skills/kuromi-block.png"></div>
-
-    <div class="bottom-hud">
-        <div class="hud-side">
-            <div class="hud-avatar" style="border: 4px solid #3b82f6;"><img src="assets/ultraman.png"></div>
-            <div class="hud-score text-blue-400">U:<span id="s1">0</span></div>
-            <div class="energy-container"><div id="bar1" class="energy-bar energy-u"></div></div>
-            <div id="btn1" class="skill-btn" onclick="useSkill('u')"><img src="assets/skills/spiderman-skill.png"></div>
-        </div>
-        <div class="hud-side hud-right">
-            <div class="hud-avatar" style="border: 4px solid #ffffff; background: #ffffff;"><img src="assets/melody.png"></div>
-            <div class="hud-score text-pink-400">M:<span id="s2">0</span></div>
-            <div class="energy-container"><div id="bar2" class="energy-bar energy-m"></div></div>
-            <div id="btn2" class="skill-btn" onclick="useSkill('m')"><img src="assets/skills/kuromi-skill.png"></div>
-        </div>
-    </div>
-
-    <div id="result" class="screen hidden" style="z-index:1000; background: rgba(0,0,0,0.9); position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
-        <h1 class="text-5xl font-black mb-12 text-yellow-400 italic tracking-tighter">MISSION COMPLETE</h1>
-        <div class="flex gap-16 mb-12">
-            <div class="text-center">
-                <div class="w-32 h-32 rounded-full border-4 border-blue-500 overflow-hidden mb-4 bg-[#1e3a8a] shadow-xl"><img src="assets/ultraman.png" class="w-full h-full object-cover"></div>
-                <p class="text-blue-400 font-bold mb-1">ULTRAMAN</p>
-                <p id="f1" class="text-6xl font-black text-white">0</p>
-            </div>
-            <div class="text-center">
-                <div class="w-32 h-32 rounded-full border-4 border-white overflow-hidden mb-4 bg-white shadow-xl"><img src="assets/melody.png" class="w-full h-full object-cover"></div>
-                <p class="text-pink-400 font-bold mb-1">MELODY</p>
-                <p id="f2" class="text-6xl font-black text-white">0</p>
+    <div id="hub-container" class="dual-container">
+        <div class="player-zone p2-zone bg-gradient-custom">
+            <h2 class="text-2xl font-black mb-4">準備好了嗎？</h2>
+            <div class="flex gap-4">
+                <div class="bg-white/10 p-4 rounded-2xl border border-white/20">
+                    <p class="text-xs uppercase opacity-50">你的紀錄</p>
+                    <p class="text-xl font-bold p2-score">尚無冒險</p>
+                </div>
             </div>
         </div>
-        <div id="winner-msg" class="text-2xl font-black mb-12 text-yellow-400"></div>
-        <div class="flex gap-6">
-            <button onclick="location.reload()" class="px-10 py-4 bg-blue-600 rounded-2xl font-black text-xl shadow-lg">RESTART</button>
-            <a href="index.html" class="px-10 py-4 bg-slate-700 rounded-2xl font-black text-xl shadow-lg">HOME</a>
+
+        <div class="player-zone p1-zone bg-[#0f0f1a]">
+            <div class="text-center mb-6">
+                <h1 class="text-4xl font-black italic tracking-tighter mb-2">小英雄遊戲樂園</h1>
+                <p class="text-xs opacity-50 uppercase tracking-widest">Kids Hero Playground</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 w-full max-w-md px-6">
+                <a href="welcome.html" class="game-card bg-blue-600 p-4 rounded-3xl flex flex-col items-center shadow-lg border-b-4 border-blue-800">
+                    <span class="text-4xl mb-2">⚡</span>
+                    <span class="font-bold text-sm">英雄挑戰</span>
+                </a>
+                <div class="game-card bg-gray-800 p-4 rounded-3xl flex flex-col items-center opacity-50 cursor-not-allowed">
+                    <span class="text-4xl mb-2">🍎</span>
+                    <span class="font-bold text-sm">即將開啟</span>
+                </div>
+            </div>
         </div>
     </div>
-
-    <script src="js/history.js"></script>
-    <script>
-        var s1 = 0, s2 = 0, tm = 30, active = false;
-        var e1 = 0, e2 = 0; 
-        var spawnInterval = null;
-        var hitSound = new Audio('assets/sfx/hit.mp3');
-        var endSound = new Audio('assets/sfx/gameover.mp3');
-        var bgm = new Audio('assets/sfx/bgm.mp3'); bgm.loop = true;
-
-        function start() {
-            active = true;
-            bgm.currentTime = 0;
-            bgm.play().catch(e=>{});
-            var timer = setInterval(() => {
-                if(!active) { clearInterval(timer); return; }
-                tm--;
-                var tmEl = document.getElementById('tm');
-                tmEl.innerText = tm;
-                if(tm <= 5) tmEl.classList.add('timer-danger');
-                if(tm <= 0) { clearInterval(timer); end(); }
-            }, 1000);
-            spawnInterval = setInterval(() => { if(active) spawn(); }, 600);
-        }
-
-        function spawn() {
-            var isU = Math.random() > 0.5;
-            var item = document.createElement('div');
-            item.className = 'falling-item';
-            item.dataset.type = isU ? 'u' : 'm';
-            item.style.background = isU ? '#1e3a8a' : '#ffffff';
-            var img = document.createElement('img');
-            img.src = isU ? 'assets/ultraman.png' : 'assets/melody.png';
-            item.appendChild(img);
-
-            var half = window.innerWidth / 2;
-            var x = isU 
-                ? Math.random() * (half - 120) + 10 
-                : half + Math.random() * (half - 120) + 10;
-
-            item.style.left = x + 'px'; 
-            item.style.top = '-120px';
-            document.getElementById('game-area').appendChild(item);
-
-            var pos = -120; var speed = 4 + Math.random() * 5;
-            var move = setInterval(() => {
-                if(!active) { clearInterval(move); item.remove(); return; }
-                pos += speed; item.style.top = pos + 'px';
-                if(pos > window.innerHeight) { clearInterval(move); item.remove(); }
-            }, 20);
-        }
-
-        function handleHit(clientX, clientY) {
-            if(!active) return;
-            var items = document.getElementsByClassName('falling-item');
-            for(var i=0; i<items.length; i++){
-                var r = items[i].getBoundingClientRect();
-                if(clientX > r.left-30 && clientX < r.right+30 && clientY > r.top-30 && clientY < r.bottom+30){
-                    hitSound.currentTime = 0; hitSound.play().catch(e=>{});
-                    if(items[i].dataset.type === 'u') { s1++; e1 = Math.min(8, e1+1); } 
-                    else { s2++; e2 = Math.min(8, e2+1); }
-                    updateHUD();
-                    items[i].classList.add('hit-flash');
-                    var target = items[i];
-                    setTimeout(() => target.remove(), 200);
-                    break;
-                }
-            }
-        }
-
-        window.addEventListener('touchstart', (e) => { var t = e.changedTouches[0]; handleHit(t.clientX, t.clientY); }, { passive: false });
-        window.addEventListener('mousedown', (e) => { handleHit(e.clientX, e.clientY); });
-
-        function updateHUD() {
-            document.getElementById('s1').innerText = s1;
-            document.getElementById('s2').innerText = s2;
-            document.getElementById('bar1').style.width = (e1/8*100) + '%';
-            document.getElementById('bar2').style.width = (e2/8*100) + '%';
-            if(e1>=8) document.getElementById('btn1').classList.add('skill-ready');
-            if(e2>=8) document.getElementById('btn2').classList.add('skill-ready');
-        }
-
-        function useSkill(type) {
-            if(type === 'u' && e1 < 8) return;
-            if(type === 'm' && e2 < 8) return;
-            if(type === 'u') { 
-                e1 = 0; 
-                document.getElementById('btn1').classList.remove('skill-ready'); 
-                showBlock('u'); // 奧特曼射出的網子會顯示在右邊
-            } else { 
-                e2 = 0; 
-                document.getElementById('btn2').classList.remove('skill-ready'); 
-                showBlock('m'); // 美樂蒂炸出的煙霧會顯示在左邊
-            }
-            updateHUD();
-        }
-
-        function showBlock(origin) {
-            var targetId = (origin === 'u') ? 'skill-u' : 'skill-m';
-            var el = document.getElementById(targetId);
-            el.style.display = 'block';
-            setTimeout(() => { el.style.display = 'none'; }, 3000);
-        }
-
-        function end() {
-            active = false; bgm.pause(); endSound.play().catch(e=>{});
-            document.getElementById('result').classList.remove('hidden');
-            document.getElementById('f1').innerText = s1;
-            document.getElementById('f2').innerText = s2;
-            var msg = s1 > s2 ? '⚡ ULTRAMAN WINS!' : s2 > s1 ? '🌸 MELODY WINS!' : 'HEROIC TIE!';
-            document.getElementById('winner-msg').innerText = msg;
-            saveRecord(s1, s2);
-        }
-        window.onload = start;
-    </script>
 </body>
 </html>
