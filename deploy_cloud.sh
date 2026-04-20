@@ -27,18 +27,18 @@ cp -R ${PROJECT_ROOT}/src/games/hero-challenge/assets/* ${DEPLOY_HUB}/public/des
 # 公用 JS
 cp ${PROJECT_ROOT}/src/common/js/history.js ${DEPLOY_HUB}/public/design/js/
 
-# 2. 執行部署 (使用與 auto_deploy_all.sh 相同的權限機制)
+# 3. 部署至 Firebase (使用絕對路徑與 --config)
 echo "🔥 正在上傳至 Firebase ($PROJECT_ID)..."
 export GOOGLE_APPLICATION_CREDENTIALS="${KEY_PATH}"
-cd ${DEPLOY_HUB}
 
-# 獲取臨時 Token
+# 使用與原本 auto_deploy_all.sh 相同的權限機制
 TOKEN=$(gcloud auth application-default print-access-token 2>/dev/null)
+FIREBASE_JSON="${DEPLOY_HUB}/firebase.json"
 
 if [ -n "$TOKEN" ]; then
-    firebase deploy --only hosting --project ${PROJECT_ID} --non-interactive --token "$TOKEN"
+    firebase deploy --only hosting --project ${PROJECT_ID} --non-interactive --token "$TOKEN" --config "$FIREBASE_JSON"
 else
-    firebase deploy --only hosting --project ${PROJECT_ID} --non-interactive
+    firebase deploy --only hosting --project ${PROJECT_ID} --non-interactive --config "$FIREBASE_JSON"
 fi
 
 echo "✨ 部署完成！"
