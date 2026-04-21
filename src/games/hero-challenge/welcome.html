@@ -451,6 +451,87 @@
         .d-5 { animation-delay: 0.54s; } .d-6 { animation-delay: 0.66s; }
         @keyframes rise { to { opacity: 1; transform: translateY(0); } }
 
+        /* ========== Mode + character selection ========== */
+        /* Mode option visual reuses .time-option look (already defined above) */
+        .mode-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .mode-grid .time-option .num {
+            font-size: clamp(1.4rem, 4vw, 2rem);
+            line-height: 1.05;
+        }
+        .mode-grid .time-option .sub {
+            display: block;
+            margin-top: 6px;
+            font-size: 0.65rem;
+            letter-spacing: 0.32em;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+        .mode-grid .time-option.active .sub { color: #bfdbfe; }
+
+        /* Faceoff: SOLO chooser */
+        .fighter { cursor: default; transition: transform .25s ease, opacity .25s ease, filter .25s ease; }
+        body[data-mode="solo"] .fighter {
+            cursor: pointer;
+            opacity: 0.45;
+            filter: grayscale(0.6);
+            transform: scale(0.92);
+        }
+        body[data-mode="solo"] .fighter.picked {
+            opacity: 1;
+            filter: none;
+            transform: scale(1.04);
+        }
+        body[data-mode="solo"] .fighter.picked .fighter-avatar {
+            border-color: rgba(251,191,36,0.85);
+            box-shadow: 0 0 0 3px rgba(251,191,36,0.15), 0 18px 36px rgba(0,0,0,0.5);
+        }
+        body[data-mode="solo"] .fighter.picked .fighter-avatar::after { opacity: 0.85; }
+        body[data-mode="solo"] .fighter .fighter-role { display: none; }
+        body[data-mode="solo"] .fighter.picked::after {
+            content: 'PICKED';
+            display: block;
+            margin-top: 4px;
+            font-family: 'Bungee', system-ui, sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 0.4em;
+            color: #fbbf24;
+        }
+
+        body[data-mode="solo"] .vs-badge { display: none; }
+        body[data-mode="solo"] .vs-mini { display: none; }
+        body[data-mode="solo"] .vs-pick {
+            display: block;
+            font-family: 'Bungee', system-ui, sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.4em;
+            color: var(--accent-gold);
+            text-align: center;
+        }
+        body[data-mode="solo"] .vs-pick-sub {
+            display: block;
+            margin-top: 4px;
+            font-size: 0.6rem;
+            letter-spacing: 0.3em;
+            color: var(--muted);
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        body[data-mode="duo"] .vs-pick,
+        body[data-mode="duo"] .vs-pick-sub { display: none; }
+
+        /* Title sub swap by mode */
+        body[data-mode="solo"] .title-main-duo,
+        body[data-mode="solo"] .title-sub-duo,
+        body[data-mode="solo"] .rules-duo { display: none; }
+        body[data-mode="duo"]  .title-main-solo,
+        body[data-mode="duo"]  .title-sub-solo,
+        body[data-mode="duo"]  .rules-solo { display: none; }
+
         /* Responsive */
         @media (max-width: 420px) {
             .faceoff { padding: 20px 14px; gap: 8px; }
@@ -459,7 +540,7 @@
         }
     </style>
 </head>
-<body>
+<body data-mode="duo" data-pick="u">
     <div class="nebula"></div>
     <div class="stars"></div>
     <div class="grid-overlay"></div>
@@ -481,14 +562,38 @@
 
         <!-- Title -->
         <div class="title-block reveal d-2">
-            <div class="overtitle font-en">Duel Briefing</div>
-            <h1 class="title-main font-en">READY TO DUEL</h1>
-            <div class="title-sub">奧特曼 × 美樂蒂 · 英雄挑戰賽</div>
+            <div class="overtitle font-en">Mission Briefing</div>
+            <h1 class="title-main font-en title-main-duo">READY TO DUEL</h1>
+            <h1 class="title-main font-en title-main-solo">READY TO RUMBLE</h1>
+            <div class="title-sub title-sub-duo">奧特曼 × 美樂蒂 · 英雄挑戰賽</div>
+            <div class="title-sub title-sub-solo">挑選你的英雄 · 單人衝榜</div>
         </div>
 
-        <!-- Faceoff -->
-        <div class="faceoff reveal d-3">
-            <div class="fighter left">
+        <!-- Mode select -->
+        <div class="panel reveal d-3">
+            <div class="panel-label">
+                <div class="key font-en">Game Mode</div>
+                <div class="value"><span id="modeDisplay">DUO</span> / selected</div>
+            </div>
+            <div class="time-grid mode-grid" id="modeGrid">
+                <button type="button" class="time-option" data-mode="solo">
+                    <span class="corner tl"></span><span class="corner tr"></span>
+                    <span class="corner bl"></span><span class="corner br"></span>
+                    <span class="num">SOLO</span>
+                    <span class="sub">單人挑戰</span>
+                </button>
+                <button type="button" class="time-option active" data-mode="duo">
+                    <span class="corner tl"></span><span class="corner tr"></span>
+                    <span class="corner bl"></span><span class="corner br"></span>
+                    <span class="num">DUO</span>
+                    <span class="sub">雙人對戰</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Faceoff / Character chooser -->
+        <div class="faceoff reveal d-4">
+            <div class="fighter left" data-pick="u">
                 <div class="fighter-avatar">
                     <img src="assets/ultraman.png" alt="Ultraman">
                 </div>
@@ -499,9 +604,11 @@
             <div class="vs-core">
                 <div class="vs-badge font-en">VS</div>
                 <div class="vs-mini font-mono">1v1 · HEAD TO HEAD</div>
+                <div class="vs-pick">PICK YOUR HERO</div>
+                <div class="vs-pick-sub">tap to choose</div>
             </div>
 
-            <div class="fighter right">
+            <div class="fighter right" data-pick="m">
                 <div class="fighter-avatar">
                     <img src="assets/melody.png" alt="Melody">
                 </div>
@@ -511,7 +618,7 @@
         </div>
 
         <!-- Time select -->
-        <div class="panel reveal d-4">
+        <div class="panel reveal d-5">
             <div class="panel-label">
                 <div class="key font-en">Match Length</div>
                 <div class="value"><span id="valDisplay">30</span>s / selected</div>
@@ -548,8 +655,8 @@
         </div>
 
         <!-- CTA -->
-        <div class="cta-wrap reveal d-5">
-            <a id="launchBtn" href="main2.html?time=45" class="launch-btn">
+        <div class="cta-wrap reveal d-6">
+            <a id="launchBtn" href="play-duo.html?time=45" class="launch-btn">
                 <span>ENTER BATTLEFIELD</span>
                 <span class="arrow">➜</span>
             </a>
@@ -561,7 +668,7 @@
         </div>
 
         <!-- Rules strip -->
-        <div class="rules reveal d-6">
+        <div class="rules reveal d-6 rules-duo">
             <div class="rule">
                 <span class="ico">⚡</span>
                 <div class="t">TAP YOUR HERO</div>
@@ -578,32 +685,89 @@
                 <div class="d">時間到時分數最高者勝</div>
             </div>
         </div>
+
+        <div class="rules reveal d-6 rules-solo">
+            <div class="rule">
+                <span class="ico">🎯</span>
+                <div class="t">TAP TO SCORE</div>
+                <div class="d">點擊掉落英雄累積分數</div>
+            </div>
+            <div class="rule">
+                <span class="ico">✨</span>
+                <div class="t">UNLEASH SKILL</div>
+                <div class="d">滿格能量釋放專屬必殺</div>
+            </div>
+            <div class="rule">
+                <span class="ico">⏱️</span>
+                <div class="t">BEAT THE CLOCK</div>
+                <div class="d">挑戰個人最高紀錄</div>
+            </div>
+        </div>
     </div>
 
     <script>
         (function () {
-            var grid = document.getElementById('timeGrid');
-            var launch = document.getElementById('launchBtn');
-            var display = document.getElementById('valDisplay');
+            var state = { mode: 'duo', pick: 'u', time: 45 };
 
-            function setTime(val) {
-                var opts = grid.querySelectorAll('.time-option');
-                opts.forEach(function (o) {
-                    o.classList.toggle('active', o.dataset.time === String(val));
+            var timeGrid   = document.getElementById('timeGrid');
+            var modeGrid   = document.getElementById('modeGrid');
+            var launch     = document.getElementById('launchBtn');
+            var timeDisp   = document.getElementById('valDisplay');
+            var modeDisp   = document.getElementById('modeDisplay');
+            var fighters   = document.querySelectorAll('.faceoff .fighter');
+
+            function applyState() {
+                document.body.dataset.mode = state.mode;
+                document.body.dataset.pick = state.pick;
+                modeDisp.textContent = state.mode.toUpperCase();
+                timeDisp.textContent = state.time;
+
+                fighters.forEach(function (f) {
+                    f.classList.toggle('picked', f.dataset.pick === state.pick);
                 });
-                display.textContent = val;
-                launch.setAttribute('href', 'main2.html?time=' + val);
+
+                var href = state.mode === 'solo'
+                    ? 'play-solo.html?p=' + state.pick + '&time=' + state.time
+                    : 'play-duo.html?time=' + state.time;
+                launch.setAttribute('href', href);
             }
 
-            grid.addEventListener('click', function (e) {
+            function setActive(grid, attr, val) {
+                grid.querySelectorAll('.time-option').forEach(function (o) {
+                    o.classList.toggle('active', o.dataset[attr] === String(val));
+                });
+            }
+
+            timeGrid.addEventListener('click', function (e) {
                 var btn = e.target.closest('.time-option');
                 if (!btn) return;
-                setTime(btn.dataset.time);
+                state.time = parseInt(btn.dataset.time, 10);
+                setActive(timeGrid, 'time', state.time);
+                applyState();
             });
 
-            // Initialize to the already-active button
-            var initial = grid.querySelector('.time-option.active');
-            if (initial) setTime(initial.dataset.time);
+            modeGrid.addEventListener('click', function (e) {
+                var btn = e.target.closest('.time-option');
+                if (!btn) return;
+                state.mode = btn.dataset.mode;
+                setActive(modeGrid, 'mode', state.mode);
+                applyState();
+            });
+
+            fighters.forEach(function (f) {
+                f.addEventListener('click', function () {
+                    if (state.mode !== 'solo') return;
+                    state.pick = f.dataset.pick;
+                    applyState();
+                });
+            });
+
+            // Initial sync
+            var t0 = timeGrid.querySelector('.time-option.active');
+            if (t0) state.time = parseInt(t0.dataset.time, 10);
+            var m0 = modeGrid.querySelector('.time-option.active');
+            if (m0) state.mode = m0.dataset.mode;
+            applyState();
         })();
     </script>
 </body>

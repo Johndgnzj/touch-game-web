@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HERO CHALLENGE — SOLO</title>
+    <link rel="stylesheet" href="../../common/css/global.css">
+    <style>
+        :root {
+            --hud-h: 14vh;
+            --accent-u: #3b82f6;
+            --accent-m: #ec4899;
+        }
+        html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; background: #000; overflow: hidden; touch-action: none; color: #fff; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
+
+        #game-area {
+            position: fixed; inset: 0; z-index: 10;
+            background: url('assets/background-portrait.jpg') no-repeat center center / cover;
+        }
+        @media (orientation: landscape) {
+            #game-area { background-image: url('assets/background-landscape.jpg'); }
+        }
+
+        /* 倒數計時 */
+        #tm-container { position: fixed; top: 4vh; left: 50%; transform: translateX(-50%); z-index: 60; pointer-events: none; }
+        #tm { font-size: clamp(5rem, 14vw, 9rem); font-weight: 900; line-height: 1; text-shadow: 8px 8px 22px rgba(0,0,0,0.7), 0 0 40px rgba(255,255,255,0.15); transition: color .3s, font-size .3s; }
+        .timer-danger { color: #ff4d4d !important; animation: shake .15s infinite; }
+        @keyframes shake {
+            0% { transform: translate(2px, 2px); }
+            25% { transform: translate(-3px, -1px); }
+            50% { transform: translate(-2px, 3px); }
+            75% { transform: translate(3px, -2px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        /* 落下道具 */
+        .falling-item {
+            position: absolute; width: 110px; height: 110px;
+            border-radius: 50%; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            pointer-events: none; z-index: 20;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.55);
+            border: 3px solid rgba(255,255,255,0.18);
+        }
+        .falling-item img { width: 100%; height: 100%; object-fit: cover; }
+        .falling-item.pulled { box-shadow: 0 0 24px var(--accent-m), 0 8px 22px rgba(0,0,0,0.5); border-color: rgba(244,114,182,0.85); }
+
+        /* 底部 HUD */
+        .bottom-hud {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: var(--hud-h);
+            background: rgba(0, 0, 0, 0.78);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(255,255,255,0.15);
+            z-index: 100;
+            display: flex; align-items: center; gap: 16px;
+            padding: 0 18px; box-sizing: border-box;
+        }
+        .hud-avatar {
+            width: var(--hud-h); height: var(--hud-h); flex-shrink: 0;
+            border-radius: 50%; overflow: hidden;
+            background: rgba(255,255,255,0.05);
+            box-sizing: border-box;
+        }
+        body[data-pick="u"] .hud-avatar { border: 4px solid var(--accent-u); }
+        body[data-pick="m"] .hud-avatar { border: 4px solid #ffffff; background: #ffffff; }
+        .hud-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .hud-score { font-size: calc(var(--hud-h) * 0.55); line-height: 1; font-weight: 900; flex-shrink: 0; min-width: 100px; letter-spacing: -.02em; }
+        body[data-pick="u"] .hud-score { color: #60a5fa; }
+        body[data-pick="m"] .hud-score { color: #f472b6; }
+        .hud-score .label { font-size: 0.6em; opacity: 0.7; margin-right: 6px; }
+
+        .energy-container { flex: 1; min-width: 0; height: 22px; background: rgba(255,255,255,0.1); border-radius: 11px; overflow: hidden; border: 2px solid rgba(255,255,255,0.12); }
+        .energy-bar { height: 100%; width: 0%; transition: width 0.3s; }
+        body[data-pick="u"] .energy-bar { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        body[data-pick="m"] .energy-bar { background: linear-gradient(90deg, #f472b6, #ec4899); }
+
+        .skill-btn {
+            width: var(--hud-h); height: var(--hud-h); border-radius: 50%; flex-shrink: 0;
+            background: rgba(255,255,255,0.05); border: 3px solid rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; pointer-events: auto; transition: all 0.3s;
+            opacity: 0.25; filter: grayscale(1);
+            box-sizing: border-box;
+        }
+        .skill-btn img { width: 85%; height: 85%; object-fit: contain; }
+        .skill-ready { opacity: 1 !important; filter: grayscale(0) !important; border-color: #fbbf24 !important; transform: scale(1.08); box-shadow: 0 0 24px #fbbf24; }
+
+        /* 置中技能 FX */
+        .skill-fx {
+            position: fixed; left: 50%; top: 50%;
+            width: 50vw; max-width: 80vh; aspect-ratio: 1;
+            transform: translate(-50%, -50%) scale(0.5);
+            opacity: 0; pointer-events: none; z-index: 300;
+            transition: transform .35s cubic-bezier(.175, .885, .32, 1.275), opacity .35s;
+        }
+        .skill-fx.on { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        .skill-fx img {
+            width: 100%; height: 100%; object-fit: contain;
+            filter: drop-shadow(0 14px 30px rgba(0,0,0,.6));
+            animation: skillSpin 3.5s linear infinite;
+        }
+        @keyframes skillSpin {
+            0%   { transform: rotate(-3deg) scale(1); }
+            50%  { transform: rotate(3deg) scale(1.04); }
+            100% { transform: rotate(-3deg) scale(1); }
+        }
+
+        /* 技能標籤 (中央底部小字) */
+        .skill-label {
+            position: fixed; left: 50%; bottom: calc(var(--hud-h) + 16px);
+            transform: translateX(-50%);
+            z-index: 290;
+            padding: 6px 18px; border-radius: 999px;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.18);
+            font-size: 0.85rem; letter-spacing: 0.25em; text-transform: uppercase; font-weight: 700;
+            opacity: 0; pointer-events: none;
+            transition: opacity .3s;
+        }
+        .skill-label.on { opacity: 1; }
+
+        .hit-flash { animation: hitFlash 0.2s ease-out forwards; }
+        @keyframes hitFlash { 0% { transform: scale(1.4); opacity: 0.8; } 100% { transform: scale(1); opacity: 0; } }
+
+        /* 結算畫面 */
+        #result {
+            position: fixed; inset: 0; z-index: 1000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.92);
+            padding: 24px;
+        }
+        #result.show { display: flex; }
+        #result h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; font-style: italic; color: #facc15; margin: 0 0 1.5rem; letter-spacing: -0.03em; text-align: center; }
+        .result-portrait { width: 140px; height: 140px; border-radius: 50%; overflow: hidden; margin: 0 auto 1.2rem; box-shadow: 0 12px 30px rgba(0,0,0,0.55); }
+        body[data-pick="u"] .result-portrait { border: 4px solid var(--accent-u); background: #1e3a8a; }
+        body[data-pick="m"] .result-portrait { border: 4px solid #ffffff; background: #ffffff; }
+        .result-portrait img { width: 100%; height: 100%; object-fit: cover; }
+        .result-name { font-weight: 900; letter-spacing: 0.1em; margin: 0 0 0.5rem; text-align: center; }
+        body[data-pick="u"] .result-name { color: #60a5fa; }
+        body[data-pick="m"] .result-name { color: #f472b6; }
+        .result-score { font-size: clamp(4rem, 10vw, 6rem); font-weight: 900; margin: 0 0 0.5rem; line-height: 1; text-align: center; letter-spacing: -0.03em; }
+        .result-meta { color: rgba(255,255,255,0.6); font-size: 0.85rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 2rem; text-align: center; }
+        .result-meta .best { color: #facc15; font-weight: 900; }
+        .result-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+        .result-btn { padding: 0.9rem 2.4rem; border-radius: 1rem; font-weight: 900; font-size: 1.05rem; border: none; cursor: pointer; box-shadow: 0 8px 18px rgba(0,0,0,0.5); text-decoration: none; color: #fff; display: inline-block; letter-spacing: 0.08em; }
+        .result-btn.primary { background: #2563eb; }
+        .result-btn.secondary { background: #334155; }
+    </style>
+</head>
+<body>
+    <div id="game-area"></div>
+
+    <div id="tm-container"><div id="tm">30</div></div>
+
+    <div class="skill-fx" id="skillFx"><img id="skillFxImg" src="assets/skills/spiderman-block.png" alt=""></div>
+    <div class="skill-label" id="skillLabel">SKILL ACTIVE</div>
+
+    <div class="bottom-hud">
+        <div class="hud-avatar"><img id="heroAvatar" src="assets/ultraman.png"></div>
+        <div class="hud-score"><span class="label" id="heroLabel">U:</span><span id="score">0</span></div>
+        <div class="energy-container"><div id="energyBar" class="energy-bar"></div></div>
+        <div id="skillBtn" class="skill-btn"><img id="skillBtnImg" src="assets/skills/spiderman-skill.png"></div>
+    </div>
+
+    <div id="result">
+        <div class="result-portrait"><img id="resultPortrait" src="assets/ultraman.png"></div>
+        <p class="result-name" id="resultName">ULTRAMAN</p>
+        <h1>MISSION COMPLETE</h1>
+        <p class="result-score" id="finalScore">0</p>
+        <p class="result-meta" id="resultMeta">FINAL SCORE</p>
+        <div class="result-actions">
+            <button onclick="location.reload()" class="result-btn primary">RESTART</button>
+            <a href="welcome.html" class="result-btn secondary">MENU</a>
+        </div>
+    </div>
+
+    <script src="../../common/js/history.js"></script>
+    <script>
+        // ===== Params =====
+        var params = new URLSearchParams(location.search);
+        var ALLOWED_TIMES = [30, 45, 60];
+        var requestedTime = parseInt(params.get('time'), 10);
+        var INITIAL_TIME = ALLOWED_TIMES.indexOf(requestedTime) >= 0 ? requestedTime : 30;
+        var pick = params.get('p') === 'm' ? 'm' : 'u'; // default ultraman
+
+        var HERO = pick === 'u'
+            ? { name: 'ULTRAMAN', img: 'assets/ultraman.png', bg: '#1e3a8a', label: 'U:',
+                skillBtnImg: 'assets/skills/spiderman-skill.png',
+                skillFxImg:  'assets/skills/spiderman-block.png',
+                skillLabel:  'WEB STORM' }
+            : { name: 'MELODY',   img: 'assets/melody.png',   bg: '#ffffff', label: 'M:',
+                skillBtnImg: 'assets/skills/kuromi-skill.png',
+                skillFxImg:  'assets/skills/kuromi-skill.png',
+                skillLabel:  'GRAVITY WELL' };
+
+        // Apply hero-specific UI
+        document.body.dataset.pick = pick;
+        document.getElementById('heroAvatar').src = HERO.img;
+        document.getElementById('heroLabel').textContent = HERO.label;
+        document.getElementById('skillBtnImg').src = HERO.skillBtnImg;
+        document.getElementById('skillFxImg').src = HERO.skillFxImg;
+        document.getElementById('skillLabel').textContent = HERO.skillLabel;
+        document.getElementById('resultPortrait').src = HERO.img;
+        document.getElementById('resultName').textContent = HERO.name;
+
+        // ===== State =====
+        var s = 0, e = 0, tm = INITIAL_TIME, active = false;
+        var ENERGY_MAX = 8;
+        var SKILL_DURATION_U = 5000;
+        var SKILL_DURATION_M = 3500;
+        var BASE_SPAWN_MS = 600;
+        var FAST_SPAWN_MS = 300;
+        var spawnIntervalId = null;
+        var speedFactor = 1.0;       // 1.0 normal, 0.5 during U skill
+        var gravityActive = false;   // M skill
+        document.getElementById('tm').textContent = tm;
+
+        // ===== Audio =====
+        var hitSound = new Audio('assets/sfx/hit.mp3');
+        var endSound = new Audio('assets/sfx/gameover.mp3');
+        var bgm      = new Audio('assets/sfx/bgm.mp3'); bgm.loop = true;
+        var audioUnlocked = false;
+        function unlockAudio() {
+            if (audioUnlocked) return;
+            audioUnlocked = true;
+            try {
+                endSound.play().then(function(){ endSound.pause(); endSound.currentTime = 0; }).catch(function(){});
+            } catch (err) {}
+            bgm.currentTime = 0;
+            bgm.play().catch(function(){});
+        }
+
+        // ===== Spawn / move =====
+        function setSpawnRate(ms) {
+            if (spawnIntervalId) clearInterval(spawnIntervalId);
+            spawnIntervalId = setInterval(function() { if (active) spawn(); }, ms);
+        }
+
+        function spawn() {
+            var area = document.getElementById('game-area');
+            var size = 110;
+            var w = window.innerWidth;
+            var x = Math.random() * Math.max(1, w - size - 20) + 10;
+            var y = -size;
+            var item = document.createElement('div');
+            item.className = 'falling-item';
+            item.style.background = HERO.bg;
+            item.style.left = x + 'px';
+            item.style.top = y + 'px';
+            var img = document.createElement('img');
+            img.src = HERO.img;
+            item.appendChild(img);
+            area.appendChild(item);
+
+            var baseSpeed = 4 + Math.random() * 5;
+            var posX = x, posY = y;
+            var pulled = false;
+            var move = setInterval(function() {
+                if (!active) { clearInterval(move); item.remove(); return; }
+
+                if (gravityActive) {
+                    if (!pulled) { pulled = true; item.classList.add('pulled'); }
+                    var hudH = document.querySelector('.bottom-hud').offsetHeight;
+                    var tx = window.innerWidth / 2 - size / 2;
+                    var ty = window.innerHeight - hudH - size - 20;
+                    posX += (tx - posX) * 0.18;
+                    posY += (ty - posY) * 0.18;
+                    item.style.left = posX + 'px';
+                    item.style.top  = posY + 'px';
+                    var dx = tx - posX, dy = ty - posY;
+                    if (Math.sqrt(dx*dx + dy*dy) < 30) {
+                        clearInterval(move);
+                        autoCollect(item);
+                    }
+                    return;
+                }
+
+                posY += baseSpeed * speedFactor;
+                item.style.top = posY + 'px';
+                if (posY > window.innerHeight) { clearInterval(move); item.remove(); }
+            }, 20);
+        }
+
+        function autoCollect(item) {
+            s++;
+            updateHUD();
+            try { hitSound.currentTime = 0; hitSound.play().catch(function(){}); } catch (err) {}
+            item.classList.add('hit-flash');
+            setTimeout(function() { item.remove(); }, 200);
+        }
+
+        // ===== Input =====
+        function handleHit(clientX, clientY) {
+            if (!active) return;
+            var items = document.getElementsByClassName('falling-item');
+            for (var i = 0; i < items.length; i++) {
+                var r = items[i].getBoundingClientRect();
+                if (clientX > r.left - 24 && clientX < r.right + 24 &&
+                    clientY > r.top  - 24 && clientY < r.bottom + 24) {
+                    try { hitSound.currentTime = 0; hitSound.play().catch(function(){}); } catch (err) {}
+                    s++;
+                    e = Math.min(ENERGY_MAX, e + 1);
+                    updateHUD();
+                    items[i].classList.add('hit-flash');
+                    var target = items[i];
+                    setTimeout(function() { target.remove(); }, 200);
+                    break;
+                }
+            }
+        }
+
+        window.addEventListener('touchstart', function(ev) {
+            unlockAudio();
+            for (var i = 0; i < ev.changedTouches.length; i++) {
+                var t = ev.changedTouches[i];
+                handleHit(t.clientX, t.clientY);
+            }
+        }, { passive: false });
+        window.addEventListener('mousedown', function(ev) { unlockAudio(); handleHit(ev.clientX, ev.clientY); });
+
+        // ===== HUD =====
+        function updateHUD() {
+            document.getElementById('score').textContent = s;
+            document.getElementById('energyBar').style.width = (e / ENERGY_MAX * 100) + '%';
+            var btn = document.getElementById('skillBtn');
+            if (e >= ENERGY_MAX) btn.classList.add('skill-ready');
+            else                 btn.classList.remove('skill-ready');
+        }
+
+        // ===== Skill =====
+        function useSkill() {
+            if (!active || e < ENERGY_MAX) return;
+            e = 0;
+            updateHUD();
+
+            var fx = document.getElementById('skillFx');
+            var label = document.getElementById('skillLabel');
+            fx.classList.add('on');
+            label.classList.add('on');
+
+            setSpawnRate(FAST_SPAWN_MS);
+            var duration;
+            if (pick === 'u') {
+                speedFactor = 0.5;
+                duration = SKILL_DURATION_U;
+            } else {
+                gravityActive = true;
+                duration = SKILL_DURATION_M;
+            }
+
+            setTimeout(function() {
+                fx.classList.remove('on');
+                label.classList.remove('on');
+                speedFactor = 1.0;
+                gravityActive = false;
+                setSpawnRate(BASE_SPAWN_MS);
+            }, duration);
+        }
+
+        var sBtn = document.getElementById('skillBtn');
+        sBtn.addEventListener('click', function(ev) { ev.stopPropagation(); useSkill(); });
+        sBtn.addEventListener('touchend', function(ev) { ev.preventDefault(); ev.stopPropagation(); unlockAudio(); useSkill(); }, { passive: false });
+        sBtn.addEventListener('touchstart', function(ev) { ev.stopPropagation(); }, { passive: true });
+
+        // ===== Lifecycle =====
+        function start() {
+            active = true;
+            var timer = setInterval(function() {
+                if (!active) { clearInterval(timer); return; }
+                tm--;
+                var el = document.getElementById('tm');
+                el.textContent = tm;
+                if (tm <= 5) el.classList.add('timer-danger');
+                if (tm <= 0) { clearInterval(timer); end(); }
+            }, 1000);
+            setSpawnRate(BASE_SPAWN_MS);
+        }
+
+        function end() {
+            active = false;
+            if (spawnIntervalId) clearInterval(spawnIntervalId);
+            bgm.pause();
+            try { endSound.currentTime = 0; endSound.play().catch(function(){}); } catch (err) {}
+
+            // Best score (per hero)
+            var bestKey = 'hero-challenge-solo-best-' + pick;
+            var prev = parseInt(localStorage.getItem(bestKey) || '0', 10);
+            var isBest = s > prev;
+            if (isBest) localStorage.setItem(bestKey, String(s));
+
+            document.getElementById('finalScore').textContent = s;
+            document.getElementById('resultMeta').innerHTML = isBest
+                ? '<span class="best">★ NEW BEST ★</span>'
+                : 'BEST · ' + Math.max(prev, s);
+            document.getElementById('result').classList.add('show');
+
+            if (typeof saveRecord === 'function') saveRecord({
+                game: 'hero-challenge',
+                mode: 'solo',
+                score: s,
+                winner: pick === 'u' ? 'ultraman' : 'melody'
+            });
+        }
+
+        window.onload = start;
+    </script>
+</body>
+</html>

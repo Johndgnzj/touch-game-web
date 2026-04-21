@@ -232,10 +232,23 @@
         var endSound = new Audio('assets/sfx/gameover.mp3');
         var bgm = new Audio('assets/sfx/bgm.mp3'); bgm.loop = true;
 
-        function start() {
-            active = true;
+        var audioUnlocked = false;
+        function unlockAudio() {
+            if (audioUnlocked) return;
+            audioUnlocked = true;
+            // Prime endSound so it's allowed to play later (no user gesture at game-over)
+            try {
+                endSound.play().then(function(){
+                    endSound.pause();
+                    endSound.currentTime = 0;
+                }).catch(function(){});
+            } catch (e) {}
             bgm.currentTime = 0;
             bgm.play().catch(function(){});
+        }
+
+        function start() {
+            active = true;
 
             var timer = setInterval(function() {
                 if (!active) { clearInterval(timer); return; }
@@ -309,12 +322,13 @@
         }
 
         window.addEventListener('touchstart', function(e) {
+            unlockAudio();
             for (var i = 0; i < e.changedTouches.length; i++) {
                 var t = e.changedTouches[i];
                 handleHit(t.clientX, t.clientY);
             }
         }, { passive: false });
-        window.addEventListener('mousedown', function(e) { handleHit(e.clientX, e.clientY); });
+        window.addEventListener('mousedown', function(e) { unlockAudio(); handleHit(e.clientX, e.clientY); });
 
         function updateHUD() {
             document.getElementById('s1').innerText = s1;
@@ -366,7 +380,12 @@
             document.getElementById('f2').innerText = s2;
             var msg = s1 > s2 ? 'ULTRAMAN WINS!' : s2 > s1 ? 'MELODY WINS!' : 'HEROIC TIE!';
             document.getElementById('winner-msg').innerText = msg;
-            if (typeof saveRecord === 'function') saveRecord(s1, s2);
+            if (typeof saveRecord === 'function') saveRecord({
+                game: 'hero-challenge',
+                mode: 'duo',
+                scores: { u: s1, m: s2 },
+                winner: s1 > s2 ? 'ultraman' : s2 > s1 ? 'melody' : 'tie'
+            });
         }
 
         window.onload = start;
