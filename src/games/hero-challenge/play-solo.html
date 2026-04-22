@@ -35,7 +35,7 @@
 
         /* 落下道具 */
         .falling-item {
-            position: absolute; width: 110px; height: 110px;
+            position: absolute; width: 88px; height: 88px;
             border-radius: 50%; overflow: hidden;
             display: flex; align-items: center; justify-content: center;
             pointer-events: none; z-index: 20;
@@ -146,9 +146,46 @@
         .result-btn { padding: 0.9rem 2.4rem; border-radius: 1rem; font-weight: 900; font-size: 1.05rem; border: none; cursor: pointer; box-shadow: 0 8px 18px rgba(0,0,0,0.5); text-decoration: none; color: #fff; display: inline-block; letter-spacing: 0.08em; }
         .result-btn.primary { background: #2563eb; }
         .result-btn.secondary { background: #334155; }
+
+        /* ===== Preloader ===== */
+        #preloader {
+            position: fixed; inset: 0; z-index: 2000;
+            background: #050510;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 28px;
+            transition: opacity 0.5s ease;
+        }
+        #preloader.done { opacity: 0; pointer-events: none; }
+        .preloader-title {
+            font-size: clamp(1.6rem, 5vw, 2.6rem);
+            font-weight: 900; letter-spacing: 0.08em; color: #fff;
+            text-shadow: 0 0 30px rgba(96,165,250,0.45);
+        }
+        .preloader-bar-wrap {
+            width: min(80vw, 360px); height: 10px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 999px; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+        .preloader-bar {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, #3b82f6, #f472b6);
+            transition: width 0.2s ease;
+        }
+        .preloader-text {
+            font-size: 0.95rem; color: rgba(255,255,255,0.7);
+            letter-spacing: 0.18em;
+        }
     </style>
 </head>
 <body>
+    <div id="preloader">
+        <div class="preloader-title">點點英雄大派對</div>
+        <div class="preloader-bar-wrap"><div id="preloaderBar" class="preloader-bar"></div></div>
+        <div class="preloader-text">載入中… <span id="preloadPct">0</span>%</div>
+    </div>
+
     <div id="game-area"></div>
 
     <div id="tm-container"><div id="tm">30</div></div>
@@ -239,7 +276,7 @@
 
         function spawn() {
             var area = document.getElementById('game-area');
-            var size = 110;
+            var size = 88;
             var w = window.innerWidth;
             var x = Math.random() * Math.max(1, w - size - 20) + 10;
             var y = -size;
@@ -283,6 +320,8 @@
         }
 
         function autoCollect(item) {
+            if (item.dataset.hit === '1') return;
+            item.dataset.hit = '1';
             s++;
             updateHUD();
             try { hitSound.currentTime = 0; hitSound.play().catch(function(){}); } catch (err) {}
@@ -295,9 +334,11 @@
             if (!active) return;
             var items = document.getElementsByClassName('falling-item');
             for (var i = 0; i < items.length; i++) {
+                if (items[i].dataset.hit === '1') continue;
                 var r = items[i].getBoundingClientRect();
                 if (clientX > r.left - 24 && clientX < r.right + 24 &&
                     clientY > r.top  - 24 && clientY < r.bottom + 24) {
+                    items[i].dataset.hit = '1';
                     try { hitSound.currentTime = 0; hitSound.play().catch(function(){}); } catch (err) {}
                     s++;
                     e = Math.min(ENERGY_MAX, e + 1);
@@ -403,7 +444,70 @@
             });
         }
 
-        window.onload = start;
+        // ===== Asset preload =====
+        function preloadAssets(images, audios) {
+            var total = images.length + audios.length;
+            if (total === 0) return Promise.resolve();
+            var loaded = 0;
+            var barEl = document.getElementById('preloaderBar');
+            var pctEl = document.getElementById('preloadPct');
+            return new Promise(function(resolve) {
+                var finished = false;
+                function bump() {
+                    if (finished) return;
+                    loaded++;
+                    var pct = Math.round(loaded / total * 100);
+                    if (barEl) barEl.style.width = pct + '%';
+                    if (pctEl) pctEl.textContent = pct;
+                    if (loaded >= total) { finished = true; resolve(); }
+                }
+                images.forEach(function(src) {
+                    var img = new Image();
+                    img.onload = bump; img.onerror = bump;
+                    img.src = src;
+                });
+                audios.forEach(function(src) {
+                    var a = new Audio();
+                    var done = false;
+                    function once() { if (done) return; done = true; bump(); }
+                    a.addEventListener('canplaythrough', once, { once: true });
+                    a.addEventListener('loadeddata', once, { once: true });
+                    a.addEventListener('error', once, { once: true });
+                    a.preload = 'auto';
+                    a.src = src;
+                });
+                setTimeout(function() {
+                    if (!finished) { finished = true; resolve(); }
+                }, 10000);
+            });
+        }
+
+        window.onload = function() {
+            var imgList = [
+                'assets/background-portrait.jpg',
+                'assets/background-landscape.jpg',
+                'assets/ultraman.png',
+                'assets/melody.png',
+                'assets/logo.png',
+                'assets/skills/spiderman-skill.png',
+                'assets/skills/spiderman-block.png',
+                'assets/skills/kuromi-skill.png',
+                'assets/skills/kuromi-block.png'
+            ];
+            var audioList = [
+                'assets/sfx/bgm.mp3',
+                'assets/sfx/hit.mp3',
+                'assets/sfx/gameover.mp3'
+            ];
+            preloadAssets(imgList, audioList).then(function() {
+                var pre = document.getElementById('preloader');
+                if (pre) {
+                    pre.classList.add('done');
+                    setTimeout(function() { pre.style.display = 'none'; }, 500);
+                }
+                start();
+            });
+        };
     </script>
 </body>
 </html>
