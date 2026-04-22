@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fruit Hunt Adventure</title>
+    <link rel="icon" type="image/png" href="../../assets/games_icon_logo.png">
+    <link rel="shortcut icon" type="image/png" href="../../assets/games_icon_logo.png">
+    <link rel="apple-touch-icon" href="../../assets/games_icon_logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../assets/games_icon_logo.png">
+    <link rel="manifest" href="../site.webmanifest">
+    <meta name="theme-color" content="#060611">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Hero Play">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bungee&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
@@ -76,7 +85,7 @@
         const views = [];
         const stage = document.getElementById('main-stage');
         const hitSfx = new Audio('assets/sfx/hit.mp3');
-        const bgm = new Audio('assets/sfx/bgm.mp3'); bgm.loop = true;
+        const bgm = new Audio('assets/sfx/bgm-duo.mp3'); bgm.loop = true;
 
         function buildView(isP2) {
             const root = document.createElement('div');

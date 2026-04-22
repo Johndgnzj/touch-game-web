@@ -1,0 +1,15 @@
+{
+  "name": "Kids Hero Play",
+  "short_name": "Hero Play",
+  "icons": [
+    { "src": "../assets/games_icon_logo.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "../assets/games_icon_logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "../assets/games_icon_logo.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "theme_color": "#060611",
+  "background_color": "#060611",
+  "display": "standalone",
+  "orientation": "any",
+  "start_url": "menu.html",
+  "scope": "./"
+}

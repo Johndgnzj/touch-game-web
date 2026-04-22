@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HERO CHALLENGE — SOLO</title>
+    <link rel="icon" type="image/png" href="../../assets/games_icon_logo.png">
+    <link rel="shortcut icon" type="image/png" href="../../assets/games_icon_logo.png">
+    <link rel="apple-touch-icon" href="../../assets/games_icon_logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../assets/games_icon_logo.png">
+    <link rel="manifest" href="../site.webmanifest">
+    <meta name="theme-color" content="#060611">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Hero Play">
     <link rel="stylesheet" href="../../common/css/global.css">
     <style>
         :root {
@@ -177,6 +186,24 @@
             font-size: 0.95rem; color: rgba(255,255,255,0.7);
             letter-spacing: 0.18em;
         }
+        .tap-start-btn {
+            padding: 18px 52px; border-radius: 999px; border: none;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #0b0b0b; font-weight: 900; font-size: clamp(1.1rem, 3.2vw, 1.5rem);
+            letter-spacing: 0.22em; cursor: pointer;
+            box-shadow: 0 12px 32px rgba(251,191,36,0.4), 0 0 0 0 rgba(251,191,36,0.6);
+            animation: tapPulse 1.5s ease-in-out infinite;
+            font-family: inherit;
+            -webkit-tap-highlight-color: transparent;
+        }
+        @keyframes tapPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 12px 32px rgba(251,191,36,0.4), 0 0 0 0 rgba(251,191,36,0.55); }
+            50%      { transform: scale(1.06); box-shadow: 0 16px 40px rgba(251,191,36,0.55), 0 0 0 18px rgba(251,191,36,0); }
+        }
+        .tap-start-hint {
+            font-size: 0.85rem; letter-spacing: 0.25em;
+            color: rgba(255,255,255,0.55); text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
@@ -256,7 +283,7 @@
         // ===== Audio =====
         var hitSound = new Audio('assets/sfx/hit.mp3');
         var endSound = new Audio('assets/sfx/gameover.mp3');
-        var bgm      = new Audio('assets/sfx/bgm.mp3'); bgm.loop = true;
+        var bgm      = new Audio('assets/sfx/bgm-solo.mp3'); bgm.loop = true;
         var audioUnlocked = false;
         function unlockAudio() {
             if (audioUnlocked) return;
@@ -500,14 +527,31 @@
                 'assets/sfx/gameover.mp3'
             ];
             preloadAssets(imgList, audioList).then(function() {
-                var pre = document.getElementById('preloader');
-                if (pre) {
-                    pre.classList.add('done');
-                    setTimeout(function() { pre.style.display = 'none'; }, 500);
-                }
-                start();
+                showTapToStart();
             });
         };
+
+        function showTapToStart() {
+            var pre = document.getElementById('preloader');
+            if (!pre) { unlockAudio(); start(); return; }
+            pre.innerHTML =
+                '<div class="preloader-title">點點英雄大派對</div>' +
+                '<button id="tapStartBtn" class="tap-start-btn">TAP TO START</button>' +
+                '<div class="tap-start-hint">點一下開始遊戲</div>';
+            var btn = document.getElementById('tapStartBtn');
+            var started = false;
+            function begin(ev) {
+                if (started) return;
+                started = true;
+                if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+                unlockAudio();
+                pre.classList.add('done');
+                setTimeout(function() { pre.style.display = 'none'; }, 500);
+                start();
+            }
+            btn.addEventListener('touchstart', begin, { passive: false });
+            btn.addEventListener('click', begin);
+        }
     </script>
 </body>
 </html>
