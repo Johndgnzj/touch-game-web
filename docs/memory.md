@@ -37,3 +37,47 @@
 - `.glass-card` 雖只用一次，但語意清楚，可保留。
 
 **結論**：本次優化視覺上無明顯問題，主要技術債在於雙套按鈕系統與部分未使用的 CSS 規則，建議下一次重構時一併整理。
+
+---
+
+# 遊戲音訊解鎖模式 (2026-04-22)
+
+## 6. BGM 在新頁面無法自動播放的問題
+
+### 現象
+從 `welcome.html` 跳到 `play-*.html` 後，BGM 並不會立刻響，必須等玩家「第一次點畫面」才播得出來。期間雖然計時器、掉落物件都已經開始運作，但遊戲處於靜音狀態。
+
+### 根因
+瀏覽器 autoplay policy：**`Audio.play()` 必須在「同一頁面、同一使用者手勢事件 (touchstart / mousedown / click / pointerdown)」的 call stack 內被呼叫，才允許播放**。
+- `location.href` / `<a href>` 跳頁後，原先 welcome 頁的手勢授權不會帶到新頁面。
+- 所以 play 頁即使 `window.onload` 裡直接 `bgm.play()`，仍會被 reject。
+
+舊寫法讓 BGM 只在第一個 `touchstart` 事件處理器中被觸發（同時處理「打擊」邏輯），導致玩家要打到第一個物件才有聲音。
+
+### 解法 — Tap to Start 遮罩（已套用於 hero-challenge、fruit-hunt）
+
+**流程**：
+1. 頁面載入 → 顯示 `#preloader`（載入進度條）
+2. `preloadAssets()` resolve 後 → 把 preloader 內容替換為金色脈動的「TAP TO START」按鈕
+3. 玩家點按鈕（`touchstart` / `click`）→ 同一個 handler 內依序執行：
+   - `unlockAudio()`：在此手勢 stack 內 `bgm.play()`、順便 prime 其他 SFX（`hitSfx.play().then(pause)`）
+   - 淡出 preloader
+   - `init()` / `start()`：啟動計時器、spawn interval、將 `active` 設 true
+
+**關鍵實作細節**：
+- `active` 初始值必須設為 `false`，避免玩家點到 TAP TO START 按鈕時，window 層級的 `touchstart` 同時觸發 `handleHit()` 而誤加分（`handleHit` 依 `active` early-return）。
+- `unlockAudio()` 要有 `audioUnlocked` guard，允許被多次呼叫（按鈕一次 + 後續 touchstart 每一次都會再呼叫，但只有第一次有效）。
+- 對於遊戲結束後才播的 `endSound` / `gameOver` 等音效，也要在 `unlockAudio()` 內先做 `play().then(pause)` 的 priming，否則到 `end()` 時已沒有使用者手勢，會被 block。
+- 技能按鈕的 `touchend` handler 也要呼叫 `unlockAudio()`（雖然 window 層級已有，但避免 `stopPropagation` 擋住）。
+
+**參考實作**：
+- [src/games/hero-challenge/play-solo.html](../src/games/hero-challenge/play-solo.html) — `unlockAudio()` + `showTapToStart()`
+- [src/games/hero-challenge/play-duo.html](../src/games/hero-challenge/play-duo.html)
+- [src/games/fruit-hunt/play.html](../src/games/fruit-hunt/play.html)
+
+### 未來新增遊戲時的 checklist
+- [ ] `var/let active = false` 初始
+- [ ] `new Audio(...)` 後不要直接 `.play()`；透過 `unlockAudio()`
+- [ ] `unlockAudio()` 內 prime 所有延後才要播的 SFX
+- [ ] 預載完成後顯示 TAP TO START，而不是直接 `start()` / `init()`
+- [ ] 視需要在 window `touchstart` / `mousedown` 也呼叫一次 `unlockAudio()` 作為保險

@@ -49,9 +49,64 @@
         .player-card.winner { border-color:#fbbf24; background:rgba(251,191,36,0.1); }
         .player-label { font-size:1rem; letter-spacing:0.2em; opacity:0.7; }
         .player-score { font-size:3.5rem; font-weight:900; }
+
+        /* ===== Preloader / Tap to Start ===== */
+        #preloader {
+            position: fixed; inset: 0; z-index: 2000;
+            background: #050510;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 28px;
+            transition: opacity 0.5s ease;
+        }
+        #preloader.done { opacity: 0; pointer-events: none; }
+        .preloader-title {
+            font-size: clamp(1.6rem, 5vw, 2.6rem);
+            font-weight: 900; letter-spacing: 0.08em; color: #fff;
+            text-shadow: 0 0 30px rgba(96,165,250,0.45);
+        }
+        .preloader-bar-wrap {
+            width: min(80vw, 360px); height: 10px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 999px; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+        .preloader-bar {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, #22c55e, #fbbf24);
+            transition: width 0.2s ease;
+        }
+        .preloader-text {
+            font-size: 0.95rem; color: rgba(255,255,255,0.7);
+            letter-spacing: 0.18em;
+        }
+        .tap-start-btn {
+            padding: 18px 52px; border-radius: 999px; border: none;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #0b0b0b; font-weight: 900; font-size: clamp(1.1rem, 3.2vw, 1.5rem);
+            letter-spacing: 0.22em; cursor: pointer;
+            box-shadow: 0 12px 32px rgba(251,191,36,0.4), 0 0 0 0 rgba(251,191,36,0.6);
+            animation: tapPulse 1.5s ease-in-out infinite;
+            font-family: inherit;
+            -webkit-tap-highlight-color: transparent;
+        }
+        @keyframes tapPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 12px 32px rgba(251,191,36,0.4), 0 0 0 0 rgba(251,191,36,0.55); }
+            50%      { transform: scale(1.06); box-shadow: 0 16px 40px rgba(251,191,36,0.55), 0 0 0 18px rgba(251,191,36,0); }
+        }
+        .tap-start-hint {
+            font-size: 0.85rem; letter-spacing: 0.25em;
+            color: rgba(255,255,255,0.55); text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
+    <div id="preloader">
+        <div class="preloader-title">Fruit Hunt Adventure</div>
+        <div class="preloader-bar-wrap"><div id="preloaderBar" class="preloader-bar"></div></div>
+        <div class="preloader-text">載入中… <span id="preloadPct">0</span>%</div>
+    </div>
+
     <div class="stage" id="main-stage"></div>
 
     <div id="result">
@@ -75,17 +130,35 @@
             { name: 'BANANA', img: 'banana.png' },
             { name: 'STRAWBERRY', img: 'strawberry.png' },
             { name: 'GRAPE', img: 'grape.png' },
-            { name: 'WATERMELON', img: 'watermelon.png' }
+            { name: 'WATERMELON', img: 'watermelon.png' },
+            { name: 'PINEAPPLE', img: 'pineapple.png' },
+            { name: 'ORANGE', img: 'orange.png' },
+            { name: 'PEAR', img: 'pear.png' },
+            { name: 'LEMON', img: 'lemon.png' },
+            { name: 'CHERRY', img: 'cherry.png' },
+            { name: 'BLUEBERRY', img: 'blueberry.png' }
         ];
 
         const HOLE_ASPECT = 80 / 120; // height / width, preserves original proportions
         const HOLE_COUNT = level === 'easy' ? 3 : 5;
 
-        let timer = timeLimit, active = true, currentTarget = null;
+        let timer = timeLimit, active = false, currentTarget = null;
         const views = [];
         const stage = document.getElementById('main-stage');
         const hitSfx = new Audio('assets/sfx/hit.mp3');
-        const bgm = new Audio('assets/sfx/bgm-duo.mp3'); bgm.loop = true;
+        const bgm = new Audio('assets/sfx/bgm.mp3'); bgm.loop = true;
+
+        // ===== Audio unlock (must be called from a user gesture on this page) =====
+        let audioUnlocked = false;
+        function unlockAudio() {
+            if (audioUnlocked) return;
+            audioUnlocked = true;
+            try {
+                hitSfx.play().then(() => { hitSfx.pause(); hitSfx.currentTime = 0; }).catch(() => {});
+            } catch (e) {}
+            bgm.currentTime = 0;
+            bgm.play().catch(() => {});
+        }
 
         function buildView(isP2) {
             const root = document.createElement('div');
@@ -216,6 +289,7 @@
                 if (timer <= 0) {
                     clearInterval(itv);
                     active = false;
+                    bgm.pause();
                     showResult();
                 }
             }, 1000);
@@ -251,16 +325,85 @@
         }
 
         function init() {
+            active = true;
             views.push(buildView(false));
             if (mode === 'duo') views.push(buildView(true));
             views.forEach(spawnHoles);
             newTarget();
             startTimer();
-            bgm.play().catch(e => {});
             window.addEventListener('resize', () => views.forEach(applySizesToView));
         }
 
-        window.onload = init;
+        // ===== Asset preload =====
+        function preloadAssets(images, audios) {
+            const total = images.length + audios.length;
+            if (total === 0) return Promise.resolve();
+            let loaded = 0;
+            const barEl = document.getElementById('preloaderBar');
+            const pctEl = document.getElementById('preloadPct');
+            return new Promise(resolve => {
+                let finished = false;
+                function bump() {
+                    if (finished) return;
+                    loaded++;
+                    const pct = Math.round(loaded / total * 100);
+                    if (barEl) barEl.style.width = pct + '%';
+                    if (pctEl) pctEl.textContent = pct;
+                    if (loaded >= total) { finished = true; resolve(); }
+                }
+                images.forEach(src => {
+                    const img = new Image();
+                    img.onload = bump; img.onerror = bump;
+                    img.src = src;
+                });
+                audios.forEach(src => {
+                    const a = new Audio();
+                    let done = false;
+                    const once = () => { if (done) return; done = true; bump(); };
+                    a.addEventListener('canplaythrough', once, { once: true });
+                    a.addEventListener('loadeddata', once, { once: true });
+                    a.addEventListener('error', once, { once: true });
+                    a.preload = 'auto';
+                    a.src = src;
+                });
+                setTimeout(() => { if (!finished) { finished = true; resolve(); } }, 10000);
+            });
+        }
+
+        function showTapToStart() {
+            const pre = document.getElementById('preloader');
+            if (!pre) { unlockAudio(); init(); return; }
+            pre.innerHTML =
+                '<div class="preloader-title">Fruit Hunt Adventure</div>' +
+                '<button id="tapStartBtn" class="tap-start-btn">TAP TO START</button>' +
+                '<div class="tap-start-hint">點一下開始遊戲</div>';
+            const btn = document.getElementById('tapStartBtn');
+            let started = false;
+            function begin(ev) {
+                if (started) return;
+                started = true;
+                if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+                unlockAudio();
+                pre.classList.add('done');
+                setTimeout(() => { pre.style.display = 'none'; }, 500);
+                init();
+            }
+            btn.addEventListener('touchstart', begin, { passive: false });
+            btn.addEventListener('click', begin);
+        }
+
+        window.onload = () => {
+            const imgList = [
+                'assets/background.jpg',
+                'assets/tree-hole.png',
+                ...fruits.map(f => 'assets/fruits/' + f.img)
+            ];
+            const audioList = [
+                'assets/sfx/bgm.mp3',
+                'assets/sfx/hit.mp3'
+            ];
+            preloadAssets(imgList, audioList).then(showTapToStart);
+        };
     </script>
 </body>
 </html>
