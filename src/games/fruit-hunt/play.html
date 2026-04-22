@@ -29,7 +29,7 @@
         .hud { position:relative; z-index:2; height: 80px; background: rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:space-between; padding: 0 20px; border-bottom: 2px solid rgba(255,255,255,0.1); flex-shrink:0; }
         .target-card { background: rgba(255,255,255,0.1); border: 2px solid #fbbf24; padding: 5px 20px; border-radius: 15px; display:flex; align-items:center; gap: 10px; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        .target-img { width: 40px; height: 40px; }
+        .target-img { width: 40px; height: 40px; object-fit: contain; background-color: transparent;}
         .timer { font-family: 'JetBrains Mono'; font-size: 2rem; color: #fff; }
         .timer-danger { color: #ff4444 !important; animation: shake 0.1s infinite; }
         @keyframes shake { 0% { transform: translate(1px,1px); } 50% { transform: translate(-1px,-1px); } }
@@ -48,7 +48,7 @@
         .solo-hud .hud { height: 160px; padding: 0 40px; }
         .solo-hud .target-card { padding: 10px 40px; gap: 20px; border-width: 3px; border-radius: 24px; }
         .solo-hud .target-card .text-xs { font-size: 1rem; }
-        .solo-hud .target-img { width: 80px; height: 80px; }
+        .solo-hud .target-img { width: 80px; height: 80px; object-fit: contain; background-color: transparent;}
         .solo-hud .target-name { font-size: 2.25rem; }
         .solo-hud .timer { font-size: 4rem; }
         .solo-hud .score { font-size: 3rem; }
@@ -205,11 +205,21 @@
             const w = areaEl.clientWidth || window.innerWidth;
             const h = areaEl.clientHeight || window.innerHeight;
             const scale = mode === 'solo' ? 2 : 1;
-            let holeWidth = Math.min(180 * scale, Math.max(60 * scale, (w / (HOLE_COUNT + 1)) * 0.8 * scale));
+            
+            // 1. 這一段保留：這決定了你「滿意的水果大小」基準
+            let baseWidth = Math.min(180 * scale, Math.max(60 * scale, (w / (HOLE_COUNT + 1)) * 0.8 * scale));
             const hCap = mode === 'solo' ? 0.7 : 0.45;
-            holeWidth = Math.min(holeWidth, (h * hCap) / HOLE_ASPECT);
+            baseWidth = Math.min(baseWidth, (h * hCap) / HOLE_ASPECT);
+            
+            // 2. 水果大小維持原樣
+            const fruitSize = baseWidth * HOLE_ASPECT;
+
+            // --- 修改這裡：額外加大洞口尺寸 ---
+            const holeScale = 1.8; // 洞口比水果大 1.2 倍，你可以按需求調整（如 1.5）
+            const holeWidth = baseWidth * holeScale;
             const holeHeight = holeWidth * HOLE_ASPECT;
-            const fruitSize = holeWidth * HOLE_ASPECT;
+            // ----------------------------
+
             return { holeWidth, holeHeight, fruitSize };
         }
 
