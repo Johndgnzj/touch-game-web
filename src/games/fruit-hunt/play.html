@@ -40,7 +40,18 @@
         .hole { position:absolute; background: url('assets/tree-hole.png') center/contain no-repeat; transform: translateX(-50%); }
         .fruit { position:absolute; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); transform: scale(0); cursor:pointer; }
         .fruit.pop { transform: scale(1); }
-        .fruit img { width:100%; height:100%; object-fit:contain; }
+        .fruit img { width:100%; height:100%; object-fit:contain; pointer-events:none; }
+        @keyframes wiggle { 0%,100% { transform: scale(1.2) rotate(-8deg);} 50% { transform: scale(1.2) rotate(8deg);} }
+        .fruit.highlight { animation: wiggle 0.25s infinite; }
+
+        /* Solo mode: HUD 放大 2 倍 */
+        .solo-hud .hud { height: 160px; padding: 0 40px; }
+        .solo-hud .target-card { padding: 10px 40px; gap: 20px; border-width: 3px; border-radius: 24px; }
+        .solo-hud .target-card .text-xs { font-size: 1rem; }
+        .solo-hud .target-img { width: 80px; height: 80px; }
+        .solo-hud .target-name { font-size: 2.25rem; }
+        .solo-hud .timer { font-size: 4rem; }
+        .solo-hud .score { font-size: 3rem; }
 
         #result { position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:200; display:none; flex-direction:column; align-items:center; justify-content:center; color:white; padding:20px; text-align:center; }
         .font-en { font-family: 'Bungee', sans-serif; }
@@ -162,7 +173,7 @@
 
         function buildView(isP2) {
             const root = document.createElement('div');
-            root.className = 'player-view' + (isP2 ? ' p2-area' : '');
+            root.className = 'player-view' + (isP2 ? ' p2-area' : '') + (mode === 'solo' ? ' solo-hud' : '');
             root.innerHTML = `
                 <div class="view-bg"></div>
                 <div class="hud">
@@ -193,8 +204,10 @@
         function computeHoleSize(areaEl) {
             const w = areaEl.clientWidth || window.innerWidth;
             const h = areaEl.clientHeight || window.innerHeight;
-            let holeWidth = Math.min(180, Math.max(60, (w / (HOLE_COUNT + 1)) * 0.8));
-            holeWidth = Math.min(holeWidth, (h * 0.45) / HOLE_ASPECT);
+            const scale = mode === 'solo' ? 2 : 1;
+            let holeWidth = Math.min(180 * scale, Math.max(60 * scale, (w / (HOLE_COUNT + 1)) * 0.8 * scale));
+            const hCap = mode === 'solo' ? 0.7 : 0.45;
+            holeWidth = Math.min(holeWidth, (h * hCap) / HOLE_ASPECT);
             const holeHeight = holeWidth * HOLE_ASPECT;
             const fruitSize = holeWidth * HOLE_ASPECT;
             return { holeWidth, holeHeight, fruitSize };
@@ -226,18 +239,19 @@
                 hole.style.top = (30 + Math.random() * 40) + '%';
                 view.gameArea.appendChild(hole);
                 view.holes.push(hole);
-
-                setInterval(() => {
-                    if (!active) return;
-                    if (Math.random() > 0.7) popFruit(hole, view);
-                }, 1500);
             }
             applySizesToView(view);
         }
 
-        function popFruit(hole, view) {
+        function clearViewFruits(view) {
+            view.holes.forEach(hole => {
+                const f = hole.querySelector('.fruit');
+                if (f) f.remove();
+            });
+        }
+
+        function popFruit(hole, view, fruitData) {
             if (hole.querySelector('.fruit')) return;
-            const fruitData = fruits[Math.floor(Math.random() * fruits.length)];
             const fruit = document.createElement('div');
             fruit.className = 'fruit';
             fruit.innerHTML = `<img src="assets/fruits/${fruitData.img}">`;
@@ -248,35 +262,62 @@
 
             setTimeout(() => fruit.classList.add('pop'), 50);
 
+            // 3 秒後，若此顆為目標水果，放大 20% 並搖晃
+            setTimeout(() => {
+                if (!active) return;
+                if (!fruit.parentNode) return;
+                if (currentTarget && fruit.dataset.name === currentTarget.name) {
+                    fruit.classList.add('highlight');
+                }
+            }, 3000);
+
             fruit.onclick = () => {
                 if (!active) return;
                 if (fruit.dataset.name === currentTarget.name) {
                     view.score++;
                     view.scoreEl.innerText = view.score;
+                    hitSfx.currentTime = 0;
                     hitSfx.play().catch(e => {});
+                    fruit.classList.remove('highlight');
                     fruit.style.transform = 'scale(1.5)';
                     fruit.style.opacity = '0';
-                    setTimeout(() => fruit.remove(), 200);
-                    newTarget();
+                    startRound();
                 } else {
+                    fruit.style.animation = 'none';
+                    // force reflow so shake restarts
+                    void fruit.offsetWidth;
                     fruit.style.animation = 'shake 0.1s 3';
                 }
             };
+        }
 
-            setTimeout(() => {
-                if (fruit && fruit.parentNode) {
-                    fruit.classList.remove('pop');
-                    setTimeout(() => fruit.remove(), 300);
-                }
-            }, 1200);
+        function refillHoles(view) {
+            clearViewFruits(view);
+            if (view.holes.length === 0) return;
+            const correctIdx = Math.floor(Math.random() * view.holes.length);
+            const distractors = fruits.filter(f => f.name !== currentTarget.name);
+            view.holes.forEach((hole, i) => {
+                const data = (i === correctIdx)
+                    ? currentTarget
+                    : distractors[Math.floor(Math.random() * distractors.length)];
+                popFruit(hole, view, data);
+            });
         }
 
         function newTarget() {
-            currentTarget = fruits[Math.floor(Math.random() * fruits.length)];
+            const pool = currentTarget
+                ? fruits.filter(f => f.name !== currentTarget.name)
+                : fruits;
+            currentTarget = pool[Math.floor(Math.random() * pool.length)];
             views.forEach(v => {
                 v.targetImg.src = `assets/fruits/${currentTarget.img}`;
                 v.targetName.innerText = currentTarget.name;
             });
+        }
+
+        function startRound() {
+            newTarget();
+            views.forEach(refillHoles);
         }
 
         function startTimer() {
@@ -326,10 +367,14 @@
 
         function init() {
             active = true;
-            views.push(buildView(false));
-            if (mode === 'duo') views.push(buildView(true));
+            if (mode === 'duo') {
+                views.push(buildView(true));   // 上半，旋轉 180° 面向上方玩家
+                views.push(buildView(false));  // 下半，正向面向下方玩家
+            } else {
+                views.push(buildView(false));
+            }
             views.forEach(spawnHoles);
-            newTarget();
+            startRound();
             startTimer();
             window.addEventListener('resize', () => views.forEach(applySizesToView));
         }
