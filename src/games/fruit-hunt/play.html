@@ -242,23 +242,87 @@
             };
         }
 
+        // 依 mode / 方向 / 難度決定排版
+        function getLayoutType(areaEl) {
+            const w = areaEl.clientWidth || window.innerWidth;
+            const h = areaEl.clientHeight || window.innerHeight;
+            const isPortrait = h > w;
+            if (HOLE_COUNT === 5) {
+                if (mode === 'solo' && isPortrait) return 'grid9';
+                return 'rows23';
+            }
+            // 3 個洞：solo 直式用三角形配置、其餘單列
+            if (mode === 'solo' && isPortrait) return 'triangle3';
+            return 'row';
+        }
+
+        // 每個 hole 在 gameArea 中的百分比位置（left, top 為 hole 中心）
+        function getHolePositions(layoutType) {
+            if (layoutType === 'grid9') {
+                // 5 個洞放九宮格的 1/3/5/7/9
+                return [
+                    { left: 18, top: 22 },
+                    { left: 82, top: 22 },
+                    { left: 50, top: 50 },
+                    { left: 18, top: 78 },
+                    { left: 82, top: 78 }
+                ];
+            }
+            if (layoutType === 'rows23') {
+                // 2+3 列：收緊上下間距與第二列左右邊距
+                return [
+                    { left: 30, top: 26 },
+                    { left: 70, top: 26 },
+                    { left: 18, top: 70 },
+                    { left: 50, top: 70 },
+                    { left: 82, top: 70 }
+                ];
+            }
+            if (layoutType === 'triangle3') {
+                return [
+                    { left: 25, top: 28 },
+                    { left: 75, top: 28 },
+                    { left: 50, top: 72 }
+                ];
+            }
+            // single row
+            const out = [];
+            for (let i = 0; i < HOLE_COUNT; i++) {
+                out.push({ left: 100 / (HOLE_COUNT + 1) * (i + 1), top: 50 });
+            }
+            return out;
+        }
+
         function computeHoleSize(areaEl) {
             const w = areaEl.clientWidth || window.innerWidth;
             const h = areaEl.clientHeight || window.innerHeight;
-            const scale = mode === 'solo' ? 2 : 1;
+            const layoutType = getLayoutType(areaEl);
+            const positions = getHolePositions(layoutType);
 
-            // Hard 模式採 2+3 兩列排版，寬度以 3 欄估算、高度佔比除以列數
-            const rows = HOLE_COUNT === 5 ? 2 : 1;
-            const cols = HOLE_COUNT === 5 ? 3 : HOLE_COUNT;
+            // 算出最近鄰洞中心距（水平與垂直，取最小），保證 hole 不會彼此重疊
+            let minColGap = Infinity, minRowGap = Infinity;
+            for (let i = 0; i < positions.length; i++) {
+                for (let j = i + 1; j < positions.length; j++) {
+                    const dx = Math.abs(positions[i].left - positions[j].left);
+                    const dy = Math.abs(positions[i].top - positions[j].top);
+                    if (dx > 0 && dy < 5) minColGap = Math.min(minColGap, dx);
+                    if (dy > 0 && dx < 5) minRowGap = Math.min(minRowGap, dy);
+                }
+            }
+            if (!isFinite(minColGap)) minColGap = 100 / (HOLE_COUNT + 1);
+            if (!isFinite(minRowGap)) minRowGap = 100;
 
-            let baseWidth = Math.min(180 * scale, Math.max(60 * scale, (w / (cols + 1)) * 0.8 * scale));
-            const hCap = rows === 2 ? 0.32 : (mode === 'solo' ? 0.7 : 0.45);
-            baseWidth = Math.min(baseWidth, (h * hCap) / HOLE_ASPECT);
+            const colGapPx = w * minColGap / 100;
+            const rowGapPx = h * minRowGap / 100;
 
-            const fruitSize = baseWidth * HOLE_ASPECT;
-            const holeScale = 1.8;
-            const holeWidth = baseWidth * holeScale;
+            // hole 不可寬於相鄰欄距（留 8% 間隙）；不可高於相鄰列距（留 8% 間隙）
+            let holeWidth = Math.min(colGapPx * 0.92, rowGapPx * 0.92 / HOLE_ASPECT);
+            const maxHole = mode === 'solo' ? 360 : 220;
+            holeWidth = Math.max(80, Math.min(holeWidth, maxHole));
+
             const holeHeight = holeWidth * HOLE_ASPECT;
+            // 水果大小 ≈ 洞寬的 85%（比原本 67% 更大、視覺上佔滿洞）
+            const fruitSize = holeWidth * 0.85;
 
             return { holeWidth, holeHeight, fruitSize };
         }
@@ -273,34 +337,29 @@
         function applySizesToView(view) {
             const { holeWidth, holeHeight, fruitSize } = computeHoleSize(view.gameArea);
             view.holeSize = { holeWidth, holeHeight, fruitSize };
-            view.holes.forEach(hole => {
+            // 若方向切換導致 layout 變更，重新套用位置
+            const layoutType = getLayoutType(view.gameArea);
+            const positions = getHolePositions(layoutType);
+            view.holes.forEach((hole, i) => {
                 hole.style.width = holeWidth + 'px';
                 hole.style.height = holeHeight + 'px';
+                if (positions[i]) {
+                    hole.style.left = positions[i].left + '%';
+                    hole.style.top = positions[i].top + '%';
+                }
                 const fruit = hole.querySelector('.fruit');
                 if (fruit) applyFruitPosition(fruit, fruitSize, holeWidth, holeHeight);
             });
         }
 
         function spawnHoles(view) {
-            for (let i = 0; i < HOLE_COUNT; i++) {
+            const layoutType = getLayoutType(view.gameArea);
+            const positions = getHolePositions(layoutType);
+            for (let i = 0; i < positions.length; i++) {
                 const hole = document.createElement('div');
                 hole.className = 'hole';
-                let leftPct, topPct;
-                if (HOLE_COUNT === 5) {
-                    // 2+3 兩列：前 2 個在上列、後 3 個在下列
-                    if (i < 2) {
-                        leftPct = 100 / 3 * (i + 1);
-                        topPct = 20 + Math.random() * 8;
-                    } else {
-                        leftPct = 100 / 4 * (i - 2 + 1);
-                        topPct = 58 + Math.random() * 8;
-                    }
-                } else {
-                    leftPct = 100 / (HOLE_COUNT + 1) * (i + 1);
-                    topPct = 30 + Math.random() * 40;
-                }
-                hole.style.left = leftPct + '%';
-                hole.style.top = topPct + '%';
+                hole.style.left = positions[i].left + '%';
+                hole.style.top = positions[i].top + '%';
                 view.gameArea.appendChild(hole);
                 view.holes.push(hole);
             }
