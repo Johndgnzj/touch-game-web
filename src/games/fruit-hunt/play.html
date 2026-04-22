@@ -53,6 +53,19 @@
         .solo-hud .timer { font-size: 4rem; }
         .solo-hud .score { font-size: 3rem; }
 
+        /* Duo mode: HUD 改為左右兩側直欄，讓計時、分數、目標水果都放大 */
+        .duo-hud { flex-direction: row !important; }
+        .duo-hud .side-bar { position:relative; z-index:2; background: rgba(0,0,0,0.55); display:flex; flex-direction:column; align-items:center; justify-content:space-around; padding: 16px 10px; flex-shrink:0; }
+        .duo-hud .side-bar.left  { border-right: 2px solid rgba(255,255,255,0.1); width: 110px; }
+        .duo-hud .side-bar.right { border-left:  2px solid rgba(255,255,255,0.1); width: 180px; }
+        .duo-hud .side-bar .timer { font-size: 3rem; }
+        .duo-hud .side-bar .score { font-size: 3rem; font-weight: 900; }
+        .duo-hud .side-bar .label { font-size: 0.75rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.55); text-transform: uppercase; }
+        .duo-hud .side-bar .target-card { flex-direction: column; padding: 16px 14px; gap: 12px; }
+        .duo-hud .side-bar .target-img { width: 96px; height: 96px; object-fit: contain; }
+        .duo-hud .side-bar .target-name { font-size: 1.5rem; }
+        .duo-hud .game-area { flex: 1; }
+
         #result { position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:200; display:none; flex-direction:column; align-items:center; justify-content:center; color:white; padding:20px; text-align:center; }
         .font-en { font-family: 'Bungee', sans-serif; }
         .duo-result { display:flex; gap:32px; margin-bottom:32px; flex-wrap:wrap; justify-content:center; }
@@ -173,20 +186,45 @@
 
         function buildView(isP2) {
             const root = document.createElement('div');
-            root.className = 'player-view' + (isP2 ? ' p2-area' : '') + (mode === 'solo' ? ' solo-hud' : '');
-            root.innerHTML = `
-                <div class="view-bg"></div>
-                <div class="hud">
-                    <div class="timer">${timeLimit}</div>
-                    <div class="target-card">
-                        <span class="text-xs text-amber-400 font-bold uppercase tracking-widest">Target</span>
-                        <img class="target-img" src="">
-                        <span class="target-name font-en text-lg">APPLE</span>
+            const hudClass = mode === 'solo' ? ' solo-hud' : ' duo-hud';
+            root.className = 'player-view' + (isP2 ? ' p2-area' : '') + hudClass;
+            if (mode === 'duo') {
+                root.innerHTML = `
+                    <div class="view-bg"></div>
+                    <div class="side-bar left">
+                        <div>
+                            <div class="label">Time</div>
+                            <div class="timer">${timeLimit}</div>
+                        </div>
+                        <div>
+                            <div class="label">Score</div>
+                            <div class="score">0</div>
+                        </div>
                     </div>
-                    <div class="score text-2xl font-black">0</div>
-                </div>
-                <div class="game-area"></div>
-            `;
+                    <div class="game-area"></div>
+                    <div class="side-bar right">
+                        <div class="target-card">
+                            <span class="text-amber-400 font-bold uppercase tracking-widest" style="font-size:0.9rem;letter-spacing:0.2em;">Target</span>
+                            <img class="target-img" src="">
+                            <span class="target-name font-en">APPLE</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                root.innerHTML = `
+                    <div class="view-bg"></div>
+                    <div class="hud">
+                        <div class="timer">${timeLimit}</div>
+                        <div class="target-card">
+                            <span class="text-xs text-amber-400 font-bold uppercase tracking-widest">Target</span>
+                            <img class="target-img" src="">
+                            <span class="target-name font-en text-lg">APPLE</span>
+                        </div>
+                        <div class="score text-2xl font-black">0</div>
+                    </div>
+                    <div class="game-area"></div>
+                `;
+            }
             stage.appendChild(root);
             return {
                 root,
@@ -205,20 +243,19 @@
             const w = areaEl.clientWidth || window.innerWidth;
             const h = areaEl.clientHeight || window.innerHeight;
             const scale = mode === 'solo' ? 2 : 1;
-            
-            // 1. 這一段保留：這決定了你「滿意的水果大小」基準
-            let baseWidth = Math.min(180 * scale, Math.max(60 * scale, (w / (HOLE_COUNT + 1)) * 0.8 * scale));
-            const hCap = mode === 'solo' ? 0.7 : 0.45;
-            baseWidth = Math.min(baseWidth, (h * hCap) / HOLE_ASPECT);
-            
-            // 2. 水果大小維持原樣
-            const fruitSize = baseWidth * HOLE_ASPECT;
 
-            // --- 修改這裡：額外加大洞口尺寸 ---
-            const holeScale = 1.8; // 洞口比水果大 1.2 倍，你可以按需求調整（如 1.5）
+            // Hard 模式採 2+3 兩列排版，寬度以 3 欄估算、高度佔比除以列數
+            const rows = HOLE_COUNT === 5 ? 2 : 1;
+            const cols = HOLE_COUNT === 5 ? 3 : HOLE_COUNT;
+
+            let baseWidth = Math.min(180 * scale, Math.max(60 * scale, (w / (cols + 1)) * 0.8 * scale));
+            const hCap = rows === 2 ? 0.32 : (mode === 'solo' ? 0.7 : 0.45);
+            baseWidth = Math.min(baseWidth, (h * hCap) / HOLE_ASPECT);
+
+            const fruitSize = baseWidth * HOLE_ASPECT;
+            const holeScale = 1.8;
             const holeWidth = baseWidth * holeScale;
             const holeHeight = holeWidth * HOLE_ASPECT;
-            // ----------------------------
 
             return { holeWidth, holeHeight, fruitSize };
         }
@@ -245,8 +282,22 @@
             for (let i = 0; i < HOLE_COUNT; i++) {
                 const hole = document.createElement('div');
                 hole.className = 'hole';
-                hole.style.left = (100 / (HOLE_COUNT + 1) * (i + 1)) + '%';
-                hole.style.top = (30 + Math.random() * 40) + '%';
+                let leftPct, topPct;
+                if (HOLE_COUNT === 5) {
+                    // 2+3 兩列：前 2 個在上列、後 3 個在下列
+                    if (i < 2) {
+                        leftPct = 100 / 3 * (i + 1);
+                        topPct = 20 + Math.random() * 8;
+                    } else {
+                        leftPct = 100 / 4 * (i - 2 + 1);
+                        topPct = 58 + Math.random() * 8;
+                    }
+                } else {
+                    leftPct = 100 / (HOLE_COUNT + 1) * (i + 1);
+                    topPct = 30 + Math.random() * 40;
+                }
+                hole.style.left = leftPct + '%';
+                hole.style.top = topPct + '%';
                 view.gameArea.appendChild(hole);
                 view.holes.push(hole);
             }
@@ -305,11 +356,15 @@
             clearViewFruits(view);
             if (view.holes.length === 0) return;
             const correctIdx = Math.floor(Math.random() * view.holes.length);
+            // 隨機打亂非目標水果，確保不重複
             const distractors = fruits.filter(f => f.name !== currentTarget.name);
+            for (let i = distractors.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [distractors[i], distractors[j]] = [distractors[j], distractors[i]];
+            }
+            let di = 0;
             view.holes.forEach((hole, i) => {
-                const data = (i === correctIdx)
-                    ? currentTarget
-                    : distractors[Math.floor(Math.random() * distractors.length)];
+                const data = (i === correctIdx) ? currentTarget : distractors[di++];
                 popFruit(hole, view, data);
             });
         }
