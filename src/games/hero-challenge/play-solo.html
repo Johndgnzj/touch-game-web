@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HERO CHALLENGE — SOLO</title>
@@ -96,18 +99,44 @@
         .skill-ready { opacity: 1 !important; filter: grayscale(0) !important; border-color: #fbbf24 !important; transform: scale(1.08); box-shadow: 0 0 24px #fbbf24; }
 
         /* 置中技能 FX */
+        /* 1. 外層容器保持妳原本的置中邏輯，完全不動 */
         .skill-fx {
             position: fixed; left: 50%; top: 50%;
             width: 50vw; max-width: 80vh; aspect-ratio: 1;
-            transform: translate(-50%, -50%) scale(0.5);
+            transform: translate(-50%, -50%) scale(0.5); /* 這裡的 scale 是動畫初始狀態 */
             opacity: 0; pointer-events: none; z-index: 300;
             transition: transform .35s cubic-bezier(.175, .885, .32, 1.275), opacity .35s;
+            
+            /* 核心：讓裡面的圖片永遠在容器正中間 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
+        /* U 技能：壓在落下道具下方（落下物 z-index:20） */
+        body[data-pick="u"] .skill-fx { z-index: 15; }
+
+        /* 2. 當技能啟動時，外層負責整體的彈出動畫 */
         .skill-fx.on { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        .skill-fx img {
-            width: 100%; height: 100%; object-fit: contain;
+
+        /* 3. 內層圖片：透過 width 調整大小，避開 transform 衝突 */
+        #skillFxImg {
+            object-fit: contain;
             filter: drop-shadow(0 14px 30px rgba(0,0,0,.6));
             animation: skillSpin 3.5s linear infinite;
+            transition: width 0.3s ease; /* 切換角色時縮放平滑一點 */
+        }
+
+        /* U 角色：圖片佔滿 100% */
+        #skillFxImg.skill-fx-u {
+            width: 150%;
+            height: 150%;
+        }
+
+        /* M 角色：圖片只佔一半 50% */
+        #skillFxImg.skill-fx-m {
+            width: 50%;
+            height: 50%;
         }
         @keyframes skillSpin {
             0%   { transform: rotate(-3deg) scale(1); }
@@ -251,11 +280,13 @@
         var HERO = pick === 'u'
             ? { name: 'ULTRAMAN', img: 'assets/ultraman.png', bg: '#1e3a8a', label: 'U:',
                 skillBtnImg: 'assets/skills/spiderman-skill.png',
-                skillFxImg:  'assets/skills/spiderman-block.png',
+                skillFxImg:  'assets/skills/spiderman-skill.png',
+                skillFxImgClass: 'skill-fx-u',
                 skillLabel:  'WEB STORM' }
             : { name: 'MELODY',   img: 'assets/melody.png',   bg: '#ffffff', label: 'M:',
                 skillBtnImg: 'assets/skills/kuromi-skill.png',
                 skillFxImg:  'assets/skills/kuromi-skill.png',
+                skillFxImgClass: 'skill-fx-m',
                 skillLabel:  'GRAVITY WELL' };
 
         // Apply hero-specific UI
@@ -263,7 +294,19 @@
         document.getElementById('heroAvatar').src = HERO.img;
         document.getElementById('heroLabel').textContent = HERO.label;
         document.getElementById('skillBtnImg').src = HERO.skillBtnImg;
-        document.getElementById('skillFxImg').src = HERO.skillFxImg;
+        const fxElement = document.getElementById('skillFxImg');
+
+        // 設定圖片路徑
+        fxElement.src = HERO.skillFxImg;
+
+        // 清除舊的縮放狀態，加上新的
+        fxElement.classList.remove('skill-fx-u', 'skill-fx-m');
+        fxElement.classList.add(HERO.skillFxImgClass);
+
+        // U 角色：把 skillFx 移入 #game-area，讓落下道具(z-index:20)蓋過它
+        if (pick === 'u') {
+            document.getElementById('game-area').appendChild(document.getElementById('skillFx'));
+        }
         document.getElementById('skillLabel').textContent = HERO.skillLabel;
         document.getElementById('resultPortrait').src = HERO.img;
         document.getElementById('resultName').textContent = HERO.name;
@@ -325,9 +368,9 @@
 
                 if (gravityActive) {
                     if (!pulled) { pulled = true; item.classList.add('pulled'); }
-                    var hudH = document.querySelector('.bottom-hud').offsetHeight;
-                    var tx = window.innerWidth / 2 - size / 2;
-                    var ty = window.innerHeight - hudH - size - 20;
+                    var fxRect = document.getElementById('skillFxImg').getBoundingClientRect();
+                    var tx = fxRect.left + fxRect.width / 2 - size / 2;
+                    var ty = fxRect.top  + fxRect.height / 2 - size / 2;
                     posX += (tx - posX) * 0.18;
                     posY += (ty - posY) * 0.18;
                     item.style.left = posX + 'px';
